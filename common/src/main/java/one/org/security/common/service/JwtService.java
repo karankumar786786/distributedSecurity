@@ -85,6 +85,7 @@ public class JwtService {
                 .claim("id", tokenDTO.id())
                 .claim("deviceHash", tokenDTO.deviceHash())
                 .claim("purpose", tokenDTO.purpose())
+                .claim("scope", tokenDTO.scope())
                 .issueTime(new Date())
                 .expirationTime(
                         new Date(System.currentTimeMillis() + (tokenDTO.expirationAfterInMinutes() * 60 * 1000L)))
@@ -133,12 +134,13 @@ public class JwtService {
             String subject = claims.getSubject();
             String id = claims.getStringClaim("id");
             String deviceHash = claims.getStringClaim("deviceHash");
+            java.util.List<String> scope = claims.getStringListClaim("scope");
             String hmacKeyId = (String) jwt.getHeader().getCustomParam("hmacKeyId");
 
             long expTime = claims.getExpirationTime().getTime();
             long now = System.currentTimeMillis();
             int minutesRemaining = (int) ((expTime - now) / (1000 * 60));
-            return new TokenDTO(subject, id, deviceHash, minutesRemaining, hmacKeyId, expectedPurpose);
+            return new TokenDTO(subject, id, deviceHash, minutesRemaining, hmacKeyId, expectedPurpose, scope);
 
         } catch (java.text.ParseException | JOSEException e) {
             throw new BadCredentialsException("Invalid token", e);

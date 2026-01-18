@@ -18,7 +18,6 @@ import one.org.security.common.dto.TokenDTO;
 import one.org.security.common.enums.TokenPurposeMessageEnum;
 import one.org.security.core.domain.entity.User;
 import one.org.security.core.service.UserService;
-import one.org.security.core.service.VerifyUserService;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -26,7 +25,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(JwtAuthFilter.class);
 
     @Autowired
-    private VerifyUserService verifyUserService;
+    private one.org.security.common.service.VerifyUserService verifyUserService;
 
     @Autowired
     private UserService userService;

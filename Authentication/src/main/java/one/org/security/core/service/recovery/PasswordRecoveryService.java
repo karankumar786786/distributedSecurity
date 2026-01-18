@@ -1,6 +1,7 @@
 package one.org.security.core.service.recovery;
 
 import java.util.Collections;
+import one.org.security.common.service.VerifyUserService;
 import java.util.Map;
 
 import org.bson.types.ObjectId;
@@ -22,7 +23,6 @@ import one.org.security.common.enums.OtpSentMethodEnum;
 import one.org.security.common.enums.TokenPurposeMessageEnum;
 import one.org.security.core.service.SecurityEventService;
 import one.org.security.core.service.UserService;
-import one.org.security.core.service.VerifyUserService;
 import one.org.security.core.service.otp.OtpService;
 import one.org.security.common.service.RedisService;
 
@@ -53,7 +53,7 @@ public class PasswordRecoveryService {
     public Map<String, String> forgetPassword(ForgetPasswordRequestDTO request, String tempToken,
             String rawDeviceData) {
         String ipAddress = rawDeviceData.split(":")[1];
-        TokenDTO data = verifyTempToken(tempToken, rawDeviceData,TokenPurposeMessageEnum.FORGET_PASSWORD);
+        TokenDTO data = verifyTempToken(tempToken, rawDeviceData, TokenPurposeMessageEnum.FORGET_PASSWORD);
         User user = userService.getUserById(new ObjectId(data.id()));
 
         if (request.option() == ForgetPasswordRequestEnum.BACKUP_EMAIL) {
@@ -68,7 +68,7 @@ public class PasswordRecoveryService {
 
         TokenDTO newTokenDTO = new TokenDTO(data.subject(), data.id(), data.deviceHash(),
                 jwtProperties.getRecoveryExpiration(), data.hmacKeyId(),
-                TokenPurposeMessageEnum.FORGET_PASSWORD_VERIFICATION);
+                TokenPurposeMessageEnum.FORGET_PASSWORD_VERIFICATION, null);
         return Collections.singletonMap("token", jwtService.encode(newTokenDTO));
     }
 
@@ -95,7 +95,7 @@ public class PasswordRecoveryService {
 
     // --- Helpers ---
 
-    private TokenDTO verifyTempToken(String token, String rawDeviceData,TokenPurposeMessageEnum purpose) {
+    private TokenDTO verifyTempToken(String token, String rawDeviceData, TokenPurposeMessageEnum purpose) {
         return verifyToken(token, rawDeviceData, purpose);
     }
 

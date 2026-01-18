@@ -1,6 +1,5 @@
 package one.org.security.core.service.auth;
 
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -45,7 +44,7 @@ import one.org.security.common.enums.Event;
 import one.org.security.common.enums.TokenPurposeMessageEnum;
 import one.org.security.core.service.SecurityEventService;
 import one.org.security.core.service.UserService;
-import one.org.security.core.service.VerifyUserService;
+import one.org.security.common.service.VerifyUserService;
 import one.org.security.common.service.RedisService;
 import one.org.security.infrastructure.config.JwtProperties;
 import one.org.security.common.service.JwtService;
@@ -54,200 +53,213 @@ import org.springframework.security.authentication.BadCredentialsException;
 @ExtendWith(MockitoExtension.class)
 public class FidoServiceTest {
 
-    @Mock
-    private UserService userService;
-    @Mock
-    private RedisService redisService;
-    @Mock
-    private ObjectMapper objectMapper;
-    @Mock
-    private JwtService jwtService;
-    @Mock
-    private JwtProperties jwtProperties;
-    @Mock
-    private SecurityEventService securityEventService;
-    @Mock
-    private VerifyUserService verifyUserService;
-    @Mock
-    private RelyingParty relyingParty;
+        @Mock
+        private UserService userService;
+        @Mock
+        private RedisService redisService;
+        @Mock
+        private ObjectMapper objectMapper;
+        @Mock
+        private JwtService jwtService;
+        @Mock
+        private JwtProperties jwtProperties;
+        @Mock
+        private SecurityEventService securityEventService;
+        @Mock
+        private VerifyUserService verifyUserService;
+        @Mock
+        private RelyingParty relyingParty;
 
-    private FidoService fidoService;
+        private FidoService fidoService;
 
-    private User testUser;
-    private TokenDTO testTokenDTO;
+        private User testUser;
+        private TokenDTO testTokenDTO;
 
-    @BeforeEach
-    void setUp() {
-        fidoService = new FidoService(
-                userService,
-                redisService,
-                objectMapper,
-                jwtService,
-                jwtProperties,
-                securityEventService,
-                verifyUserService,
-                "localhost",
-                "Test Service",
-                Collections.singleton("http://localhost:3000"),
-                3, // max attempts
-                6 // lockout hours
-        );
+        @BeforeEach
+        void setUp() {
+                fidoService = new FidoService(
+                                userService,
+                                redisService,
+                                objectMapper,
+                                jwtService,
+                                jwtProperties,
+                                securityEventService,
+                                verifyUserService,
+                                "localhost",
+                                "Test Service",
+                                Collections.singleton("http://localhost:3000"),
+                                3, // max attempts
+                                6 // lockout hours
+                );
 
-        ReflectionTestUtils.setField(fidoService, "relyingParty", relyingParty);
+                ReflectionTestUtils.setField(fidoService, "relyingParty", relyingParty);
 
-        testUser = User.builder()
-                .id(new ObjectId())
-                .username("testuser")
-                .numberOfInitaiatedOperations(0)
-                .fidoCredential(FidoCredential.builder()
-                        .credentialId(new ByteArray(new byte[] { 1, 2, 3 }))
-                        .build())
-                .build();
+                testUser = User.builder()
+                                .id(new ObjectId())
+                                .username("testuser")
+                                .numberOfInitaiatedOperations(0)
+                                .fidoCredential(FidoCredential.builder()
+                                                .credentialId(new ByteArray(new byte[] { 1, 2, 3 }))
+                                                .build())
+                                .build();
 
-        testTokenDTO = new TokenDTO(
-                "testuser",
-                testUser.getId().toHexString(),
-                "deviceHash",
-                60,
-                "keyId",
-                TokenPurposeMessageEnum.LOGIN);
-    }
-
-    @Test
-    void initiateLogin_Success() throws JsonProcessingException {
-        when(verifyUserService.verifyUser(anyString(), anyString(), eq(TokenPurposeMessageEnum.LOGIN)))
-                .thenReturn(testTokenDTO);
-        when(userService.getUserByUsername("testuser")).thenReturn(testUser);
-
-        AssertionRequest mockRequest = mock(AssertionRequest.class);
-        when(mockRequest.toJson()).thenReturn("{}");
-        when(mockRequest.toCredentialsGetJson()).thenReturn("{}");
-
-        when(relyingParty.startAssertion(any(StartAssertionOptions.class))).thenReturn(mockRequest);
-
-        String result = fidoService.initiateLogin("validToken", "ip:127.0.0.1");
-
-        assertNotNull(result);
-        verify(redisService).setValue(eq("fido_login:testuser"), anyString(), eq(5L), any());
-    }
-
-    @Test
-    void initiateLogin_Blocked() {
-        when(verifyUserService.verifyUser(anyString(), anyString(), eq(TokenPurposeMessageEnum.LOGIN)))
-                .thenReturn(testTokenDTO);
-
-        testUser.setNumberOfInitaiatedOperations(4);
-        testUser.setLockingTime(LocalDateTime.now().plusHours(1)); // Already blocked
-        when(userService.getUserByUsername("testuser")).thenReturn(testUser);
-
-        assertThrows(AccountBlockedException.class, () -> fidoService.initiateLogin("validToken", "ip:127.0.0.1"));
-
-        verify(relyingParty, never()).startAssertion(any());
-    }
-
-    @Test
-    void finishLogin_Success() throws Exception {
-        when(verifyUserService.verifyUser(anyString(), anyString(), eq(TokenPurposeMessageEnum.LOGIN)))
-                .thenReturn(testTokenDTO);
-        when(redisService.getValue("fido_login:testuser")).thenReturn("{}");
-        when(userService.getUserByUsername("testuser")).thenReturn(testUser);
-        when(jwtService.encode(any(TokenDTO.class))).thenReturn("token");
-
-        AssertionResult mockResult = mock(AssertionResult.class);
-        when(mockResult.isSuccess()).thenReturn(true);
-        when(mockResult.getCredential()).thenReturn(RegisteredCredential.builder()
-                .credentialId(new ByteArray(new byte[] { 1, 2, 3 }))
-                .userHandle(new ByteArray(new byte[] { 1 }))
-                .publicKeyCose(new ByteArray(new byte[] { 1 }))
-                .signatureCount(10)
-                .build());
-
-        try (MockedStatic<AssertionRequest> arMock = Mockito.mockStatic(AssertionRequest.class);
-                MockedStatic<PublicKeyCredential> pkcMock = Mockito.mockStatic(PublicKeyCredential.class)) {
-
-            arMock.when(() -> AssertionRequest.fromJson(anyString())).thenReturn(mock(AssertionRequest.class));
-            pkcMock.when(() -> PublicKeyCredential.parseAssertionResponseJson(any()))
-                    .thenReturn(mock(PublicKeyCredential.class));
-
-            when(relyingParty.finishAssertion(any(FinishAssertionOptions.class))).thenReturn(mockResult);
-
-            FidoCompleteLoginRequestDTO requestDTO = new FidoCompleteLoginRequestDTO();
-            requestDTO.setResponse("{}");
-
-            fidoService.finishLogin("validToken", "ip:127.0.0.1", requestDTO);
-
-            verify(userService).resetCompletedOperations(testUser.getId());
-            verify(userService).saveUser(testUser);
-            verify(securityEventService).saveSecurityEvent(argThat(event -> event.getEvent() == Event.LOGIN_SUCCESS));
+                testTokenDTO = new TokenDTO(
+                                "testuser",
+                                testUser.getId().toHexString(),
+                                "deviceHash",
+                                60,
+                                "keyId",
+                                TokenPurposeMessageEnum.LOGIN,
+                                null);
         }
-    }
 
-    @Test
-    void finishLogin_Failure_Increment() throws Exception {
-        when(verifyUserService.verifyUser(anyString(), anyString(), eq(TokenPurposeMessageEnum.LOGIN)))
-                .thenReturn(testTokenDTO);
-        when(redisService.getValue("fido_login:testuser")).thenReturn("{}");
-        when(userService.getUserByUsername("testuser")).thenReturn(testUser);
+        @Test
+        void initiateLogin_Success() throws JsonProcessingException {
+                when(verifyUserService.verifyUser(anyString(), anyString(), eq(TokenPurposeMessageEnum.LOGIN)))
+                                .thenReturn(testTokenDTO);
+                when(userService.getUserByUsername("testuser")).thenReturn(testUser);
 
-        // Return updated user to simulate increment result
-        User updated = User.builder().id(testUser.getId()).username("testuser").numberOfInitaiatedOperations(1).build();
-        when(userService.incrementCompletedOperations(testUser.getId())).thenReturn(updated);
+                AssertionRequest mockRequest = mock(AssertionRequest.class);
+                when(mockRequest.toJson()).thenReturn("{}");
+                when(mockRequest.toCredentialsGetJson()).thenReturn("{}");
 
-        AssertionResult mockResult = mock(AssertionResult.class);
-        when(mockResult.isSuccess()).thenReturn(false);
+                when(relyingParty.startAssertion(any(StartAssertionOptions.class))).thenReturn(mockRequest);
 
-        try (MockedStatic<AssertionRequest> arMock = Mockito.mockStatic(AssertionRequest.class);
-                MockedStatic<PublicKeyCredential> pkcMock = Mockito.mockStatic(PublicKeyCredential.class)) {
+                String result = fidoService.initiateLogin("validToken", "ip:127.0.0.1");
 
-            arMock.when(() -> AssertionRequest.fromJson(anyString())).thenReturn(mock(AssertionRequest.class));
-            pkcMock.when(() -> PublicKeyCredential.parseAssertionResponseJson(any()))
-                    .thenReturn(mock(PublicKeyCredential.class));
-
-            when(relyingParty.finishAssertion(any(FinishAssertionOptions.class))).thenReturn(mockResult);
-
-            FidoCompleteLoginRequestDTO requestDTO = new FidoCompleteLoginRequestDTO();
-            requestDTO.setResponse("{}");
-
-            assertThrows(BadCredentialsException.class,
-                    () -> fidoService.finishLogin("validToken", "ip:127.0.0.1", requestDTO));
-
-            verify(userService).incrementCompletedOperations(testUser.getId());
-            verify(securityEventService).saveSecurityEvent(
-                    argThat(event -> event.getEvent() == Event.LOGIN_FAIL && event.getMessage().contains("failed")));
+                assertNotNull(result);
+                verify(redisService).setValue(eq("fido_login:testuser"), anyString(), eq(5L), any());
         }
-    }
 
-    @Test
-    void finishLogin_Failure_BlockingLimit() throws Exception {
-        when(verifyUserService.verifyUser(anyString(), anyString(), eq(TokenPurposeMessageEnum.LOGIN)))
-                .thenReturn(testTokenDTO);
-        when(redisService.getValue("fido_login:testuser")).thenReturn("{}");
-        when(userService.getUserByUsername("testuser")).thenReturn(testUser);
+        @Test
+        void initiateLogin_Blocked() {
+                when(verifyUserService.verifyUser(anyString(), anyString(), eq(TokenPurposeMessageEnum.LOGIN)))
+                                .thenReturn(testTokenDTO);
 
-        User blocked = User.builder().id(testUser.getId()).username("testuser").numberOfInitaiatedOperations(4).build();
-        when(userService.incrementCompletedOperations(testUser.getId())).thenReturn(blocked);
+                testUser.setNumberOfInitaiatedOperations(4);
+                testUser.setLockingTime(LocalDateTime.now().plusHours(1)); // Already blocked
+                when(userService.getUserByUsername("testuser")).thenReturn(testUser);
 
-        AssertionResult mockResult = mock(AssertionResult.class);
-        when(mockResult.isSuccess()).thenReturn(false);
+                assertThrows(AccountBlockedException.class,
+                                () -> fidoService.initiateLogin("validToken", "ip:127.0.0.1"));
 
-        try (MockedStatic<AssertionRequest> arMock = Mockito.mockStatic(AssertionRequest.class);
-                MockedStatic<PublicKeyCredential> pkcMock = Mockito.mockStatic(PublicKeyCredential.class)) {
-
-            arMock.when(() -> AssertionRequest.fromJson(anyString())).thenReturn(mock(AssertionRequest.class));
-            pkcMock.when(() -> PublicKeyCredential.parseAssertionResponseJson(any()))
-                    .thenReturn(mock(PublicKeyCredential.class));
-
-            when(relyingParty.finishAssertion(any(FinishAssertionOptions.class))).thenReturn(mockResult);
-
-            FidoCompleteLoginRequestDTO requestDTO = new FidoCompleteLoginRequestDTO();
-            requestDTO.setResponse("{}");
-
-            assertThrows(AccountBlockedException.class,
-                    () -> fidoService.finishLogin("validToken", "ip:127.0.0.1", requestDTO));
-
-            verify(userService).saveUser(argThat(user -> user.getLockingTime() != null));
-            verify(securityEventService).saveSecurityEvent(
-                    argThat(event -> event.getEvent() == Event.LOGIN_FAIL && event.getMessage().contains("blocked")));
+                verify(relyingParty, never()).startAssertion(any());
         }
-    }
+
+        @Test
+        void finishLogin_Success() throws Exception {
+                when(verifyUserService.verifyUser(anyString(), anyString(), eq(TokenPurposeMessageEnum.LOGIN)))
+                                .thenReturn(testTokenDTO);
+                when(redisService.getValue("fido_login:testuser")).thenReturn("{}");
+                when(userService.getUserByUsername("testuser")).thenReturn(testUser);
+                when(jwtService.encode(any(TokenDTO.class))).thenReturn("token");
+
+                AssertionResult mockResult = mock(AssertionResult.class);
+                when(mockResult.isSuccess()).thenReturn(true);
+                when(mockResult.getCredential()).thenReturn(RegisteredCredential.builder()
+                                .credentialId(new ByteArray(new byte[] { 1, 2, 3 }))
+                                .userHandle(new ByteArray(new byte[] { 1 }))
+                                .publicKeyCose(new ByteArray(new byte[] { 1 }))
+                                .signatureCount(10)
+                                .build());
+
+                try (MockedStatic<AssertionRequest> arMock = Mockito.mockStatic(AssertionRequest.class);
+                                MockedStatic<PublicKeyCredential> pkcMock = Mockito
+                                                .mockStatic(PublicKeyCredential.class)) {
+
+                        arMock.when(() -> AssertionRequest.fromJson(anyString()))
+                                        .thenReturn(mock(AssertionRequest.class));
+                        pkcMock.when(() -> PublicKeyCredential.parseAssertionResponseJson(any()))
+                                        .thenReturn(mock(PublicKeyCredential.class));
+
+                        when(relyingParty.finishAssertion(any(FinishAssertionOptions.class))).thenReturn(mockResult);
+
+                        FidoCompleteLoginRequestDTO requestDTO = new FidoCompleteLoginRequestDTO();
+                        requestDTO.setResponse("{}");
+
+                        fidoService.finishLogin("validToken", "ip:127.0.0.1", requestDTO);
+
+                        verify(userService).resetCompletedOperations(testUser.getId());
+                        verify(userService).saveUser(testUser);
+                        verify(securityEventService)
+                                        .saveSecurityEvent(argThat(event -> event.getEvent() == Event.LOGIN_SUCCESS));
+                }
+        }
+
+        @Test
+        void finishLogin_Failure_Increment() throws Exception {
+                when(verifyUserService.verifyUser(anyString(), anyString(), eq(TokenPurposeMessageEnum.LOGIN)))
+                                .thenReturn(testTokenDTO);
+                when(redisService.getValue("fido_login:testuser")).thenReturn("{}");
+                when(userService.getUserByUsername("testuser")).thenReturn(testUser);
+
+                // Return updated user to simulate increment result
+                User updated = User.builder().id(testUser.getId()).username("testuser").numberOfInitaiatedOperations(1)
+                                .build();
+                when(userService.incrementCompletedOperations(testUser.getId())).thenReturn(updated);
+
+                AssertionResult mockResult = mock(AssertionResult.class);
+                when(mockResult.isSuccess()).thenReturn(false);
+
+                try (MockedStatic<AssertionRequest> arMock = Mockito.mockStatic(AssertionRequest.class);
+                                MockedStatic<PublicKeyCredential> pkcMock = Mockito
+                                                .mockStatic(PublicKeyCredential.class)) {
+
+                        arMock.when(() -> AssertionRequest.fromJson(anyString()))
+                                        .thenReturn(mock(AssertionRequest.class));
+                        pkcMock.when(() -> PublicKeyCredential.parseAssertionResponseJson(any()))
+                                        .thenReturn(mock(PublicKeyCredential.class));
+
+                        when(relyingParty.finishAssertion(any(FinishAssertionOptions.class))).thenReturn(mockResult);
+
+                        FidoCompleteLoginRequestDTO requestDTO = new FidoCompleteLoginRequestDTO();
+                        requestDTO.setResponse("{}");
+
+                        assertThrows(BadCredentialsException.class,
+                                        () -> fidoService.finishLogin("validToken", "ip:127.0.0.1", requestDTO));
+
+                        verify(userService).incrementCompletedOperations(testUser.getId());
+                        verify(securityEventService).saveSecurityEvent(
+                                        argThat(event -> event.getEvent() == Event.LOGIN_FAIL
+                                                        && event.getMessage().contains("failed")));
+                }
+        }
+
+        @Test
+        void finishLogin_Failure_BlockingLimit() throws Exception {
+                when(verifyUserService.verifyUser(anyString(), anyString(), eq(TokenPurposeMessageEnum.LOGIN)))
+                                .thenReturn(testTokenDTO);
+                when(redisService.getValue("fido_login:testuser")).thenReturn("{}");
+                when(userService.getUserByUsername("testuser")).thenReturn(testUser);
+
+                User blocked = User.builder().id(testUser.getId()).username("testuser").numberOfInitaiatedOperations(4)
+                                .build();
+                when(userService.incrementCompletedOperations(testUser.getId())).thenReturn(blocked);
+
+                AssertionResult mockResult = mock(AssertionResult.class);
+                when(mockResult.isSuccess()).thenReturn(false);
+
+                try (MockedStatic<AssertionRequest> arMock = Mockito.mockStatic(AssertionRequest.class);
+                                MockedStatic<PublicKeyCredential> pkcMock = Mockito
+                                                .mockStatic(PublicKeyCredential.class)) {
+
+                        arMock.when(() -> AssertionRequest.fromJson(anyString()))
+                                        .thenReturn(mock(AssertionRequest.class));
+                        pkcMock.when(() -> PublicKeyCredential.parseAssertionResponseJson(any()))
+                                        .thenReturn(mock(PublicKeyCredential.class));
+
+                        when(relyingParty.finishAssertion(any(FinishAssertionOptions.class))).thenReturn(mockResult);
+
+                        FidoCompleteLoginRequestDTO requestDTO = new FidoCompleteLoginRequestDTO();
+                        requestDTO.setResponse("{}");
+
+                        assertThrows(AccountBlockedException.class,
+                                        () -> fidoService.finishLogin("validToken", "ip:127.0.0.1", requestDTO));
+
+                        verify(userService).saveUser(argThat(user -> user.getLockingTime() != null));
+                        verify(securityEventService).saveSecurityEvent(
+                                        argThat(event -> event.getEvent() == Event.LOGIN_FAIL
+                                                        && event.getMessage().contains("blocked")));
+                }
+        }
 }

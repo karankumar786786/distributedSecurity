@@ -30,7 +30,6 @@ import one.org.security.core.domain.enums.LoginOptionsEnum;
 import one.org.security.common.enums.TokenPurposeMessageEnum;
 import one.org.security.core.service.SecurityEventService;
 import one.org.security.core.service.UserService;
-import one.org.security.core.service.VerifyUserService;
 
 import one.org.security.common.service.HmacService;
 import one.org.security.common.service.JwtService;
@@ -52,7 +51,7 @@ public class CoreAuthenticationService {
     @Autowired
     private HmacService hmacService;
     @Autowired
-    private VerifyUserService verifyUserService;
+    private one.org.security.common.service.VerifyUserService verifyUserService;
     @Autowired
     private JwtProperties jwtProperties;
 
@@ -124,13 +123,13 @@ public class CoreAuthenticationService {
 
         HmacDTO hash = hmacService.encode(rawDeviceData);
         TokenDTO tempTokenDTO = new TokenDTO(user.getUsername(), user.getId().toHexString(), hash.signature(),
-                jwtProperties.getTempExpiration(), hash.keyId(), TokenPurposeMessageEnum.TEMP_TOKEN);
+                jwtProperties.getTempExpiration(), hash.keyId(), TokenPurposeMessageEnum.TEMP_TOKEN, null);
         if (request.reason() == CheckUserExistRequestAvailableEnum.LOGIN) {
             tempTokenDTO = new TokenDTO(user.getUsername(), user.getId().toHexString(), hash.signature(),
-                    jwtProperties.getTempExpiration(), hash.keyId(), TokenPurposeMessageEnum.LOGIN);
+                    jwtProperties.getTempExpiration(), hash.keyId(), TokenPurposeMessageEnum.LOGIN, null);
         } else if (request.reason() == CheckUserExistRequestAvailableEnum.FORGET_PASSWORD) {
             tempTokenDTO = new TokenDTO(user.getUsername(), user.getId().toHexString(), hash.signature(),
-                    jwtProperties.getTempExpiration(), hash.keyId(), TokenPurposeMessageEnum.FORGET_PASSWORD);
+                    jwtProperties.getTempExpiration(), hash.keyId(), TokenPurposeMessageEnum.FORGET_PASSWORD, null);
         }
         String tempToken = jwtService.encode(tempTokenDTO);
 
@@ -158,9 +157,9 @@ public class CoreAuthenticationService {
 
     private AuthResponseDTO createTokens(User user, String deviceHash, String hashKeyId) {
         TokenDTO accessTokenDTO = new TokenDTO(user.getUsername(), user.getId().toHexString(), deviceHash,
-                jwtProperties.getAccessExpiration(), hashKeyId, TokenPurposeMessageEnum.ACCESS_TOKEN);
+                jwtProperties.getAccessExpiration(), hashKeyId, TokenPurposeMessageEnum.ACCESS_TOKEN, null);
         TokenDTO refreshTokenDTO = new TokenDTO(user.getUsername(), user.getId().toHexString(), deviceHash,
-                jwtProperties.getRefreshExpiration(), hashKeyId, TokenPurposeMessageEnum.REFRESH_TOKEN);
+                jwtProperties.getRefreshExpiration(), hashKeyId, TokenPurposeMessageEnum.REFRESH_TOKEN, null);
         return new AuthResponseDTO(jwtService.encode(accessTokenDTO), jwtService.encode(refreshTokenDTO));
     }
 

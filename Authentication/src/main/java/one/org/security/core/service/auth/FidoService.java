@@ -16,8 +16,11 @@ import one.org.security.core.service.SecurityEventService;
 import one.org.security.infrastructure.config.JwtProperties;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
+
+import one.org.security.common.service.VerifyUserService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,7 +50,6 @@ import one.org.security.api.Errors.CustomExceptions.UnauthorizedOperationExcepti
 import one.org.security.core.domain.entity.FidoCredential;
 import one.org.security.core.domain.entity.User;
 import one.org.security.core.service.UserService;
-import one.org.security.core.service.VerifyUserService;
 import one.org.security.common.service.RedisService;
 import one.org.security.common.service.JwtService;
 
@@ -61,7 +63,8 @@ public class FidoService {
     private final JwtService jwtService;
     private final JwtProperties jwtProperties;
     private final SecurityEventService securityEventService;
-    private final VerifyUserService verifyUserService;
+    @Autowired
+    private VerifyUserService verifyUserService;
 
     private final String rpId;
     private final String rpName;
@@ -278,9 +281,9 @@ public class FidoService {
 
     private AuthResponseDTO createTokens(User user, String deviceHash, String hashKeyId) {
         TokenDTO accessTokenDTO = new TokenDTO(user.getUsername(), user.getId().toHexString(), deviceHash,
-                jwtProperties.getAccessExpiration(), hashKeyId, TokenPurposeMessageEnum.ACCESS_TOKEN);
+                jwtProperties.getAccessExpiration(), hashKeyId, TokenPurposeMessageEnum.ACCESS_TOKEN, null);
         TokenDTO refreshTokenDTO = new TokenDTO(user.getUsername(), user.getId().toHexString(), deviceHash,
-                jwtProperties.getRefreshExpiration(), hashKeyId, TokenPurposeMessageEnum.REFRESH_TOKEN);
+                jwtProperties.getRefreshExpiration(), hashKeyId, TokenPurposeMessageEnum.REFRESH_TOKEN, null);
         return new AuthResponseDTO(jwtService.encode(accessTokenDTO), jwtService.encode(refreshTokenDTO));
     }
 

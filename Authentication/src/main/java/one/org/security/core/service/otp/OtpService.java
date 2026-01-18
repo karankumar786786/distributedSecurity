@@ -17,7 +17,7 @@ import one.org.security.common.dto.TokenDTO;
 import one.org.security.core.domain.enums.CheckUserExistRequestAvailableEnum;
 import one.org.security.common.enums.OtpSentMethodEnum;
 import one.org.security.common.enums.TokenPurposeMessageEnum;
-import one.org.security.core.service.VerifyUserService;
+import one.org.security.common.service.VerifyUserService;
 import one.org.security.common.service.RedisService;
 import java.time.LocalDateTime;
 
