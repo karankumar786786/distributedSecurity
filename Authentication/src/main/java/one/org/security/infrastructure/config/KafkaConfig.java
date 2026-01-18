@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-@EnableKafkaStreams
 public class KafkaConfig {
 
     @Value("${spring.kafkaConfig.server.address}")
@@ -34,8 +33,6 @@ public class KafkaConfig {
 
     @Value("${spring.kafkaConfig.consumer.group-id}")
     private String groupId;
-    @Value("${spring.kafkaConfig.consumer.stream-id}")
-    private String streamId;
 
     @Value("${spring.kafkaConfig.schema.registry.url}")
     private String schemaRegistryUrl;
@@ -135,17 +132,5 @@ public class KafkaConfig {
         ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(multiConsumerFactory());
         return factory;
-    }
-
-    @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
-    public KafkaStreamsConfiguration kafkaStreamsConfiguration() {
-        Map<String, Object> config = new HashMap<>();
-        config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        config.put(StreamsConfig.APPLICATION_ID_CONFIG, streamId);
-        config.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-        config.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
-        config.put("schema.registry.url", schemaRegistryUrl);
-
-        return new KafkaStreamsConfiguration(config);
     }
 }

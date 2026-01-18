@@ -124,6 +124,11 @@
 			<artifactId>webauthn-server-core</artifactId>
 			<version>2.5.0</version>
 		</dependency>
+		<dependency>
+			<groupId>one.org.security</groupId>
+			<artifactId>common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -135,25 +140,7 @@
 			</extension>
 		</extensions>
 		<plugins>
-			<plugin>
-				<groupId>org.xolstice.maven.plugins</groupId>
-				<artifactId>protobuf-maven-plugin</artifactId>
-				<version>0.6.1</version>
-				<configuration>
-					<protocArtifact>com.google.protobuf:protoc:3.25.1:exe:${os.detected.classifier}</protocArtifact>
-					<pluginId>grpc-java</pluginId>
-					<pluginArtifact>
-						io.grpc:protoc-gen-grpc-java:1.60.0:exe:${os.detected.classifier}</pluginArtifact>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>compile</goal>
-							<goal>compile-custom</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -179,31 +166,7 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.avro</groupId>
-				<artifactId>avro-maven-plugin</artifactId>
-				<version>1.11.0</version>
-				<executions>
-					<execution>
-						<id>avro</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>schema</goal>
-						</goals>
-						<configuration>
-							<sourceDirectory>${project.basedir}/src/main/resources/avro/</sourceDirectory>
-							<outputDirectory>${project.basedir}/src/main/java</outputDirectory>
-							<stringType>String</stringType>
-							<imports>
-								<import>${project.basedir}/src/main/resources/avro/mail.avsc</import>
-								<import>${project.basedir}/src/main/resources/avro/sms.avsc</import>
-								<import>
-									${project.basedir}/src/main/resources/avro/securityEvent.avsc</import>
-							</imports>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+
 		</plugins>
 	</build>
 

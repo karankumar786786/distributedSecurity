@@ -41,7 +41,7 @@ import one.org.security.api.dto.request.FidoCompleteLoginRequestDTO;
 import one.org.security.core.domain.dto.TokenDTO;
 import one.org.security.core.domain.entity.FidoCredential;
 import one.org.security.core.domain.entity.User;
-import one.org.security.core.domain.enums.Event;
+import one.org.security.common.enums.Event;
 import one.org.security.core.domain.enums.TokenPurposeMessageEnum;
 import one.org.security.core.service.SecurityEventService;
 import one.org.security.core.service.UserService;

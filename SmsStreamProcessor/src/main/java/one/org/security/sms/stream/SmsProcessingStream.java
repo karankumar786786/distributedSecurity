@@ -1,4 +1,4 @@
-package one.org.security.ConsumerService;
+package one.org.security.sms.stream;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -21,22 +21,22 @@ import org.springframework.stereotype.Service;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import one.org.security.avro.Mail;
-import one.org.security.avro.ProcessedMail;
+import one.org.security.avro.ProcessedSms;
+import one.org.security.avro.Sms;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class MailProcessingStream {
+public class SmsProcessingStream {
 
     @Value("${spring.kafkaConfig.schema.registry.url}")
     private String schemaRegistryUrl;
 
-    @Value("${spring.kafkaConfig.topics.mail}")
-    private String mailTopicName;
+    @Value("${spring.kafkaConfig.topics.sms}")
+    private String smsTopicName;
 
-    @Value("${spring.kafkaConfig.topics.processed-mail}")
-    private String processedMailTopicName;
+    @Value("${spring.kafkaConfig.topics.processed-sms}")
+    private String processedSmsTopicName;
 
     @Value("${spring.kafkaConfig.window.duration-ms:10000}")
     private long windowDurationMs;
@@ -46,31 +46,31 @@ public class MailProcessingStream {
     }
 
     @Autowired
-    public void processMail(StreamsBuilder streamBuilder) {
+    public void processSms(StreamsBuilder streamBuilder) {
         Map<String, String> serdeConfig = config();
 
-        SpecificAvroSerde<Mail> mailSerde = new SpecificAvroSerde<>();
-        mailSerde.configure(serdeConfig, false);
+        SpecificAvroSerde<Sms> smsSerde = new SpecificAvroSerde<>();
+        smsSerde.configure(serdeConfig, false);
 
-        SpecificAvroSerde<ProcessedMail> processedMailSerde = new SpecificAvroSerde<>();
-        processedMailSerde.configure(serdeConfig, false);
+        SpecificAvroSerde<ProcessedSms> processedSmsSerde = new SpecificAvroSerde<>();
+        processedSmsSerde.configure(serdeConfig, false);
 
-        KStream<String, Mail> mailStream = streamBuilder.stream(
-                mailTopicName,
-                Consumed.with(Serdes.String(), mailSerde));
+        KStream<String, Sms> smsStream = streamBuilder.stream(
+                smsTopicName,
+                Consumed.with(Serdes.String(), smsSerde));
 
-        mailStream.groupByKey()
+        smsStream.groupByKey()
                 .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofMillis(windowDurationMs)))
                 .aggregate(
-                        () -> ProcessedMail.newBuilder().setMails(new ArrayList<>()).build(),
+                        () -> ProcessedSms.newBuilder().setSmsList(new ArrayList<>()).build(),
                         (key, value, aggregate) -> {
-                            List<Mail> list = new ArrayList<>(aggregate.getMails());
+                            List<Sms> list = new ArrayList<>(aggregate.getSmsList());
                             list.add(value);
-                            return ProcessedMail.newBuilder().setMails(list).build();
+                            return ProcessedSms.newBuilder().setSmsList(list).build();
                         },
-                        Materialized.with(Serdes.String(), processedMailSerde))
+                        Materialized.with(Serdes.String(), processedSmsSerde))
                 .toStream()
                 .map((windowedKey, value) -> new KeyValue<>(windowedKey.key(), value))
-                .to(processedMailTopicName, Produced.with(Serdes.String(), processedMailSerde));
+                .to(processedSmsTopicName, Produced.with(Serdes.String(), processedSmsSerde));
     }
 }

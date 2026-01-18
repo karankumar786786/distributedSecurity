@@ -39,6 +39,11 @@
 			<artifactId>grpc-services</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>one.org.security</groupId>
+			<artifactId>common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.grpc</groupId>
 			<artifactId>spring-grpc-spring-boot-starter</artifactId>
 		</dependency>
@@ -67,7 +72,7 @@
 			<artifactId>grpc-netty-shaded</artifactId>
 			<version>${grpc.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-protobuf</artifactId>
@@ -105,30 +110,7 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>io.github.ascopes</groupId>
-				<artifactId>protobuf-maven-plugin</artifactId>
-				<version>4.0.3</version>
-				<configuration>
-					<protoc>${protobuf-java.version}</protoc>
-					<binaryMavenPlugins>
-						<binaryMavenPlugin>
-							<groupId>io.grpc</groupId>
-							<artifactId>protoc-gen-grpc-java</artifactId>
-							<version>${grpc.version}</version>
-							<options>@generated=omit</options>
-						</binaryMavenPlugin>
-					</binaryMavenPlugins>
-				</configuration>
-				<executions>
-					<execution>
-						<id>generate</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

@@ -25,7 +25,7 @@ import one.org.security.core.domain.dto.TokenDTO;
 import one.org.security.core.domain.entity.SecurityEvent;
 import one.org.security.core.domain.entity.User;
 import one.org.security.core.domain.enums.CheckUserExistRequestAvailableEnum;
-import one.org.security.core.domain.enums.Event;
+import one.org.security.common.enums.Event;
 import one.org.security.core.domain.enums.LoginOptionsEnum;
 import one.org.security.core.domain.enums.TokenPurposeMessageEnum;
 import one.org.security.core.service.SecurityEventService;

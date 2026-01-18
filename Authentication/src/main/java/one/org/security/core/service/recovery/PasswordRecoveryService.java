@@ -16,7 +16,7 @@ import one.org.security.core.domain.dto.OtpVerificationDTO;
 import one.org.security.core.domain.dto.TokenDTO;
 import one.org.security.core.domain.entity.SecurityEvent;
 import one.org.security.core.domain.entity.User;
-import one.org.security.core.domain.enums.Event;
+import one.org.security.common.enums.Event;
 import one.org.security.core.domain.enums.ForgetPasswordRequestEnum;
 import one.org.security.core.domain.enums.OtpSentMethodEnum;
 import one.org.security.core.domain.enums.TokenPurposeMessageEnum;

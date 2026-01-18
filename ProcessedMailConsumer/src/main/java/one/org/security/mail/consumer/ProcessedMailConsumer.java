@@ -1,4 +1,4 @@
-package one.org.security.ConsumerService;
+package one.org.security.mail.consumer;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;

@@ -1,4 +1,4 @@
-package one.org.security.ConsumerService;
+package one.org.security.event.stream;
 
 import java.time.Duration;
 import java.time.Instant;
