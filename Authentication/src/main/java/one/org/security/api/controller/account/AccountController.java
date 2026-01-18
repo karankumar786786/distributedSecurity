@@ -75,7 +75,6 @@ public class AccountController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    
     @PostMapping("/fido/register/init")
     public ResponseEntity<FidoInitResponseDTO> initFidoRegister(
             @AuthenticationPrincipal User user) throws com.fasterxml.jackson.core.JsonProcessingException {
@@ -83,12 +82,12 @@ public class AccountController {
         return new ResponseEntity<>(new FidoInitResponseDTO(response), HttpStatus.OK);
     }
 
-    
     @PostMapping("/fido/register/complete")
     public ResponseEntity<Void> completeFidoRegister(
             @Validated @RequestBody one.org.security.api.dto.request.FidoCompleteRegisterRequestDTO request,
-            @AuthenticationPrincipal User user) {
-        fidoService.finishRegistration(user.getUsername(), request.getResponse());
+            @AuthenticationPrincipal User user,
+            @RequestAttribute("RAW_DEVICE_DATA") String rawDeviceData) {
+        fidoService.finishRegistration(user.getUsername(), request.getResponse(), rawDeviceData);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

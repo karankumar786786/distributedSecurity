@@ -5,14 +5,13 @@ spring:
     redis:
       host: localhost
       port: 6379
-    mongodb:
-      host: localhost
-      port: 27017
-      database: security
-      username: admin
-      password: secret
-      authentication-database: admin
-      auto-index-creation: true
+  mongodb:
+    host: localhost
+    port: 27017
+    database: security
+    username: admin
+    password: secret
+    authentication-database: admin
   kafkaConfig:
     server:
       address: localhost:19092
