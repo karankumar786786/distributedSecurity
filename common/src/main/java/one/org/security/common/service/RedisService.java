@@ -1,4 +1,4 @@
-package one.org.security.infrastructure.cache;
+package one.org.security.common.service;
 
 import java.util.concurrent.TimeUnit;
 
@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import one.org.security.core.domain.dto.OtpVerificationDTO;
-import one.org.security.core.domain.enums.OtpSentMethodEnum;
+import one.org.security.common.dto.OtpVerificationDTO;
+import one.org.security.common.enums.OtpSentMethodEnum;
 
 @Service
 public class RedisService {
@@ -17,10 +17,6 @@ public class RedisService {
 
     public boolean setOtpVerification(OtpVerificationDTO otpVerificationDTO) {
         String key = "verification:" + otpVerificationDTO.username();
-        // Assuming OtpVerificationDTO now has an attempts() method and we want to add
-        // it to the string.
-        // The original instruction snippet was syntactically incorrect, so I'm
-        // interpreting it as adding 'attempts' to the delimited string.
         // The order is otp, deviceHash, to, method, attempts.
         String value = otpVerificationDTO.otp() + ":" + otpVerificationDTO.deviceHash() + ":" + otpVerificationDTO.to()
                 + ":" + otpVerificationDTO.method().toString() + ":" + otpVerificationDTO.attempts();

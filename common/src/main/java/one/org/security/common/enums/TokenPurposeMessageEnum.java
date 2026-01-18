@@ -1,4 +1,4 @@
-package one.org.security.core.domain.enums;
+package one.org.security.common.enums;
 
 public enum TokenPurposeMessageEnum {
     ACCESS_TOKEN,

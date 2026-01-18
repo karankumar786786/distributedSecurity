@@ -20,20 +20,20 @@ import one.org.security.api.dto.request.LoginRequestDTO;
 import one.org.security.api.dto.request.RegisterRequestDTO;
 import one.org.security.api.dto.response.AuthResponseDTO;
 import one.org.security.api.dto.response.CheckUserExistResponseDTO;
-import one.org.security.core.domain.dto.HmacDTO;
-import one.org.security.core.domain.dto.TokenDTO;
+import one.org.security.common.dto.HmacDTO;
+import one.org.security.common.dto.TokenDTO;
 import one.org.security.core.domain.entity.SecurityEvent;
 import one.org.security.core.domain.entity.User;
 import one.org.security.core.domain.enums.CheckUserExistRequestAvailableEnum;
 import one.org.security.common.enums.Event;
 import one.org.security.core.domain.enums.LoginOptionsEnum;
-import one.org.security.core.domain.enums.TokenPurposeMessageEnum;
+import one.org.security.common.enums.TokenPurposeMessageEnum;
 import one.org.security.core.service.SecurityEventService;
 import one.org.security.core.service.UserService;
 import one.org.security.core.service.VerifyUserService;
 
-import one.org.security.infrastructure.security.HmacService;
-import one.org.security.infrastructure.security.JwtService;
+import one.org.security.common.service.HmacService;
+import one.org.security.common.service.JwtService;
 import one.org.security.infrastructure.security.filter.EncodingService;
 import one.org.security.infrastructure.config.JwtProperties;
 

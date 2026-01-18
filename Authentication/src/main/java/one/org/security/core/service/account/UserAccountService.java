@@ -11,13 +11,13 @@ import one.org.security.api.dto.request.ChangeBackupEmailRequestDTO;
 import one.org.security.api.dto.request.ChangePasswordRequestDTO;
 import one.org.security.api.dto.request.ChangePhoneNumberRequestDTO;
 import one.org.security.api.dto.request.VerifyOtpRequestDTO;
-import one.org.security.core.domain.dto.HmacDTO;
+import one.org.security.common.dto.HmacDTO;
 import one.org.security.core.domain.entity.User;
-import one.org.security.core.domain.enums.OtpSentMethodEnum;
+import one.org.security.common.enums.OtpSentMethodEnum;
 import one.org.security.core.service.UserService;
 import one.org.security.core.service.otp.OtpService;
-import one.org.security.infrastructure.cache.RedisService;
-import one.org.security.infrastructure.security.HmacService;
+import one.org.security.common.service.RedisService;
+import one.org.security.common.service.HmacService;
 import one.org.security.infrastructure.security.filter.EncodingService;
 
 @Service

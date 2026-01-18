@@ -1,4 +1,4 @@
-package one.org.security.core.domain.dto;
+package one.org.security.common.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

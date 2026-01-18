@@ -1,4 +1,4 @@
-package one.org.security.infrastructure.security;
+package one.org.security.common.service;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -18,8 +18,8 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
-import one.org.security.core.domain.dto.TokenDTO;
-import one.org.security.core.domain.enums.TokenPurposeMessageEnum;
+import one.org.security.common.dto.TokenDTO;
+import one.org.security.common.enums.TokenPurposeMessageEnum;
 
 @Service
 public class JwtService {
@@ -63,7 +63,6 @@ public class JwtService {
         this.keyMap.put(TokenPurposeMessageEnum.TEMP_TOKEN, tempKeys);
         this.keyMap.put(TokenPurposeMessageEnum.FORGET_PASSWORD_VERIFICATION, tempKeys);
         this.keyMap.put(TokenPurposeMessageEnum.LOGIN, tempKeys);
-        this.keyMap.put(TokenPurposeMessageEnum.LOGIN, tempKeys);
         this.keyMap.put(TokenPurposeMessageEnum.FORGET_PASSWORD, tempKeys);
     }
 
@@ -99,6 +98,7 @@ public class JwtService {
         }
         return jwt.serialize();
     }
+
     public TokenDTO decode(String token, TokenPurposeMessageEnum expectedPurpose) {
         try {
             SignedJWT jwt = SignedJWT.parse(token);
@@ -120,7 +120,6 @@ public class JwtService {
             if (!jwt.verify(new MACVerifier(keyToUse))) {
                 throw new BadCredentialsException("Invalid token signature");
             }
-            System.out.println("here");
 
             JWTClaimsSet claims = jwt.getJWTClaimsSet();
             String purpose = claims.getStringClaim("purpose");

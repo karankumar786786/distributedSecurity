@@ -3,11 +3,11 @@ package one.org.security.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import one.org.security.core.domain.dto.HmacDTO;
-import one.org.security.core.domain.dto.TokenDTO;
-import one.org.security.core.domain.enums.TokenPurposeMessageEnum;
-import one.org.security.infrastructure.security.HmacService;
-import one.org.security.infrastructure.security.JwtService;
+import one.org.security.common.dto.HmacDTO;
+import one.org.security.common.dto.TokenDTO;
+import one.org.security.common.enums.TokenPurposeMessageEnum;
+import one.org.security.common.service.HmacService;
+import one.org.security.common.service.JwtService;
 
 @Service
 public class VerifyUserService {

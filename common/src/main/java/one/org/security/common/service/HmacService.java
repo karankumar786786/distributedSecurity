@@ -1,4 +1,4 @@
-package one.org.security.infrastructure.security;
+package one.org.security.common.service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import one.org.security.core.domain.dto.HmacDTO;
+import one.org.security.common.dto.HmacDTO;
 
 @Service
 public class HmacService {
@@ -32,7 +32,7 @@ public class HmacService {
 
     public HmacDTO encode(String message) {
         String signature = performHash(message, this.newKey);
-        return new HmacDTO(signature,null,this.newKeyId,null);
+        return new HmacDTO(signature, null, this.newKeyId, null);
     }
 
     public boolean verify(@Validated HmacDTO hmacDTO) {

@@ -38,17 +38,17 @@ import com.yubico.webauthn.data.PublicKeyCredential;
 
 import one.org.security.api.Errors.CustomExceptions.AccountBlockedException;
 import one.org.security.api.dto.request.FidoCompleteLoginRequestDTO;
-import one.org.security.core.domain.dto.TokenDTO;
+import one.org.security.common.dto.TokenDTO;
 import one.org.security.core.domain.entity.FidoCredential;
 import one.org.security.core.domain.entity.User;
 import one.org.security.common.enums.Event;
-import one.org.security.core.domain.enums.TokenPurposeMessageEnum;
+import one.org.security.common.enums.TokenPurposeMessageEnum;
 import one.org.security.core.service.SecurityEventService;
 import one.org.security.core.service.UserService;
 import one.org.security.core.service.VerifyUserService;
-import one.org.security.infrastructure.cache.RedisService;
+import one.org.security.common.service.RedisService;
 import one.org.security.infrastructure.config.JwtProperties;
-import one.org.security.infrastructure.security.JwtService;
+import one.org.security.common.service.JwtService;
 import org.springframework.security.authentication.BadCredentialsException;
 
 @ExtendWith(MockitoExtension.class)

@@ -1,6 +1,6 @@
-package one.org.security.core.domain.dto;
+package one.org.security.common.dto;
 
-import one.org.security.core.domain.enums.OtpSentMethodEnum;
+import one.org.security.common.enums.OtpSentMethodEnum;
 
 public record OtpVerificationDTO(
         String username,

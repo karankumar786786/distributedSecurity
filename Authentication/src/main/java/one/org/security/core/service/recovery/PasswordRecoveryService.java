@@ -12,22 +12,22 @@ import one.org.security.api.Errors.CustomExceptions.InvalidTokenException;
 import one.org.security.api.Errors.CustomExceptions.UnauthorizedOperationException;
 import one.org.security.api.dto.request.ForgetPasswordRequestDTO;
 import one.org.security.api.dto.request.VerifyForgetPasswordRequestDTO;
-import one.org.security.core.domain.dto.OtpVerificationDTO;
-import one.org.security.core.domain.dto.TokenDTO;
+import one.org.security.common.dto.OtpVerificationDTO;
+import one.org.security.common.dto.TokenDTO;
 import one.org.security.core.domain.entity.SecurityEvent;
 import one.org.security.core.domain.entity.User;
 import one.org.security.common.enums.Event;
 import one.org.security.core.domain.enums.ForgetPasswordRequestEnum;
-import one.org.security.core.domain.enums.OtpSentMethodEnum;
-import one.org.security.core.domain.enums.TokenPurposeMessageEnum;
+import one.org.security.common.enums.OtpSentMethodEnum;
+import one.org.security.common.enums.TokenPurposeMessageEnum;
 import one.org.security.core.service.SecurityEventService;
 import one.org.security.core.service.UserService;
 import one.org.security.core.service.VerifyUserService;
 import one.org.security.core.service.otp.OtpService;
-import one.org.security.infrastructure.cache.RedisService;
+import one.org.security.common.service.RedisService;
 
 import one.org.security.infrastructure.config.JwtProperties;
-import one.org.security.infrastructure.security.JwtService;
+import one.org.security.common.service.JwtService;
 import one.org.security.infrastructure.security.filter.EncodingService;
 
 @Service
