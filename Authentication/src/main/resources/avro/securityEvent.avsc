@@ -1,0 +1,40 @@
+{
+  "type": "record",
+  "name": "SecurityEventLog",
+  "namespace": "one.org.security.avro",
+  "fields": [
+    {
+      "name": "id",
+      "type": ["null", "string"],
+      "default": null
+    },
+    {
+      "name": "user",
+      "type": "string"
+    },
+    {
+      "name": "deviceHash",
+      "type": "string"
+    },
+    {
+      "name": "ipAddress",
+      "type": "string"
+    },
+    {
+      "name": "event",
+      "type": "string"
+    },
+    {
+      "name": "message",
+      "type": ["null", "string"],
+      "default": null
+    },
+    {
+      "name": "createdAt",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    }
+  ]
+}

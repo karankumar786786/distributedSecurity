@@ -1,0 +1,3 @@
+<pattern>
+  %d{yyyy-MM-dd HH:mm:ss} [%X{traceId}] %-5level %logger - %msg%n
+</pattern>

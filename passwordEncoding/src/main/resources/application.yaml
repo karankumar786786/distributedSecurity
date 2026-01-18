@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: Password Encoding Service
+
+  grpc:
+    server:
+      port: 9000
+      negotiation-type: plaintext
+      reflection:
+        enabled: true

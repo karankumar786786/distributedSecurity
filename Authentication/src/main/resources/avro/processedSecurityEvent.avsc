@@ -1,0 +1,25 @@
+{
+  "type": "record",
+  "name": "ProcessedSecurityEventLog",
+  "namespace": "one.org.security.avro",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "name": "processedAt",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "securityEvents",
+      "type": {
+        "type": "array",
+        "items": "SecurityEventLog"
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-PasswordEncodingServiceApplication<passwordEncoding>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "one.org.security.passwordEncoding.PasswordEncodingServiceApplication",
+            "projectName": "passwordEncoding",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "ProcessedMail",
+  "namespace": "one.org.security.avro",
+  "fields": [
+    {
+      "name": "mails",
+      "type": {
+        "type": "array",
+        "items": "one.org.security.avro.Mail"
+      }
+    }
+  ]
+}
