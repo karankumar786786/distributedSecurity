@@ -2,12 +2,14 @@ package one.org.security.infrastructure.security.filter;
 
 import org.springframework.stereotype.Service;
 import net.devh.boot.grpc.client.inject.GrpcClient;
+import lombok.extern.slf4j.Slf4j;
 import one.org.security.passwordEncoding.EncodeRequest;
 import one.org.security.passwordEncoding.EncodeResponse;
 import one.org.security.passwordEncoding.PasswordEncodingServiceGrpc.PasswordEncodingServiceBlockingStub;
 import one.org.security.passwordEncoding.VerifyRequest;
 import one.org.security.passwordEncoding.VerifyResponse;
 
+@Slf4j
 @Service
 public class EncodingService {
 
@@ -28,7 +30,7 @@ public class EncodingService {
                 .setEncodedPassword(encodedPassword)
                 .build();
         VerifyResponse response = blockingStub.verify(request);
-        System.out.println(response.getResult());
+        log.debug("Verification result: {}", response.getResult());
         return response.getResult();
     }
 }

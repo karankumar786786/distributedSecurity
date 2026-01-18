@@ -1,6 +1,5 @@
 package one.org.security.api.controller.auth;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,13 +58,20 @@ public class AuthenticationController {
         return new ResponseEntity<>(authResponseDTO, HttpStatus.OK);
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponseDTO> refresh(
+            @Validated @RequestBody one.org.security.api.dto.request.RefreshTokenRequestDTO request,
+            @RequestAttribute("RAW_DEVICE_DATA") String rawDeviceData) {
+        AuthResponseDTO response = authenticationService.refreshToken(request, rawDeviceData);
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/login/fido/init")
     public ResponseEntity<FidoInitResponseDTO> initFidoLogin(
             @Validated @RequestHeader("X-Temp-Token") String tempToken,
-            @RequestAttribute("RAW_DEVICE_DATA") String rawDeviceData
-        )
+            @RequestAttribute("RAW_DEVICE_DATA") String rawDeviceData)
             throws JsonProcessingException {
-        String response = fidoService.initiateLogin(tempToken,rawDeviceData);
+        String response = fidoService.initiateLogin(tempToken, rawDeviceData);
         return ResponseEntity.ok(new FidoInitResponseDTO(response));
     }
 

@@ -22,6 +22,7 @@ import one.org.security.api.Errors.CustomExceptions.ResourceNotFoundException;
 import one.org.security.api.Errors.CustomExceptions.SmsNotSentException;
 import one.org.security.api.Errors.CustomExceptions.UnauthorizedOperationException;
 import one.org.security.api.Errors.CustomExceptions.UserAlreadyExistException;
+import one.org.security.api.Errors.CustomExceptions.AccountBlockedException;
 import one.org.security.api.Errors.Response.StandardErroApiResponse;
 
 import org.springframework.security.access.AccessDeniedException;
@@ -152,6 +153,12 @@ public class GlobalExceptionHandler {
         @ExceptionHandler(SmsNotSentException.class)
         public ResponseEntity<StandardErroApiResponse> handleSmsNotSentException(SmsNotSentException ex) {
                 return build(HttpStatus.INTERNAL_SERVER_ERROR, CentralErrorMessageResponse.INTERNAL_ERROR,
+                                Collections.singletonList(ex.getMessage()));
+        }
+
+        @ExceptionHandler(AccountBlockedException.class)
+        public ResponseEntity<StandardErroApiResponse> handleAccountBlockedException(AccountBlockedException ex) {
+                return build(HttpStatus.FORBIDDEN, CentralErrorMessageResponse.ACCOUNT_BLOCKED,
                                 Collections.singletonList(ex.getMessage()));
         }
 

@@ -38,8 +38,6 @@ public class OtpService {
     private VerifyUserService verifyUserService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private SecurityEventService securityEventService;
 
     public void sendOtp(String username, String deviceHash, String target, OtpSentMethodEnum method, String subject) {
         int otp = new Random().nextInt(900000) + 100000;

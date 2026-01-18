@@ -25,7 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.AssertionResult;
 import com.yubico.webauthn.FinishAssertionOptions;
@@ -58,8 +57,6 @@ public class FidoServiceTest {
         @Mock
         private RedisService redisService;
         @Mock
-        private ObjectMapper objectMapper;
-        @Mock
         private JwtService jwtService;
         @Mock
         private JwtProperties jwtProperties;
@@ -80,7 +77,6 @@ public class FidoServiceTest {
                 fidoService = new FidoService(
                                 userService,
                                 redisService,
-                                objectMapper,
                                 jwtService,
                                 jwtProperties,
                                 securityEventService,

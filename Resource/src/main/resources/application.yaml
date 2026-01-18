@@ -1,3 +1,43 @@
 spring:
   application:
     name: Resource
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  mongodb:
+    host: localhost
+    port: 27017
+    database: security
+    username: admin
+    password: secret
+    authentication-database: admin
+server:
+  port: 8082
+
+jwt:
+  access:
+    oldkeyId: "access-key-2025-12"
+    newkeyId: "access-key-2026-01"
+    oldkey: "old-access-secret-key-old-access-secret-key"
+    newkey: "new-access-secret-key-new-access-secret-key"
+  refresh:
+    oldkeyId: "refresh-key-2025-12"
+    newkeyId: "refresh-key-2026-01"
+    oldkey: "old-refresh-secret-key-old-refresh-secret-key"
+    newkey: "new-refresh-secret-key-new-refresh-secret-key"
+  temp:
+    oldkeyId: "temp-key-2025-12"
+    newkeyId: "temp-key-2026-01"
+    oldkey: "old-temp-secret-key-old-temp-secret-key"
+    newkey: "new-temp-secret-key-new-temp-secret-key"
+  issuer: "my-auth-service"
+  accessExpiration: 60
+  refreshExpiration: 60
+  tempExpiration: 5
+  recoveryExpiration: 15
+hmac:
+  oldkeyId: "hmac-key-2025-12"
+  newkeyId: "hmac-key-2026-01"
+  oldkey: "old-hmac-secret-key-old-hmac-secret-key"
+  newkey: "new-hmac-secret-key-new-hmac-secret-key"

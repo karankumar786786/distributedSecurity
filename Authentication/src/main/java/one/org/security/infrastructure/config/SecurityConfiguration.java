@@ -47,6 +47,8 @@ public class SecurityConfiguration {
                                                                 .requestMatchers(HttpMethod.POST,
                                                                                 "/auth/login/fido/complete")
                                                                 .permitAll()
+                                                                .requestMatchers(HttpMethod.POST, "/auth/refresh")
+                                                                .permitAll()
                                                                 .requestMatchers("/fido-test.html", "/swagger-ui/**",
                                                                                 "/v3/api-docs/**")
                                                                 .permitAll()

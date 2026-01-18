@@ -13,6 +13,8 @@ public class CentralErrorMessageResponse {
     public static final String INTERNAL_ERROR_MESSAGE = "Something went wrong. Please try again later";
     public static final String ACCESSS_DENIED_MESSAGE = "You dont have permission to access the resource";
     public static final String UNAUTHORIZED = "authorization faild";
+    public static final String ACCOUNT_BLOCKED = "Account blocked";
 
-    public CentralErrorMessageResponse(){}
+    public CentralErrorMessageResponse() {
+    }
 }

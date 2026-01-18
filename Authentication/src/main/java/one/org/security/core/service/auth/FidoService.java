@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import one.org.security.common.service.VerifyUserService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.AssertionResult;
 import com.yubico.webauthn.FinishRegistrationOptions;
@@ -59,7 +58,6 @@ public class FidoService {
 
     private final UserService userService;
     private final RedisService redisService;
-    private final ObjectMapper objectMapper;
     private final JwtService jwtService;
     private final JwtProperties jwtProperties;
     private final SecurityEventService securityEventService;
@@ -76,7 +74,6 @@ public class FidoService {
 
     public FidoService(UserService userService,
             RedisService redisService,
-            ObjectMapper objectMapper,
             JwtService jwtService,
             JwtProperties jwtProperties,
             SecurityEventService securityEventService,
@@ -88,7 +85,6 @@ public class FidoService {
             @Value("${security.policy.lockout-duration-hours:6}") int lockoutDurationHours) {
         this.userService = userService;
         this.redisService = redisService;
-        this.objectMapper = objectMapper;
         this.jwtService = jwtService;
         this.jwtProperties = jwtProperties;
         this.securityEventService = securityEventService;
@@ -180,44 +176,7 @@ public class FidoService {
 
             redisService.deleteValue("fido_reg:" + username);
 
-            // Checking AuthenticationController (Step 629) -> completeFidoRegister passes
-            // "request" but NOT rawDeviceData.
-            // Ah, line 75: finishLogin passes it.
-            // Line 91: completeFidoRegister calls finishRegistration(username,
-            // request.getResponse());
-            // It does NOT pass rawDeviceData.
-
-            // I will update the controller and service to pass rawDeviceData for proper
-            // logging.
-            // For now, I will add the TODO or just log without IP if possible, but
-            // SecurityEvent likely needs IP.
-            // SecurityEvent builder: .ipAddress(ipAddress).
-            // I should update the method signature. This might be a bigger change.
-            // Let's modify the signature in the next step.
-
-            // Wait, this tool call is just for FidoService. I can modify the signature
-            // here.
-            // But I need to update the caller too.
-            // I will ABORT this specific replacement and do a multi-file update via
-            // separate calls or better planning.
-            // Actually, I can just update the method signature here and then update the
-            // controller next.
-            // Just logging for now with "unknown" IP might be acceptable or I can parse
-            // from context if available?
-            // No, best to pass it.
-
-            // Let's stick to the plan: Update Event.java first (done in this turn via
-            // parallel tool?).
-            // Wait, I am in parallel tool mode.
-            // I will hold off on FidoService update in this specific tool call and do it in
-            // the next turn to ensure I update both Service and Controller together.
-
-            // RE-EVALUATING: I will only update Event.java in this turn.
-            // Removing this tool call.
-
-            // Actually, I can't "remove" it easily in thought.
-            // I'll just submit the Event.java change and then deal with the rest.
-
+            redisService.deleteValue("fido_reg:" + username);
         } catch (RegistrationFailedException | java.io.IOException e) {
             throw new RuntimeException("Registration failed", e);
         }

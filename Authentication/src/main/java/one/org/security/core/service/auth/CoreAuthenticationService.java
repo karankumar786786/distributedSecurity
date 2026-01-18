@@ -55,8 +55,14 @@ public class CoreAuthenticationService {
     @Autowired
     private JwtProperties jwtProperties;
 
+    @org.springframework.beans.factory.annotation.Value("${security.policy.max-login-attempts:3}")
+    private int maxLoginAttempts;
+
+    @org.springframework.beans.factory.annotation.Value("${security.policy.lockout-duration-hours:6}")
+    private int lockoutDurationHours;
+
     public AuthResponseDTO register(RegisterRequestDTO registerRequest, String rawDeviceData) {
-        String ipAddress = rawDeviceData.split(":")[1];
+        String ipAddress = extractIpAddress(rawDeviceData);
         HmacDTO hash = hmacService.encode(rawDeviceData);
 
         User newUser = User.builder()
@@ -83,10 +89,12 @@ public class CoreAuthenticationService {
             return new CheckUserExistResponseDTO(false, null, null);
         }
 
-        if (user.getNumberOfInitaiatedOperations() > 3) {
-            if (user.getLockingTime() != null && user.getLockingTime().plusHours(6).isAfter(LocalDateTime.now())) {
+        if (user.getNumberOfInitaiatedOperations() > maxLoginAttempts) {
+            if (user.getLockingTime() != null
+                    && user.getLockingTime().plusHours(lockoutDurationHours).isAfter(LocalDateTime.now())) {
                 throw new AccountBlockedException(
-                        "this account is blocked for some time due to max no of operartioninitiated complete the operation or wait for 6hr from "
+                        "this account is blocked for some time due to max no of operartioninitiated complete the operation or wait for "
+                                + lockoutDurationHours + "hr from "
                                 + user.getLockingTime());
             } else {
                 user.setNumberOfInitaiatedOperations(0);
@@ -96,11 +104,12 @@ public class CoreAuthenticationService {
         }
 
         user.setNumberOfInitaiatedOperations(user.getNumberOfInitaiatedOperations() + 1);
-        if (user.getNumberOfInitaiatedOperations() > 3) {
+        if (user.getNumberOfInitaiatedOperations() > maxLoginAttempts) {
             user.setLockingTime(LocalDateTime.now());
             userService.saveUser(user);
             throw new AccountBlockedException(
-                    "this account is blocked for some time due to max no of operartioninitiated complete the operation or wait for 6hr from "
+                    "this account is blocked for some time due to max no of operartioninitiated complete the operation or wait for "
+                            + lockoutDurationHours + "hr from "
                             + user.getLockingTime());
         }
         userService.saveUser(user);
@@ -137,7 +146,7 @@ public class CoreAuthenticationService {
     }
 
     public AuthResponseDTO login(LoginRequestDTO loginRequest, String tempToken, String rawDeviceData) {
-        String ipAddress = rawDeviceData.split(":")[1];
+        String ipAddress = extractIpAddress(rawDeviceData);
         TokenDTO data = verifyTempToken(tempToken, rawDeviceData, TokenPurposeMessageEnum.LOGIN);
         User user = userService.getUserById(new ObjectId(data.id()));
         if (!encodingService.verify(loginRequest.credential(), user.getPassword())) {
@@ -151,6 +160,37 @@ public class CoreAuthenticationService {
 
         logSecurityEvent(user, Event.LOGIN_SUCCESS, null, ipAddress, data.deviceHash(), data.hmacKeyId());
         return createTokens(user, data.deviceHash(), data.hmacKeyId());
+    }
+
+    public AuthResponseDTO refreshToken(one.org.security.api.dto.request.RefreshTokenRequestDTO request,
+            String rawDeviceData) {
+        String ipAddress = rawDeviceData.split(":")[1];
+        TokenDTO data = verifyUserService.verifyUser(request.refreshToken(), rawDeviceData,
+                TokenPurposeMessageEnum.REFRESH_TOKEN);
+
+        if (data == null) {
+            throw new InvalidTokenException("Invalid or expired refresh token");
+        }
+
+        User user = userService.getUserById(new ObjectId(data.id()));
+
+        // Check blocking status
+        if (user.isAccountLocked()
+                || (user.getLockingTime() != null
+                        && user.getLockingTime().plusHours(lockoutDurationHours).isAfter(LocalDateTime.now()))) {
+            throw new AccountBlockedException("Account is blocked");
+        }
+
+        logSecurityEvent(user, Event.JWT_REFRESH, "Token refreshed", ipAddress, data.deviceHash(), data.hmacKeyId());
+        return createTokens(user, data.deviceHash(), data.hmacKeyId());
+    }
+
+    private String extractIpAddress(String rawDeviceData) {
+        if (rawDeviceData == null || !rawDeviceData.contains(":")) {
+            return "unknown";
+        }
+        String[] parts = rawDeviceData.split(":");
+        return parts.length > 1 ? parts[1] : "unknown";
     }
 
     // --- Helpers ---
