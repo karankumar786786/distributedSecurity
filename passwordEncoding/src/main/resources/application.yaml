@@ -1,6 +1,8 @@
 spring:
+  main:
+    allow-bean-definition-overriding: true
   application:
-    name: Password Encoding Service
+    name: passwordEncoding
 
   grpc:
     server:
