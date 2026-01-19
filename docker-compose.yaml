@@ -1,4 +1,4 @@
-version: "3.8"
+
 
 networks:
   app-network:
@@ -8,10 +8,8 @@ services:
   # ---------------- NETWORK ----------------
   # Docker automatically creates a bridge network
 
-  # ---------------- JAEGER ----------------
   jaeger:
     image: jaegertracing/all-in-one:latest
-    container_name: jaeger
     ports:
       - "16686:16686" # Web UI
       - "4317:4317" # OTLP gRPC
@@ -20,10 +18,31 @@ services:
     environment:
       - COLLECTOR_OTLP_ENABLED=true
 
+  # ---------------- PROMETHEUS ----------------
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # ---------------- GRAFANA ----------------
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+
   # ---------------- REDPANDA ----------------
   redpanda:
     image: docker.redpanda.com/redpandadata/redpanda:v23.3.1
-    container_name: redpanda
     command:
       - redpanda
       - start
@@ -45,7 +64,6 @@ services:
   # ---------------- REDIS STACK ----------------
   redis-stack:
     image: redis/redis-stack:latest
-    container_name: redis-stack
     ports:
       - "6379:6379"
       - "8001:8001"
@@ -57,7 +75,6 @@ services:
   # ---------------- SCYLLADB ----------------
   scylladb:
     image: scylladb/scylla:5.4
-    container_name: scylladb
     command: >
       --smp 1
       --memory 750M
@@ -75,7 +92,6 @@ services:
 
   # ---------------- REDPANDA CONSOLE ----------------
   redpanda-console:
-    container_name: redpanda-console
     image: docker.redpanda.com/redpandadata/console:latest
     ports:
       - "8088:8080"
@@ -89,7 +105,6 @@ services:
       - redpanda
   mongo:
     image: mongo:latest
-    container_name: mongodb
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin

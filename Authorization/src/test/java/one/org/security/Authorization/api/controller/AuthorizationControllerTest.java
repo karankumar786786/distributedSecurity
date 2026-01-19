@@ -4,6 +4,7 @@ import one.org.security.Authorization.core.domain.entity.clientEntity;
 import one.org.security.Authorization.core.service.ClientService;
 import one.org.security.Authorization.core.service.OAuth2Service;
 import one.org.security.common.dto.TokenDTO;
+import one.org.security.common.model.AuthenticatedUser;
 import one.org.security.common.enums.TokenPurposeMessageEnum;
 import one.org.security.common.service.VerifyUserService;
 import org.junit.jupiter.api.Test;
@@ -33,41 +34,29 @@ public class AuthorizationControllerTest {
         @Mock
         private OAuth2Service oAuth2Service;
 
-        @Mock
-        private VerifyUserService verifyUserService;
-
         @InjectMocks
         private AuthorizationController authorizationController;
 
-        private static final String DEVICE_DATA = "device_hash_data";
-
         @Test
         public void testAuthorize_ValidUser_ReturnsCode() {
-                TokenDTO mockUserAuth = new TokenDTO(
-                                "user123", "user_auth_id", "device_hash", 60, "hmac_key",
-                                TokenPurposeMessageEnum.ACCESS_TOKEN, null);
+                TokenDTO tokenDTO = new TokenDTO("testUser", "123", "hash", 10, "key",
+                                TokenPurposeMessageEnum.ACCESS_TOKEN, List.of("read"));
+                AuthenticatedUser user = new AuthenticatedUser(tokenDTO);
 
-                when(verifyUserService.verifyUser(anyString(), anyString(), any(TokenPurposeMessageEnum.class)))
-                                .thenReturn(mockUserAuth);
+                when(oAuth2Service.authorize(anyString(), anyString(), anyList())).thenReturn("auth_code");
 
-                when(oAuth2Service.authorize(anyString(), anyString(), anyList()))
-                                .thenReturn("auth_code_123");
-
-                ResponseEntity<Map<String, String>> response = authorizationController.authorize(
-                                "Bearer valid_token", DEVICE_DATA, "client_1", "read");
+                ResponseEntity<Map<String, String>> response = authorizationController.authorize(user, "client1",
+                                "read");
 
                 assertEquals(HttpStatus.OK, response.getStatusCode());
                 assertNotNull(response.getBody());
-                assertEquals("auth_code_123", response.getBody().get("code"));
+                assertEquals("auth_code", response.getBody().get("code"));
         }
 
         @Test
         public void testAuthorize_InvalidUser_Unauthorized() {
-                when(verifyUserService.verifyUser(anyString(), anyString(), any(TokenPurposeMessageEnum.class)))
-                                .thenReturn(null);
-
                 ResponseEntity<Map<String, String>> response = authorizationController.authorize(
-                                "Bearer invalid_token", DEVICE_DATA, "client_1", "read");
+                                null, "client_1", "read");
 
                 assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         }
@@ -118,22 +107,15 @@ public class AuthorizationControllerTest {
 
         @Test
         public void testRegisterClient_ValidUser_ReturnsClient() {
-                TokenDTO mockUserAuth = new TokenDTO(
-                                "user123", "user_auth_id", "device_hash", 60, "hmac_key",
-                                TokenPurposeMessageEnum.ACCESS_TOKEN, null);
+                TokenDTO tokenDTO = new TokenDTO("testUser", "123", "hash", 10, "key",
+                                TokenPurposeMessageEnum.ACCESS_TOKEN, List.of("read"));
+                AuthenticatedUser user = new AuthenticatedUser(tokenDTO);
 
-                clientEntity mockClient = clientEntity.builder()
-                                .clientId("new_client_id")
-                                .userId(new org.bson.types.ObjectId())
-                                .redirectUrls(List.of("http://lb"))
-                                .build();
+                when(clientService.registerClient(anyString(), anyString())).thenReturn(clientEntity.builder()
+                                .clientId("new_client_id").userId(new org.bson.types.ObjectId()).build());
 
-                when(verifyUserService.verifyUser(anyString(), anyString(), any(TokenPurposeMessageEnum.class)))
-                                .thenReturn(mockUserAuth);
-                when(clientService.registerClient(anyString(), anyString())).thenReturn(mockClient);
-
-                ResponseEntity<clientEntity> response = authorizationController.registerClient(
-                                "Bearer valid_token", DEVICE_DATA, Map.of("redirectUrl", "http://lb"));
+                ResponseEntity<clientEntity> response = authorizationController.registerClient(user,
+                                Map.of("redirectUrl", "http://example.com"));
 
                 assertEquals(HttpStatus.OK, response.getStatusCode());
                 assertNotNull(response.getBody());

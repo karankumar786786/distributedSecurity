@@ -2,6 +2,14 @@ spring:
   application:
     name: ProcessedMailConsumer
 management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true
   tracing:
     sampling:
       probability: 1.0

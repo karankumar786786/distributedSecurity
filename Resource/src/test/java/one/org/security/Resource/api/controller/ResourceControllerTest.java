@@ -2,6 +2,7 @@ package one.org.security.Resource.api.controller;
 
 import one.org.security.Resource.core.domain.entity.ResourceEntity;
 import one.org.security.common.dto.TokenDTO;
+import one.org.security.common.model.AuthenticatedUser;
 import one.org.security.common.enums.TokenPurposeMessageEnum;
 import one.org.security.common.service.VerifyUserService;
 import org.junit.jupiter.api.Test;
@@ -23,19 +24,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class ResourceControllerTest {
 
-        @Mock
-        private VerifyUserService verifyUserService;
-
         @InjectMocks
         private ResourceController resourceController;
 
         @Test
         public void testGetResource_NoToken_Unauthorized() {
-                when(verifyUserService.verifyUser(anyString(), anyString(), any(TokenPurposeMessageEnum.class)))
-                                .thenReturn(null);
-
-                ResponseEntity<ResourceEntity> response = resourceController.getResource(
-                                "invalid_token", "device_hash_data");
+                ResponseEntity<ResourceEntity> response = resourceController.getResource(null);
 
                 assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         }
@@ -51,11 +45,8 @@ public class ResourceControllerTest {
                                 TokenPurposeMessageEnum.ACCESS_TOKEN, // purpose
                                 List.of("read")); // scope
 
-                when(verifyUserService.verifyUser(anyString(), anyString(), any(TokenPurposeMessageEnum.class)))
-                                .thenReturn(mockToken);
-
-                ResponseEntity<ResourceEntity> response = resourceController.getResource(
-                                "Bearer valid_token", "device_hash_data");
+                ResponseEntity<ResourceEntity> response = resourceController
+                                .getResource(new AuthenticatedUser(mockToken));
 
                 assertEquals(HttpStatus.OK, response.getStatusCode());
                 assertNotNull(response.getBody());
@@ -73,11 +64,8 @@ public class ResourceControllerTest {
                                 TokenPurposeMessageEnum.ACCESS_TOKEN, // purpose
                                 List.of("none")); // scope
 
-                when(verifyUserService.verifyUser(anyString(), anyString(), any(TokenPurposeMessageEnum.class)))
-                                .thenReturn(mockToken);
-
-                ResponseEntity<ResourceEntity> response = resourceController.getResource(
-                                "Bearer valid_token", "device_hash_data");
+                ResponseEntity<ResourceEntity> response = resourceController
+                                .getResource(new AuthenticatedUser(mockToken));
 
                 assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         }
