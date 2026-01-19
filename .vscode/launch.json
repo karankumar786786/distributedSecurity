@@ -9,6 +9,57 @@
             "projectName": "passwordEncoding",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-SmsStreamProcessorApplication<SmsStreamProcessor>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "one.org.security.SmsStreamProcessor.SmsStreamProcessorApplication",
+            "projectName": "SmsStreamProcessor",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=56926 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=SmsStreamProcessor"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-SecurityEventStreamProcessorApplication<SecurityEventStreamProcessor>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "one.org.security.SecurityEventStreamProcessor.SecurityEventStreamProcessorApplication",
+            "projectName": "SecurityEventStreamProcessor",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ProcessedSmsConsumerApplication<ProcessedSmsConsumer>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "one.org.security.ProcessedSmsConsumer.ProcessedSmsConsumerApplication",
+            "projectName": "ProcessedSmsConsumer",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ProcessedSecurityEventConsumerApplication<ProcessedSecurityEventConsumer>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "one.org.security.ProcessedSecurityEventConsumer.ProcessedSecurityEventConsumerApplication",
+            "projectName": "ProcessedSecurityEventConsumer",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ProcessedMailConsumerApplication<ProcessedMailConsumer>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "one.org.security.ProcessedMailConsumer.ProcessedMailConsumerApplication",
+            "projectName": "ProcessedMailConsumer",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
