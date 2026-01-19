@@ -46,3 +46,10 @@ hmac:
   newkeyId: "hmac-key-2026-01"
   oldkey: "old-hmac-secret-key-old-hmac-secret-key"
   newkey: "new-hmac-secret-key-new-hmac-secret-key"
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  otlp:
+    tracing:
+      endpoint: http://localhost:4318/v1/traces
