@@ -5,6 +5,8 @@ spring:
     redis:
       host: localhost
       port: 6379
+  cache:
+    type: redis
   kafkaConfig:
     server:
       address: localhost:19092

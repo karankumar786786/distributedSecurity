@@ -22,7 +22,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/oauth2/token").permitAll()
                         .requestMatchers("/oauth2/client/register", "/oauth2/authorize").authenticated()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/actuator/**").permitAll()
                         .anyRequest().authenticated());
         return http.build();
     }

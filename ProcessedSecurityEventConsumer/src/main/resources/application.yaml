@@ -1,6 +1,31 @@
 spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  cache:
+    type: redis
   application:
     name: ProcessedSecurityEventConsumer
+  kafkaConfig:
+    server:
+      address: localhost:19092
+    schema:
+      registry:
+        url: http://localhost:18081
+    consumer:
+      group-id: security-event-consumer-group
+      auto-offset-reset: earliest
+    topics:
+      mail: mail-topic
+      sms: sms-topic
+      processed-mail: processed-mail-topic
+      processed-sms: processed-sms-topic
+      processed-security-event: processed-security-event-topic
+      security-event: security-event-topic
+    window:
+      duration-ms: 60000
+
 management:
   endpoints:
     web:
@@ -19,3 +44,34 @@ management:
 
 server:
   port: 10018
+
+jwt:
+  issuer: "one.org.security"
+  access:
+    oldkeyId: "access-key-2025-12"
+    newkeyId: "access-key-2026-01"
+    oldkey: "old-access-secret-key-old-access-secret-key"
+    newkey: "new-access-secret-key-new-access-secret-key"
+  refresh:
+    oldkeyId: "refresh-key-2025-12"
+    newkeyId: "refresh-key-2026-01"
+    oldkey: "old-refresh-secret-key-old-refresh-secret-key"
+    newkey: "new-refresh-secret-key-new-refresh-secret-key"
+  temp:
+    oldkeyId: "temp-key-2025-12"
+    newkeyId: "temp-key-2026-01"
+    oldkey: "old-temp-secret-key-old-temp-secret-key"
+    newkey: "new-temp-secret-key-new-temp-secret-key"
+  key:
+    rotation:
+      enabled: true
+  expiration:
+    access: 900000
+    refresh: 604800000
+    temp: 300000
+
+hmac:
+  oldkeyId: "hmac-key-2025-12"
+  newkeyId: "hmac-key-2026-01"
+  oldkey: "old-hmac-secret-key-old-hmac-secret-key"
+  newkey: "new-hmac-secret-key-new-hmac-secret-key"

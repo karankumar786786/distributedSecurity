@@ -21,7 +21,7 @@ public class ResourceSecurityConfig {
                         org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/resource/**").authenticated()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/actuator/**").permitAll()
                         .anyRequest().authenticated());
         return http.build();
     }

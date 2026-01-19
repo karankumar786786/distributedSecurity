@@ -8,7 +8,8 @@
             "mainClass": "one.org.security.passwordEncoding.PasswordEncodingServiceApplication",
             "projectName": "passwordEncoding",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=56979 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=passwordEncoding"
         },
         {
             "type": "java",
@@ -58,6 +59,46 @@
             "cwd": "${workspaceFolder}",
             "mainClass": "one.org.security.ProcessedMailConsumer.ProcessedMailConsumerApplication",
             "projectName": "ProcessedMailConsumer",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-MailStreamProcessorApplication<MailStreamProcessor>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "one.org.security.MailStreamProcessor.MailStreamProcessorApplication",
+            "projectName": "MailStreamProcessor",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-SecurityApplication<security>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "one.org.security.SecurityApplication",
+            "projectName": "security",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-AuthorizationApplication<Authorization>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "one.org.security.Authorization.AuthorizationApplication",
+            "projectName": "Authorization",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ResourceApplication<Resource>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "one.org.security.Resource.ResourceApplication",
+            "projectName": "Resource",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
         }

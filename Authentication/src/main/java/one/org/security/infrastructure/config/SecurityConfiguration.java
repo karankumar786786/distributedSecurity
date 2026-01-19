@@ -50,7 +50,7 @@ public class SecurityConfiguration {
                                                                 .requestMatchers(HttpMethod.POST, "/auth/refresh")
                                                                 .permitAll()
                                                                 .requestMatchers("/fido-test.html", "/swagger-ui/**",
-                                                                                "/v3/api-docs/**")
+                                                                                "/v3/api-docs/**", "/actuator/**")
                                                                 .permitAll()
                                                                 .anyRequest().authenticated())
                                 .addFilterBefore(rawDeviceDataFilter,
