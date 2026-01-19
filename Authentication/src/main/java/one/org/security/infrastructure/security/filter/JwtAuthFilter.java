@@ -2,7 +2,6 @@ package one.org.security.infrastructure.security.filter;
 
 import java.io.IOException;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,8 +15,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import one.org.security.common.dto.TokenDTO;
 import one.org.security.common.enums.TokenPurposeMessageEnum;
-import one.org.security.core.domain.entity.User;
-import one.org.security.core.service.UserService;
+import one.org.security.common.model.AuthenticatedUser;
+import one.org.security.common.service.VerifyUserService;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -25,10 +24,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(JwtAuthFilter.class);
 
     @Autowired
-    private one.org.security.common.service.VerifyUserService verifyUserService;
-
-    @Autowired
-    private UserService userService;
+    private VerifyUserService verifyUserService;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -60,17 +56,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     TokenPurposeMessageEnum.ACCESS_TOKEN);
 
             if (tokenData != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                User user = userService.getUserById(new ObjectId(tokenData.id()));
-
-                if (user != null) {
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            user,
-                            null,
-                            user.getAuthorities() // Ensure User implements UserDetails or provides authorities
-                    );
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-                }
+                AuthenticatedUser authenticatedUser = new AuthenticatedUser(tokenData);
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        authenticatedUser,
+                        null,
+                        authenticatedUser.getAuthorities());
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         } catch (Exception e) {
             log.error(e.getMessage());
