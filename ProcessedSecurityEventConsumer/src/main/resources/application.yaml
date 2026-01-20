@@ -5,6 +5,13 @@ spring:
       port: 6379
   cache:
     type: redis
+  mongodb:
+    host: localhost
+    port: 27017
+    database: security
+    username: admin
+    password: secret
+    authentication-database: admin
   application:
     name: ProcessedSecurityEventConsumer
   kafkaConfig:

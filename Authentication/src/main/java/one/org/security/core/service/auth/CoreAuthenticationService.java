@@ -196,10 +196,11 @@ public class CoreAuthenticationService {
     // --- Helpers ---
 
     private AuthResponseDTO createTokens(User user, String deviceHash, String hashKeyId) {
+        java.util.List<String> scopes = java.util.List.of("read", "write");
         TokenDTO accessTokenDTO = new TokenDTO(user.getUsername(), user.getId().toHexString(), deviceHash,
-                jwtProperties.getAccessExpiration(), hashKeyId, TokenPurposeMessageEnum.ACCESS_TOKEN, null);
+                jwtProperties.getAccessExpiration(), hashKeyId, TokenPurposeMessageEnum.ACCESS_TOKEN, scopes);
         TokenDTO refreshTokenDTO = new TokenDTO(user.getUsername(), user.getId().toHexString(), deviceHash,
-                jwtProperties.getRefreshExpiration(), hashKeyId, TokenPurposeMessageEnum.REFRESH_TOKEN, null);
+                jwtProperties.getRefreshExpiration(), hashKeyId, TokenPurposeMessageEnum.REFRESH_TOKEN, scopes);
         return new AuthResponseDTO(jwtService.encode(accessTokenDTO), jwtService.encode(refreshTokenDTO));
     }
 

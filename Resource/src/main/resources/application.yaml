@@ -12,6 +12,21 @@ spring:
     username: admin
     password: secret
     authentication-database: admin
+  kafkaConfig:
+    server:
+      address: localhost:19092
+    consumer:
+      group-id: resource-service-group
+    schema:
+      registry:
+        url: http://localhost:18081
+    topics:
+      mail: mail-topic
+      sms: sms-topic
+      processed-mail: processed-mail-topic
+      processed-sms: processed-sms-topic
+      security-event: security-event-topic
+      processed-security-event: processed-security-event-topic
 server:
   port: 8082
 

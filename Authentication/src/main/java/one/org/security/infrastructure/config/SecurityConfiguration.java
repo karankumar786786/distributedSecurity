@@ -14,10 +14,10 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfiguration {
 
         @Autowired
-        private one.org.security.infrastructure.security.filter.JwtAuthFilter jwtAuthFilter;
+        private one.org.security.common.security.filter.JwtAuthFilter jwtAuthFilter;
 
         @Autowired
-        private one.org.security.infrastructure.security.filter.RawDeviceDataFilter rawDeviceDataFilter;
+        private one.org.security.common.security.filter.RawDeviceDataFilter rawDeviceDataFilter;
 
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -56,7 +56,7 @@ public class SecurityConfiguration {
                                 .addFilterBefore(rawDeviceDataFilter,
                                                 org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
                                 .addFilterAfter(jwtAuthFilter,
-                                                one.org.security.infrastructure.security.filter.RawDeviceDataFilter.class);
+                                                one.org.security.common.security.filter.RawDeviceDataFilter.class);
                 return http.build();
         }
 

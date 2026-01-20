@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = { "one.org.security.Resource", "one.org.security.common" })
+@ComponentScan(basePackages = { "one.org.security" })
 public class ResourceApplication {
 
 	public static void main(String[] args) {

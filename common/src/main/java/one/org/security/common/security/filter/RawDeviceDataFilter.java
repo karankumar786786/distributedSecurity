@@ -1,4 +1,4 @@
-package one.org.security.infrastructure.security.filter;
+package one.org.security.common.security.filter;
 
 import java.io.IOException;
 

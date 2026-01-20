@@ -15,7 +15,7 @@ public class ResourceController {
     @GetMapping
     public ResponseEntity<ResourceEntity> getResource(
             @org.springframework.security.core.annotation.AuthenticationPrincipal AuthenticatedUser user) {
-
+                System.out.println(user);
         if (user == null) {
             return ResponseEntity.status(401).build();
         }
