@@ -11,7 +11,7 @@ import com.mongodb.lang.NonNull;
 import lombok.Builder;
 import lombok.Data;
 
-@Document(collation = "client")
+@Document(collection = "client")
 @Data
 @Builder
 public class clientEntity {

@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import one.org.security.common.dto.HmacDTO;
 
 @Service
+@lombok.extern.slf4j.Slf4j
 public class HmacService {
     private final byte[] oldKey;
     private final byte[] newKey;
@@ -46,8 +47,13 @@ public class HmacService {
         }
 
         String expected = performHash(hmacDTO.message(), keyToUse);
-        return MessageDigest.isEqual(expected.getBytes(StandardCharsets.UTF_8),
+        boolean matches = MessageDigest.isEqual(expected.getBytes(StandardCharsets.UTF_8),
                 hmacDTO.providedSignature().getBytes(StandardCharsets.UTF_8));
+        if (!matches) {
+            log.warn("HMAC mismatch! Message: '{}', Expected: '{}', Provided: '{}'", hmacDTO.message(), expected,
+                    hmacDTO.providedSignature());
+        }
+        return matches;
     }
 
     private String performHash(String message, byte[] keyBytes) {

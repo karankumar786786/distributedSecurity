@@ -46,6 +46,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final String rawDeviceData = (String) request.getAttribute("RAW_DEVICE_DATA");
         log.info(rawDeviceData);
         if (authHeader == null || !authHeader.startsWith("Bearer ") || rawDeviceData == null) {
+            log.info("Skipping JWT filter. AuthHeader present: {}, RawDeviceData present: {}",
+                    authHeader != null, rawDeviceData != null);
             filterChain.doFilter(request, response);
             return;
         }
@@ -63,15 +65,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         authenticatedUser.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+            } else if (tokenData == null) {
+                log.warn("Token verification failed for token: {}", token);
             }
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("JWT Verification failed: {}", e.getMessage(), e);
             // Log error or let it propagate. If verification fails, we just don't set
             // authentication.
             // SecurityContext will remain empty, and subsequent security filters (if any)
             // will reject if configured.
         }
-
         filterChain.doFilter(request, response);
     }
 }

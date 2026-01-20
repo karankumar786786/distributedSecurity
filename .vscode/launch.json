@@ -80,7 +80,8 @@
             "mainClass": "one.org.security.SecurityApplication",
             "projectName": "security",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=52068 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=security"
         },
         {
             "type": "java",
@@ -90,7 +91,8 @@
             "mainClass": "one.org.security.Authorization.AuthorizationApplication",
             "projectName": "Authorization",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=52091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=Authorization"
         },
         {
             "type": "java",
@@ -99,6 +101,16 @@
             "cwd": "${workspaceFolder}",
             "mainClass": "one.org.security.Resource.ResourceApplication",
             "projectName": "Resource",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ClientApplication<Client>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "one.org.security.Client.ClientApplication",
+            "projectName": "Client",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
         }

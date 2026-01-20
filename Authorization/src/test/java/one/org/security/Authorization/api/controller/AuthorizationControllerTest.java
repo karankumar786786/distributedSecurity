@@ -7,13 +7,19 @@ import one.org.security.common.dto.TokenDTO;
 import one.org.security.common.model.AuthenticatedUser;
 import one.org.security.common.enums.TokenPurposeMessageEnum;
 import one.org.security.common.service.VerifyUserService;
+import one.org.security.Authorization.api.exception.GlobalExceptionHandler;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 import java.util.Map;
@@ -24,6 +30,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthorizationControllerTest {
@@ -37,6 +45,16 @@ public class AuthorizationControllerTest {
         @InjectMocks
         private AuthorizationController authorizationController;
 
+        private MockMvc mockMvc;
+        private ObjectMapper objectMapper = new ObjectMapper();
+
+        @BeforeEach
+        void setUp() {
+                mockMvc = MockMvcBuilders.standaloneSetup(authorizationController)
+                                .setControllerAdvice(new GlobalExceptionHandler())
+                                .build();
+        }
+
         @Test
         public void testAuthorize_ValidUser_ReturnsCode() {
                 TokenDTO tokenDTO = new TokenDTO("testUser", "123", "hash", 10, "key",
@@ -45,18 +63,31 @@ public class AuthorizationControllerTest {
 
                 when(oAuth2Service.authorize(anyString(), anyString(), anyList())).thenReturn("auth_code");
 
-                ResponseEntity<Map<String, String>> response = authorizationController.authorize(user, "client1",
-                                "read");
+                one.org.security.Authorization.api.dto.AuthorizeRequestDTO request = one.org.security.Authorization.api.dto.AuthorizeRequestDTO
+                                .builder()
+                                .clientId("client1")
+                                .scope("read")
+                                .build();
+
+                ResponseEntity<one.org.security.Authorization.api.dto.AuthorizeResponseDTO> response = authorizationController
+                                .authorize(user, request);
 
                 assertEquals(HttpStatus.OK, response.getStatusCode());
                 assertNotNull(response.getBody());
-                assertEquals("auth_code", response.getBody().get("code"));
+                assertEquals("auth_code", response.getBody().getCode());
         }
 
         @Test
         public void testAuthorize_InvalidUser_Unauthorized() {
-                ResponseEntity<Map<String, String>> response = authorizationController.authorize(
-                                null, "client_1", "read");
+                one.org.security.Authorization.api.dto.AuthorizeRequestDTO request = one.org.security.Authorization.api.dto.AuthorizeRequestDTO
+                                .builder()
+                                .clientId("client_1")
+                                .scope("read")
+                                .build();
+
+                ResponseEntity<one.org.security.Authorization.api.dto.AuthorizeResponseDTO> response = authorizationController
+                                .authorize(
+                                                null, request);
 
                 assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         }
@@ -77,48 +108,135 @@ public class AuthorizationControllerTest {
                                 .thenReturn(mockToken);
                 when(oAuth2Service.generateJwt(mockToken)).thenReturn("access_token_jwt");
 
-                ResponseEntity<Map<String, String>> response = authorizationController.token(
-                                "authorization_code", "valid_code", "client_1", "secret");
+                one.org.security.Authorization.api.dto.TokenRequestDTO request = one.org.security.Authorization.api.dto.TokenRequestDTO
+                                .builder()
+                                .grantType("authorization_code")
+                                .code("valid_code")
+                                .clientId("client_1")
+                                .clientSecret("secret")
+                                .build();
+
+                ResponseEntity<one.org.security.Authorization.api.dto.TokenResponseDTO> response = authorizationController
+                                .token(request);
 
                 assertEquals(HttpStatus.OK, response.getStatusCode());
                 assertNotNull(response.getBody());
-                assertEquals("access_token_jwt", response.getBody().get("access_token"));
+                assertEquals("access_token_jwt", response.getBody().getAccessToken());
         }
 
         @Test
         public void testToken_InvalidGrantType_BadRequest() {
-                ResponseEntity<Map<String, String>> response = authorizationController.token(
-                                "password", "valid_code", "client_1", "secret");
+                one.org.security.Authorization.api.dto.TokenRequestDTO request = one.org.security.Authorization.api.dto.TokenRequestDTO
+                                .builder()
+                                .grantType("password")
+                                .code("valid_code")
+                                .clientId("client_1")
+                                .clientSecret("secret")
+                                .build();
+
+                ResponseEntity<one.org.security.Authorization.api.dto.TokenResponseDTO> response = authorizationController
+                                .token(request);
 
                 assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-                assertEquals("unsupported_grant_type", response.getBody().get("error"));
+                assertEquals("unsupported_grant_type", response.getBody().getError());
         }
 
         @Test
         public void testToken_InvalidClient_Unauthorized() {
                 when(clientService.getClient("invalid_client")).thenReturn(null);
 
-                ResponseEntity<Map<String, String>> response = authorizationController.token(
-                                "authorization_code", "valid_code", "invalid_client", "secret");
+                one.org.security.Authorization.api.dto.TokenRequestDTO request = one.org.security.Authorization.api.dto.TokenRequestDTO
+                                .builder()
+                                .grantType("authorization_code")
+                                .code("valid_code")
+                                .clientId("invalid_client")
+                                .clientSecret("secret")
+                                .build();
+
+                ResponseEntity<one.org.security.Authorization.api.dto.TokenResponseDTO> response = authorizationController
+                                .token(request);
 
                 assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-                assertEquals("invalid_client", response.getBody().get("error"));
+                assertEquals("invalid_client", response.getBody().getError());
         }
 
         @Test
-        public void testRegisterClient_ValidUser_ReturnsClient() {
+        public void testRegisterClient_ValidUser_ReturnsClient() throws Exception {
                 TokenDTO tokenDTO = new TokenDTO("testUser", "123", "hash", 10, "key",
                                 TokenPurposeMessageEnum.ACCESS_TOKEN, List.of("read"));
                 AuthenticatedUser user = new AuthenticatedUser(tokenDTO);
 
-                when(clientService.registerClient(anyString(), anyString())).thenReturn(clientEntity.builder()
-                                .clientId("new_client_id").userId(new org.bson.types.ObjectId()).build());
+                one.org.security.Authorization.api.dto.ClientRegistrationRequestDTO request = one.org.security.Authorization.api.dto.ClientRegistrationRequestDTO
+                                .builder()
+                                .redirectUrl("http://example.com")
+                                .clientName("Test Client")
+                                .scopes(List.of("read"))
+                                .build();
 
-                ResponseEntity<clientEntity> response = authorizationController.registerClient(user,
-                                Map.of("redirectUrl", "http://example.com"));
+                when(clientService.registerClient(anyString(),
+                                any(one.org.security.Authorization.api.dto.ClientRegistrationRequestDTO.class)))
+                                .thenReturn(one.org.security.Authorization.api.dto.ClientRegistrationResponseDTO
+                                                .builder()
+                                                .clientId("new_client_id")
+                                                .clientSecret("secret")
+                                                .build());
+
+                ResponseEntity<one.org.security.Authorization.api.dto.ClientRegistrationResponseDTO> response = authorizationController
+                                .registerClient(user, request);
 
                 assertEquals(HttpStatus.OK, response.getStatusCode());
                 assertNotNull(response.getBody());
                 assertEquals("new_client_id", response.getBody().getClientId());
+        }
+
+        @Test
+        public void testRegisterClient_InvalidRequest_BadRequest() throws Exception {
+                one.org.security.Authorization.api.dto.ClientRegistrationRequestDTO request = one.org.security.Authorization.api.dto.ClientRegistrationRequestDTO
+                                .builder()
+                                .build(); // Missing required fields
+
+                mockMvc.perform(post("/client/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void testAuthorize_InvalidRequest_BadRequest() throws Exception {
+                one.org.security.Authorization.api.dto.AuthorizeRequestDTO request = one.org.security.Authorization.api.dto.AuthorizeRequestDTO
+                                .builder()
+                                .build(); // Missing required fields
+
+                // Note: We don't need to mock Authentication principal here because
+                // standaloneSetup doesn't enforce security unless explicitly configured
+                // BUT our Controller method expects @AuthenticationPrincipal.
+                // In standaloneSetup, the argument resolver for AuthenticationPrincipal might
+                // return null or need configuration.
+                // For simple validation testing, we just want to hit the validator.
+                // However, if the controller checks for user != null BEFORE validation, we
+                // might hit 401 instead of 400.
+                // The endpoint logic is:
+                // if (user == null) return 401;
+                // The @Valid annotation is on the request body. Validation usually happens
+                // BEFORE the method body execution.
+                // So we should expect 400 if validation fails, even if user is null.
+                // Wait, argument resolution happens, then validation.
+
+                mockMvc.perform(post("/oauth2/authorize")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void testToken_InvalidRequest_BadRequest() throws Exception {
+                one.org.security.Authorization.api.dto.TokenRequestDTO request = one.org.security.Authorization.api.dto.TokenRequestDTO
+                                .builder()
+                                .build(); // Missing required fields
+
+                mockMvc.perform(post("/oauth2/token")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isBadRequest());
         }
 }

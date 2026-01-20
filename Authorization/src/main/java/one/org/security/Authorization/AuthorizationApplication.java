@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 @SpringBootApplication
 @EnableMongoRepositories(basePackages = "one.org.security.Authorization.core.repository")
-@ComponentScan(basePackages = { "one.org.security.Authorization", "one.org.security.common" })
+@ComponentScan(basePackages = { "one.org.security.Authorization", "one.org.security.common", "one.org.security.utils" })
 public class AuthorizationApplication {
 
 	public static void main(String[] args) {
