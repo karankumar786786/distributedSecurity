@@ -52,7 +52,29 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        final String token = authHeader.substring(7);
+        String token = null;
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
+        } else {
+            // Try to find token in cookies
+            if (request.getCookies() != null) {
+                for (jakarta.servlet.http.Cookie cookie : request.getCookies()) {
+                    if ("AUTH-TOKEN".equals(cookie.getName())) {
+                        token = cookie.getValue();
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (token == null) {
+            log.info("Skipping JWT filter. AuthHeader/Cookie present: false, RawDeviceData present: {}",
+                    rawDeviceData != null);
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         try {
             TokenDTO tokenData = verifyUserService.verifyUser(token, rawDeviceData,
                     TokenPurposeMessageEnum.ACCESS_TOKEN);
