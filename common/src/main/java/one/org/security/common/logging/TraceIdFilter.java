@@ -1,4 +1,4 @@
-package one.org.security.logging;
+package one.org.security.common.logging;
 
 import java.io.IOException;
 import java.util.UUID;
