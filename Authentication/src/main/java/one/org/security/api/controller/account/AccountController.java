@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import one.org.security.HmacDTO;
-import one.org.security.HmacService;
 import one.org.security.api.dto.request.ChangeBackupEmailRequestDTO;
 import one.org.security.api.dto.request.ChangePasswordRequestDTO;
 import one.org.security.api.dto.request.ChangePhoneNumberRequestDTO;
 import one.org.security.api.dto.request.FidoCompleteRegisterRequestDTO;
 import one.org.security.api.dto.request.VerifyOtpRequestDTO;
 import one.org.security.api.dto.response.FidoInitResponseDTO;
+import one.org.security.common.Hmac.HmacDTO;
+import one.org.security.common.Hmac.HmacService;
 import one.org.security.core.domain.entity.User;
 import one.org.security.core.service.auth.FidoRegistrationService;
 import one.org.security.core.service.User.UserService;

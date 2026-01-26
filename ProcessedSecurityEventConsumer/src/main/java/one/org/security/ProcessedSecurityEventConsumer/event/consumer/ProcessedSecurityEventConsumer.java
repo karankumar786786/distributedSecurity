@@ -1,4 +1,4 @@
-package one.org.security.event.consumer;
+package one.org.security.ProcessedSecurityEventConsumer.event.consumer;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,9 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import one.org.security.avro.ProcessedSecurityEventLog;
 import one.org.security.avro.SecurityEventLog;
-import one.org.security.event.consumer.entity.SecurityEvent;
 import one.org.security.common.enums.Event;
-import one.org.security.event.consumer.repository.SecurityEventRepository;
+import one.org.security.ProcessedSecurityEventConsumer.event.consumer.entity.SecurityEvent;
+import one.org.security.ProcessedSecurityEventConsumer.event.consumer.repository.SecurityEventRepository;
 
 @Service
 @Slf4j

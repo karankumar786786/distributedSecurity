@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import one.org.security.core.domain.dto.Event;
+import one.org.security.common.enums.Event;
 
 @AllArgsConstructor
 @NoArgsConstructor

@@ -1,4 +1,4 @@
-package one.org.security.infrastructure.config;
+package one.org.security.ProcessedMailConsumer.config;
 
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig;

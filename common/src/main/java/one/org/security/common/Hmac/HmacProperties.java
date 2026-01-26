@@ -1,4 +1,4 @@
-package one.org.security;
+package one.org.security.common.Hmac;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;

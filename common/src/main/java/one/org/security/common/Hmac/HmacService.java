@@ -1,4 +1,4 @@
-package one.org.security;
+package one.org.security.common.Hmac;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

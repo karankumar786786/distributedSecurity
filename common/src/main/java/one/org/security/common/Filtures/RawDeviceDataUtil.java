@@ -1,4 +1,4 @@
-package one.org.security;
+package one.org.security.common.Filtures;
 
 import org.springframework.stereotype.Component;
 

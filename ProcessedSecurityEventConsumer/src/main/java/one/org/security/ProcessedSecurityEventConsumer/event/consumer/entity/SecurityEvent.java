@@ -1,4 +1,4 @@
-package one.org.security.event.consumer.entity;
+package one.org.security.ProcessedSecurityEventConsumer.event.consumer.entity;
 
 import java.time.Instant;
 

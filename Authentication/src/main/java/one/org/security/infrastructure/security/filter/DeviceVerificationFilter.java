@@ -11,8 +11,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import one.org.security.HmacDTO;
-import one.org.security.HmacService;
+import one.org.security.common.Hmac.HmacDTO;
+import one.org.security.common.Hmac.HmacService;
 
 public class DeviceVerificationFilter extends OncePerRequestFilter {
 

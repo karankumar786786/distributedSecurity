@@ -1,6 +1,5 @@
 package one.org.security.core.service.auth;
 
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,8 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
-import one.org.security.HmacDTO;
-import one.org.security.HmacService;
 import one.org.security.api.Errors.CustomExceptions.AccountBlockedException;
 import one.org.security.api.Errors.CustomExceptions.UserNotFoundException;
 import one.org.security.api.dto.enums.CheckUserExistRequestAvailableEnum;
@@ -23,7 +20,9 @@ import one.org.security.api.dto.request.LoginRequestDTO;
 import one.org.security.api.dto.request.RegisterRequestDTO;
 import one.org.security.api.dto.response.CheckUserExistResponseDTO;
 import one.org.security.api.dto.response.LoginSuccessResponseDTO;
-import one.org.security.core.domain.dto.Event;
+import one.org.security.common.Hmac.HmacDTO;
+import one.org.security.common.Hmac.HmacService;
+import one.org.security.common.enums.Event;
 import one.org.security.core.domain.entity.SecurityEvent;
 import one.org.security.core.domain.entity.User;
 import one.org.security.core.service.PasswordEncoding.EncodingService;
@@ -49,7 +48,7 @@ public class CoreAuthenticationService {
     @Value("${security.policy.lockout-duration-hours:6}")
     private int lockoutDurationHours;
 
-    public void register(RegisterRequestDTO registerRequest,String rawDeviceBind, String ipAddress) {
+    public void register(RegisterRequestDTO registerRequest, String rawDeviceBind, String ipAddress) {
         HmacDTO hash = hmacService.encode(rawDeviceBind);
         User newUser = User.builder()
                 .backupEmail("")
@@ -71,12 +70,15 @@ public class CoreAuthenticationService {
         return;
     }
 
-    public CheckUserExistResponseDTO checkUserExist(CheckUserExistRequestDTO request, String rawDeviceBind, String ipAddress) {
+    public CheckUserExistResponseDTO checkUserExist(CheckUserExistRequestDTO request, String rawDeviceBind,
+            String ipAddress) {
         User user = userService.getUserByUsername(request.username());
         if (user == null) {
-            return new CheckUserExistResponseDTO(false, null,null,"","");
-        };
-        HmacDTO initSession = hmacService.encode(rawDeviceBind+request.reason()+user.getId().toHexString()+user.getUsername());
+            return new CheckUserExistResponseDTO(false, null, null, "", "");
+        }
+        ;
+        HmacDTO initSession = hmacService
+                .encode(rawDeviceBind + request.reason() + user.getId().toHexString() + user.getUsername());
 
         if (user.getNumberOfInitaiatedOperations() > maxLoginAttempts) {
             if (user.getLockingTime() != null
@@ -110,7 +112,7 @@ public class CoreAuthenticationService {
         } else if (request.reason() != CheckUserExistRequestAvailableEnum.OTHER) {
             if (!user.isBackupEmailVerified() && !user.isPhoneNumberVerified()) {
                 data.put("accountLost", true);
-                return new CheckUserExistResponseDTO(true, data,initSession,"","");
+                return new CheckUserExistResponseDTO(true, data, initSession, "", "");
             }
             data.put("backUpEmail", user.isBackupEmailVerified());
             data.put("phoneNumberVerified", user.isPhoneNumberVerified());
@@ -118,7 +120,7 @@ public class CoreAuthenticationService {
             data = null;
         }
         ;
-        return new CheckUserExistResponseDTO(true, data,initSession,"","");
+        return new CheckUserExistResponseDTO(true, data, initSession, "", "");
     }
 
     public String initPasswordLogin(String username) {
@@ -151,12 +153,13 @@ public class CoreAuthenticationService {
             throw new IllegalArgumentException("password is incorrect");
         }
         ;
-        HmacDTO session = hmacService.encode(rawDeviceBind+user.getId().toHexString()+username);
+        HmacDTO session = hmacService.encode(rawDeviceBind + user.getId().toHexString() + username);
         user.setNumberOfInitaiatedOperations(0);
         user.setLockingTime(null);
         userService.saveUser(user);
         logSecurityEvent(user, Event.LOGIN_SUCCESS, null, ipAddress, hash.signature(), hash.keyId());
-        return new LoginSuccessResponseDTO(user.getId().toHexString(),user.getUsername(),session.signature(),session.keyId());
+        return new LoginSuccessResponseDTO(user.getId().toHexString(), user.getUsername(), session.signature(),
+                session.keyId());
     }
 
     private void logSecurityEvent(User user, Event event, String message, String ipAddress, String deviceHash,

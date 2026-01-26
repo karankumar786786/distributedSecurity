@@ -4,12 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
-import one.org.security.HmacDTO;
-import one.org.security.HmacService;
 import one.org.security.api.Errors.CustomExceptions.UserNotFoundException;
 import one.org.security.api.dto.enums.OtpSentMethodEnum;
 import one.org.security.api.dto.request.VerifyForgetPasswordRequestDTO;
-import one.org.security.core.domain.dto.Event;
+import one.org.security.common.Hmac.HmacDTO;
+import one.org.security.common.Hmac.HmacService;
+import one.org.security.common.enums.Event;
 import one.org.security.core.domain.dto.OtpVerificationDTO;
 import one.org.security.core.domain.entity.SecurityEvent;
 import one.org.security.core.domain.entity.User;
@@ -35,26 +35,27 @@ public class PasswordRecoveryService {
     @Autowired
     private HmacService hmacService;
 
-    public void initBackupEmail(String username,String rawDeviceBind, String ipAddress) {
+    public void initBackupEmail(String username, String rawDeviceBind, String ipAddress) {
         User user = userService.getUserByUsername(username);
         if (user == null) {
             // Return random UUID even if user not found to prevent timing enumeration,
             // but for now strict:
             throw new UserNotFoundException("User not found");
-        };
+        }
+        ;
         HmacDTO hash = hmacService.encode(rawDeviceBind);
-        handleBackupEmailOtp(user, hash.signature(),hash.keyId(), ipAddress);
+        handleBackupEmailOtp(user, hash.signature(), hash.keyId(), ipAddress);
         logSecurityEvent(user, Event.FORGET_PASSWORD_INITIATED, null, ipAddress, hash.signature(), hash.keyId());
         return;
     }
 
-    public void initPhoneNumber(String username, String rawDeviceBind,String ipAddress) {
+    public void initPhoneNumber(String username, String rawDeviceBind, String ipAddress) {
         User user = userService.getUserByUsername(username);
         if (user == null) {
             throw new UserNotFoundException("User not found");
         }
         HmacDTO hash = hmacService.encode(rawDeviceBind);
-        handlePhoneNumberOtp(user, hash.signature(),hash.keyId(),ipAddress);
+        handlePhoneNumberOtp(user, hash.signature(), hash.keyId(), ipAddress);
         logSecurityEvent(user, Event.FORGET_PASSWORD_INITIATED, null, ipAddress, hash.signature(), hash.keyId());
         return;
     }
@@ -82,7 +83,7 @@ public class PasswordRecoveryService {
 
     // --- Helpers ---
 
-    private void handleBackupEmailOtp(User user, String deviceHash,String deviceHashKeyId, String ipAddress) {
+    private void handleBackupEmailOtp(User user, String deviceHash, String deviceHashKeyId, String ipAddress) {
         if (!user.isBackupEmailVerified() || user.getBackupEmail() == null) {
             logSecurityEvent(user, Event.FORGET_PASSWORD_FAIL, "due to non verified backup email", ipAddress,
                     deviceHash, deviceHashKeyId);
@@ -92,13 +93,13 @@ public class PasswordRecoveryService {
                 "forget-password");
     }
 
-    private void handlePhoneNumberOtp(User user, String deviceHash, String deviceHashKeyId,String ipAddress) {
+    private void handlePhoneNumberOtp(User user, String deviceHash, String deviceHashKeyId, String ipAddress) {
         if (!user.isPhoneNumberVerified() || user.getPhoneNumber() == null) {
             logSecurityEvent(user, Event.FORGET_PASSWORD_FAIL, "due to non verified phone number", ipAddress,
                     deviceHash, deviceHashKeyId);
             throw new BadCredentialsException("phone number is not verified");
         }
-        otpService.sendOtp(user.getUsername(),user.getPhoneNumber(), OtpSentMethodEnum.PHONE_NUMBER,
+        otpService.sendOtp(user.getUsername(), user.getPhoneNumber(), OtpSentMethodEnum.PHONE_NUMBER,
                 "forget-password");
     }
 

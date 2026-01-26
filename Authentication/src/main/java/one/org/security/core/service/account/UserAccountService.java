@@ -1,6 +1,5 @@
 package one.org.security.core.service.account;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
@@ -10,7 +9,7 @@ import one.org.security.api.dto.request.ChangeBackupEmailRequestDTO;
 import one.org.security.api.dto.request.ChangePasswordRequestDTO;
 import one.org.security.api.dto.request.ChangePhoneNumberRequestDTO;
 import one.org.security.api.dto.request.VerifyOtpRequestDTO;
-import one.org.security.core.domain.dto.Event;
+import one.org.security.common.enums.Event;
 import one.org.security.core.domain.entity.SecurityEvent;
 import one.org.security.core.domain.entity.User;
 import one.org.security.core.service.otp.OtpService;
@@ -52,7 +51,7 @@ public class UserAccountService {
         if (user == null)
             throw new IllegalArgumentException("User context not found");
         userService.updateBackupEmail(user.getId(), request.backupEmail());
-        otpService.sendOtp(user.getUsername(),  request.backupEmail(), OtpSentMethodEnum.MAIL,
+        otpService.sendOtp(user.getUsername(), request.backupEmail(), OtpSentMethodEnum.MAIL,
                 "Verify Backup Email");
         return;
     }
@@ -62,7 +61,7 @@ public class UserAccountService {
         if (user == null)
             throw new IllegalArgumentException("User context not found");
         userService.updatePhoneNumber(user.getId(), request.phoneNumber());
-        otpService.sendOtp(user.getUsername(),  request.phoneNumber(), OtpSentMethodEnum.PHONE_NUMBER,
+        otpService.sendOtp(user.getUsername(), request.phoneNumber(), OtpSentMethodEnum.PHONE_NUMBER,
                 null);
         return;
     }
@@ -102,7 +101,7 @@ public class UserAccountService {
             throw new IllegalArgumentException("No backup email set for user");
         }
 
-        otpService.sendOtp(user.getUsername(),  dbUser.getBackupEmail(), OtpSentMethodEnum.MAIL,
+        otpService.sendOtp(user.getUsername(), dbUser.getBackupEmail(), OtpSentMethodEnum.MAIL,
                 "Verify Backup Email");
         return;
     }
@@ -117,7 +116,7 @@ public class UserAccountService {
             throw new IllegalArgumentException("No phone number set for user");
         }
 
-        otpService.sendOtp(user.getUsername(),  dbUser.getPhoneNumber(), OtpSentMethodEnum.PHONE_NUMBER,
+        otpService.sendOtp(user.getUsername(), dbUser.getPhoneNumber(), OtpSentMethodEnum.PHONE_NUMBER,
                 null);
         return;
     }
@@ -130,7 +129,6 @@ public class UserAccountService {
     public void logout(User user, String ipAddress, String deviceHash, String deviceHashKeyId) {
         logSecurityEvent(user, Event.LOGOUT, "User logged out", ipAddress, deviceHash, deviceHashKeyId);
     }
-
 
     private void logSecurityEvent(User user, Event event, String message, String ipAddress, String deviceHash,
             String deviceHashKeyId) {

@@ -8,7 +8,9 @@ import java.util.concurrent.TimeUnit;
 
 import one.org.security.api.dto.request.FidoCompleteLoginRequestDTO;
 import one.org.security.api.dto.response.LoginSuccessResponseDTO;
-import one.org.security.core.domain.dto.Event;
+import one.org.security.common.Hmac.HmacDTO;
+import one.org.security.common.Hmac.HmacService;
+import one.org.security.common.enums.Event;
 import one.org.security.core.domain.entity.SecurityEvent;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -28,8 +30,6 @@ import com.yubico.webauthn.exception.AssertionFailedException;
 
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import one.org.security.HmacDTO;
-import one.org.security.HmacService;
 import one.org.security.api.Errors.CustomExceptions.AccountBlockedException;
 import one.org.security.api.Errors.CustomExceptions.UnauthorizedOperationException;
 import one.org.security.core.domain.entity.User;
@@ -141,9 +141,10 @@ public class FidoService {
                         hash.keyId());
 
                 redisService.deleteValue("fido_login:" + username);
-                HmacDTO session = hmacService.encode(rawDeviceBind+user.getId().toHexString()+username);
+                HmacDTO session = hmacService.encode(rawDeviceBind + user.getId().toHexString() + username);
 
-                return new LoginSuccessResponseDTO(user.getId().toHexString(),user.getUsername(),session.signature(),session.keyId());
+                return new LoginSuccessResponseDTO(user.getId().toHexString(), user.getUsername(), session.signature(),
+                        session.keyId());
             } else {
                 User user = userService.getUserByUsername(username);
                 HmacDTO hash = hmacService.encode(rawDeviceBind);
@@ -170,10 +171,12 @@ public class FidoService {
         }
     }
 
-    // private void updateSignatureCount(User user, ByteArray credentialId, long count) {
-    //     if (user.getFidoCredential() != null && user.getFidoCredential().getCredentialId().equals(credentialId)) {
-    //         user.getFidoCredential().setSignatureCount(count);
-    //     }
+    // private void updateSignatureCount(User user, ByteArray credentialId, long
+    // count) {
+    // if (user.getFidoCredential() != null &&
+    // user.getFidoCredential().getCredentialId().equals(credentialId)) {
+    // user.getFidoCredential().setSignatureCount(count);
+    // }
     // }
 
     // Inner class adapter

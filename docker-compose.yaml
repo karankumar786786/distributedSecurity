@@ -8,38 +8,6 @@ services:
   # ---------------- NETWORK ----------------
   # Docker automatically creates a bridge network
 
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    ports:
-      - "16686:16686" # Web UI
-      - "4317:4317" # OTLP gRPC
-      - "4318:4318" # OTLP HTTP
-      - "14250:14250" # Model Key
-    environment:
-      - COLLECTOR_OTLP_ENABLED=true
-
-  # ---------------- PROMETHEUS ----------------
-  prometheus:
-    image: prom/prometheus:latest
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
-  # ---------------- GRAFANA ----------------
-  grafana:
-    image: grafana/grafana:latest
-    ports:
-      - "3000:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    depends_on:
-      - prometheus
-
   # ---------------- REDPANDA ----------------
   redpanda:
     image: docker.redpanda.com/redpandadata/redpanda:v23.3.1

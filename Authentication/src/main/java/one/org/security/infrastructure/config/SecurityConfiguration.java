@@ -10,7 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import one.org.security.ProcessDeviceFilter;
+import one.org.security.common.Filtures.ProcessDeviceFilter;
 import one.org.security.infrastructure.security.filter.DeviceVerificationFilter;
 import one.org.security.infrastructure.security.filter.ResendOtpVerificationOnAuthFilter;
 import one.org.security.infrastructure.security.filter.SessionFilter;
