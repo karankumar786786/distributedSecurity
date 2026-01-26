@@ -24,6 +24,7 @@ public class SecurityEventService {
         SecurityEventLog eventLog = SecurityEventLog.newBuilder()
                 .setId(securityEvent.getId() != null ? securityEvent.getId().toHexString() : null)
                 .setUser(securityEvent.getUser().toHexString())
+                .setDeviceHashKeyId(securityEvent.getDeviceHashKeyId())
                 .setDeviceHash(securityEvent.getDeviceHash())
                 .setIpAddress(securityEvent.getIpAddress())
                 .setEvent(securityEvent.getEvent().name())

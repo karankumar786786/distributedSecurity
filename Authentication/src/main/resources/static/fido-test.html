@@ -4,7 +4,9 @@
     <title>Security Dashboard (Cookie-Based)</title>
     <style>
       body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
         padding: 20px;
         line-height: 1.6;
         max-width: 1400px; /* Wider for more panels */
@@ -12,7 +14,11 @@
         color: #333;
         background-color: #f4f7f6;
       }
-      h1 { text-align: center; color: #333; margin-bottom: 30px; }
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+      }
       .grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -24,7 +30,7 @@
         border: 1px solid #e0e0e0;
         padding: 20px;
         border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
       }
       .panel h2 {
         margin-top: 0;
@@ -33,7 +39,11 @@
         padding-bottom: 10px;
         font-size: 1.2rem;
       }
-      .panel h3 { margin-top: 15px; font-size: 1rem; color: #555; }
+      .panel h3 {
+        margin-top: 15px;
+        font-size: 1rem;
+        color: #555;
+      }
       input {
         width: 100%;
         padding: 10px;
@@ -54,14 +64,29 @@
         transition: background 0.2s;
         margin-bottom: 10px;
       }
-      button:hover { background: #0056b3; }
-      button:disabled { background: #ccc; cursor: not-allowed; }
-      button.secondary { background: #6c757d; }
-      button.secondary:hover { background: #545b62; }
-      button.danger { background: #dc3545; }
-      button.danger:hover { background: #bd2130; }
-      
-      .log-container { margin-top: 30px; }
+      button:hover {
+        background: #0056b3;
+      }
+      button:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+      button.secondary {
+        background: #6c757d;
+      }
+      button.secondary:hover {
+        background: #545b62;
+      }
+      button.danger {
+        background: #dc3545;
+      }
+      button.danger:hover {
+        background: #bd2130;
+      }
+
+      .log-container {
+        margin-top: 30px;
+      }
       .log {
         background: #1e1e1e;
         color: #0f0;
@@ -73,36 +98,55 @@
         font-size: 13px;
         white-space: pre-wrap;
       }
-      .status { font-weight: bold; margin-bottom: 10px; }
-      .hidden { display: none; }
+      .status {
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+      .hidden {
+        display: none;
+      }
     </style>
   </head>
   <body>
     <h1>🛡️ Security Dashboard (Cookie Mode)</h1>
 
     <div class="grid">
-      
       <!-- PANEL 0: REGISTER -->
       <div class="panel">
         <h2>0. Register User</h2>
         <p>Create a new account.</p>
-        <input type="text" id="regUsername" placeholder="New Username" value="newuser">
-        <input type="password" id="regPassword" placeholder="Password" value="password">
+        <input
+          type="text"
+          id="regUsername"
+          placeholder="New Username"
+          value="newuser"
+        />
+        <input
+          type="password"
+          id="regPassword"
+          placeholder="Password"
+          value="password"
+        />
         <button onclick="registerUser()">Register</button>
       </div>
 
       <!-- PANEL 1: AUTHENTICATION -->
       <div class="panel">
         <h2>1. Authentication flow</h2>
-        
+
         <h3>A. Check User</h3>
         <p>Starts INIT-SESSION.</p>
-        <input type="text" id="username" placeholder="Username" value="user">
+        <input type="text" id="username" placeholder="Username" value="user" />
         <button onclick="checkUser()">Check User Exist</button>
 
         <h3>B. Password Login</h3>
         <p>Requires INIT-SESSION.</p>
-        <input type="password" id="password" placeholder="Password" value="password">
+        <input
+          type="password"
+          id="password"
+          placeholder="Password"
+          value="password"
+        />
         <button onclick="initPasswordLogin()">1. Init Password Login</button>
         <button onclick="completePasswordLogin()">2. Complete Login</button>
       </div>
@@ -125,233 +169,298 @@
       <!-- PANEL 4: OAUTH & ACCOUNT -->
       <div class="panel">
         <h2>4. Account & OAuth</h2>
-        <button class="danger" onclick="logout()">Logout (Clear Cookies)</button>
-        <hr>
+        <button class="danger" onclick="logout()">
+          Logout (Clear Cookies)
+        </button>
+        <hr />
         <h3>OAuth Clients</h3>
-        <input type="text" id="clientName" placeholder="Client Name" value="My App">
-        <input type="text" id="redirectUri" placeholder="Redirect URI" value="http://localhost:8080/cb">
+        <input
+          type="text"
+          id="clientName"
+          placeholder="Client Name"
+          value="My App"
+        />
+        <input
+          type="text"
+          id="redirectUri"
+          placeholder="Redirect URI"
+          value="http://localhost:8080/cb"
+        />
         <button onclick="createClient()">Create Client</button>
-        <button class="secondary" onclick="listClients()">List Clients</button>
-        <div id="clientList"></div>
       </div>
-
     </div>
 
     <div class="log-container">
-      <h3>System Log <button style="width: auto; padding: 4px 10px; float: right;" class="secondary" onclick="document.getElementById('statusLog').innerText=''">Clear</button></h3>
+      <h3>
+        System Log
+        <button
+          style="width: auto; padding: 4px 10px; float: right"
+          class="secondary"
+          onclick="document.getElementById('statusLog').innerText = ''"
+        >
+          Clear
+        </button>
+      </h3>
       <div id="statusLog" class="log">Ready...</div>
     </div>
 
     <script>
       const API_BASE = "http://localhost:10000";
-      
+
       function log(msg, type = "info") {
         const el = document.getElementById("statusLog");
         const time = new Date().toLocaleTimeString();
         let prefix = `[${time}] `;
         if (type === "error") prefix += "❌ ";
         if (type === "success") prefix += "✅ ";
-        
+
         el.innerText += "\n" + prefix + msg;
         el.scrollTop = el.scrollHeight;
       }
 
       function handleResponse(res) {
-          if (!res.ok) {
-              return res.text().then(text => { throw new Error(`${res.status} ${res.statusText}: ${text}`) });
-          }
-          return res;
+        if (!res.ok) {
+          return res.text().then((text) => {
+            throw new Error(`${res.status} ${res.statusText}: ${text}`);
+          });
+        }
+        return res;
       }
 
       // --- 0. REGISTER USER ---
       async function registerUser() {
-        const u = document.getElementById('regUsername').value;
-        const p = document.getElementById('regPassword').value;
+        const u = document.getElementById("regUsername").value;
+        const p = document.getElementById("regPassword").value;
         log(`Registering user '${u}'...`);
         try {
-            await fetch(`${API_BASE}/auth/register`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ username: u, password: p, phoneNumber: "1234567890" })
-            }).then(handleResponse);
-            log("Registration successful! You can now Check User & Login.", "success");
-        } catch (e) { log(e.message, "error"); }
+          await fetch(`${API_BASE}/auth/register`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              username: u,
+              password: p,
+              phoneNumber: "1234567890",
+            }),
+          }).then(handleResponse);
+          log(
+            "Registration successful! You can now Check User & Login.",
+            "success",
+          );
+        } catch (e) {
+          log(e.message, "error");
+        }
       }
 
       // --- 1. CHECK USER ---
       async function checkUser() {
-        const u = document.getElementById('username').value;
+        const u = document.getElementById("username").value;
         log(`Checking user '${u}'...`);
         try {
-            const res = await fetch(`${API_BASE}/auth/check-user-exist`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ username: u, reason: "LOGIN" })
-            }).then(handleResponse);
-            const data = await res.json();
-            if(data.exist) log("User exists. INIT-SESSION cookie should be set.", "success");
-            else log("User not found.", "error");
-        } catch (e) { log(e.message, "error"); }
+          const res = await fetch(`${API_BASE}/auth/check-user-exist`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: u, reason: "LOGIN" }),
+          }).then(handleResponse);
+          const data = await res.json();
+          if (data.exist)
+            log("User exists. INIT-SESSION cookie should be set.", "success");
+          else log("User not found.", "error");
+        } catch (e) {
+          log(e.message, "error");
+        }
       }
 
       // --- 1B. PASSWORD LOGIN ---
       async function initPasswordLogin() {
-          log("Initializing Password Login...");
-          try {
-              await fetch(`${API_BASE}/init/login/password`, { method: 'POST' }).then(handleResponse);
-              log("Password Login Initialized. LOGIN-SESSION cookie set.", "success");
-          } catch(e) { log(e.message, "error"); }
+        log("Initializing Password Login...");
+        try {
+          await fetch(`${API_BASE}/init/login/password`, {
+            method: "POST",
+          }).then(handleResponse);
+          log(
+            "Password Login Initialized. LOGIN-SESSION cookie set.",
+            "success",
+          );
+        } catch (e) {
+          log(e.message, "error");
+        }
       }
 
       async function completePasswordLogin() {
-          const p = document.getElementById('password').value;
-          log("Completing Password Login...");
-          try {
-              await fetch(`${API_BASE}/init/login/password/complete`, {
-                  method: 'POST',
-                  headers: {'Content-Type': 'application/json'},
-                  body: JSON.stringify({ credential: p })
-              }).then(handleResponse);
-              log("Login Successful! SESSION cookie established.", "success");
-          } catch(e) { log(e.message, "error"); }
+        const p = document.getElementById("password").value;
+        log("Completing Password Login...");
+        try {
+          await fetch(`${API_BASE}/init/login/password/complete`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ credential: p }),
+          }).then(handleResponse);
+          log("Login Successful! SESSION cookie established.", "success");
+        } catch (e) {
+          log(e.message, "error");
+        }
       }
 
       // --- 2. FIDO REGISTRATION ---
-      
+
       // Helper: Base64URL to ArrayBuffer
-      const b64ToBuf = (b) => Uint8Array.from(atob(b.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0));
+      const b64ToBuf = (b) =>
+        Uint8Array.from(atob(b.replace(/-/g, "+").replace(/_/g, "/")), (c) =>
+          c.charCodeAt(0),
+        );
       // Helper: ArrayBuffer to Base64URL
-      const bufToBase64url = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+      const bufToBase64url = (buf) =>
+        btoa(String.fromCharCode(...new Uint8Array(buf)))
+          .replace(/\+/g, "-")
+          .replace(/\//g, "_")
+          .replace(/=+$/, "");
 
       async function startFidoRegistration() {
-          log("Starting FIDO Registration...");
-          try {
-              // 1. Init
-              const initRes = await fetch(`${API_BASE}/account/fido/register/init`, { method: 'PATCH' }).then(handleResponse);
-              const initData = await initRes.json();
-              const options = JSON.parse(initData.options);
-              
-              // 2. Hardware
-              options.publicKey.challenge = b64ToBuf(options.publicKey.challenge);
-              options.publicKey.user.id = b64ToBuf(options.publicKey.user.id);
-              
-              log("Touch your authenticator...");
-              const credential = await navigator.credentials.create({ publicKey: options.publicKey });
-              
-              // 3. Complete
-              const payload = {
-                  response: JSON.stringify({
-                      id: credential.id,
-                      rawId: bufToBase64url(credential.rawId),
-                      type: credential.type,
-                      response: {
-                          attestationObject: bufToBase64url(credential.response.attestationObject),
-                          clientDataJSON: bufToBase64url(credential.response.clientDataJSON)
-                      },
-                      clientExtensionResults: credential.getClientExtensionResults()
-                  })
-              };
-              
-              await fetch(`${API_BASE}/account/fido/register/complete`, {
-                  method: 'POST',
-                  headers: {'Content-Type': 'application/json'},
-                  body: JSON.stringify(payload)
-              }).then(handleResponse);
-              
-              log("Passkey Registered Successfully!", "success");
-          } catch(e) { log(e.message, "error"); }
+        log("Starting FIDO Registration...");
+        try {
+          // 1. Init
+          const initRes = await fetch(
+            `${API_BASE}/account/fido/register/init`,
+            { method: "PATCH" },
+          ).then(handleResponse);
+          const initData = await initRes.json();
+          const options = JSON.parse(initData.options);
+
+          // 2. Hardware
+          options.publicKey.challenge = b64ToBuf(options.publicKey.challenge);
+          options.publicKey.user.id = b64ToBuf(options.publicKey.user.id);
+
+          log("Touch your authenticator...");
+          const credential = await navigator.credentials.create({
+            publicKey: options.publicKey,
+          });
+
+          // 3. Complete
+          const payload = {
+            response: JSON.stringify({
+              id: credential.id,
+              rawId: bufToBase64url(credential.rawId),
+              type: credential.type,
+              response: {
+                attestationObject: bufToBase64url(
+                  credential.response.attestationObject,
+                ),
+                clientDataJSON: bufToBase64url(
+                  credential.response.clientDataJSON,
+                ),
+              },
+              clientExtensionResults: credential.getClientExtensionResults(),
+            }),
+          };
+
+          await fetch(`${API_BASE}/account/fido/register/complete`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          }).then(handleResponse);
+
+          log("Passkey Registered Successfully!", "success");
+        } catch (e) {
+          log(e.message, "error");
+        }
       }
 
       // --- 3. FIDO LOGIN ---
-      let loginIdCache = ""; // FIDO init response might give a loginId if needed by backend, though cookies usually handle it.
 
       async function initFidoLogin() {
-          log("Initializing FIDO Login...");
-          try {
-              // Usually backend relies on cookies for context now, but might need loginId in body if legacy.
-              // Based on AuthInitController: initFidoLogin uses @RequestAttribute from filter.
-              // It returns FidoInitResponseDTO which might contain options directly or inside.
-              const res = await fetch(`${API_BASE}/init/login/fido`, { method: 'POST' }).then(handleResponse);
-              const data = await res.json();
-              
-              // Store options for step 2
-              window.fidoLoginOptions = JSON.parse(data.options);
-              log("FIDO Login Initialized. LOGIN-FIDO-SESSION set.", "success");
-          } catch(e) { log(e.message, "error"); }
+        log("Initializing FIDO Login...");
+        try {
+          const res = await fetch(`${API_BASE}/init/login/fido`, {
+            method: "POST",
+          }).then(handleResponse);
+          const data = await res.json();
+
+          // Store options for step 2
+          window.fidoLoginOptions = JSON.parse(data.options);
+          log("FIDO Login Initialized. LOGIN-FIDO-SESSION set.", "success");
+        } catch (e) {
+          log(e.message, "error");
+        }
       }
 
       async function completeFidoLogin() {
-          if (!window.fidoLoginOptions) return log("Run Init Fido Login first!", "error");
-          
-          log("Touch your authenticator...");
-          try {
-              const options = window.fidoLoginOptions;
-              options.publicKey.challenge = b64ToBuf(options.publicKey.challenge);
-              options.publicKey.allowCredentials.forEach(c => c.id = b64ToBuf(c.id));
-              
-              const assertion = await navigator.credentials.get({ publicKey: options.publicKey });
-              
-              const payload = {
-                  response: JSON.stringify({
-                      id: assertion.id,
-                      rawId: bufToBase64url(assertion.rawId),
-                      type: assertion.type,
-                      response: {
-                          authenticatorData: bufToBase64url(assertion.response.authenticatorData),
-                          clientDataJSON: bufToBase64url(assertion.response.clientDataJSON),
-                          signature: bufToBase64url(assertion.response.signature),
-                          userHandle: assertion.response.userHandle ? bufToBase64url(assertion.response.userHandle) : null
-                      },
-                      clientExtensionResults: assertion.getClientExtensionResults()
-                  })
-                  // loginId not needed if cookies handle session? AuthInitController checks loginSession cookie.
-              };
-              
-              await fetch(`${API_BASE}/init/login/fido/complete`, {
-                  method: 'POST',
-                  headers: {'Content-Type': 'application/json'},
-                  body: JSON.stringify(payload)
-              }).then(handleResponse);
-              
-              log("FIDO Login Successful! SESSION cookie set.", "success");
-          } catch(e) { log(e.message, "error"); }
+        if (!window.fidoLoginOptions)
+          return log("Run Init Fido Login first!", "error");
+
+        log("Touch your authenticator...");
+        try {
+          const options = window.fidoLoginOptions;
+          options.publicKey.challenge = b64ToBuf(options.publicKey.challenge);
+          options.publicKey.allowCredentials.forEach(
+            (c) => (c.id = b64ToBuf(c.id)),
+          );
+
+          const assertion = await navigator.credentials.get({
+            publicKey: options.publicKey,
+          });
+
+          const payload = {
+            response: JSON.stringify({
+              id: assertion.id,
+              rawId: bufToBase64url(assertion.rawId),
+              type: assertion.type,
+              response: {
+                authenticatorData: bufToBase64url(
+                  assertion.response.authenticatorData,
+                ),
+                clientDataJSON: bufToBase64url(
+                  assertion.response.clientDataJSON,
+                ),
+                signature: bufToBase64url(assertion.response.signature),
+                userHandle: assertion.response.userHandle
+                  ? bufToBase64url(assertion.response.userHandle)
+                  : null,
+              },
+              clientExtensionResults: assertion.getClientExtensionResults(),
+            }),
+          };
+
+          await fetch(`${API_BASE}/init/login/fido/complete`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          }).then(handleResponse);
+
+          log("FIDO Login Successful! SESSION cookie set.", "success");
+        } catch (e) {
+          log(e.message, "error");
+        }
       }
 
       // --- 4. LOGOUT ---
       async function logout() {
-          log("Logging out...");
-          try {
-              await fetch(`${API_BASE}/account/logout`, { method: 'PATCH' }).then(handleResponse);
-              log("Logged out. Cookies cleared.", "success");
-          } catch(e) { log(e.message, "error"); }
+        log("Logging out...");
+        try {
+          await fetch(`${API_BASE}/account/logout`, { method: "PATCH" }).then(
+            handleResponse,
+          );
+          log("Logged out. Cookies cleared.", "success");
+        } catch (e) {
+          log(e.message, "error");
+        }
       }
 
       // --- 5. OAUTH CLIENTS ---
       async function createClient() {
-          const name = document.getElementById('clientName').value;
-          const uri = document.getElementById('redirectUri').value;
-          try {
-              const res = await fetch(`${API_BASE}/account/register-client`, {
-                  method: 'PUT',
-                  headers: {'Content-Type': 'application/json'},
-                  body: JSON.stringify({ clientName: name, redirectUri: uri })
-              }).then(handleResponse);
-              const data = await res.json();
-              log(`Client Created: ${data.clientId}`, "success");
-          } catch (e) { log(e.message, "error"); }
+        const name = document.getElementById("clientName").value;
+        const uri = document.getElementById("redirectUri").value;
+        try {
+          const res = await fetch(`${API_BASE}/account/register-client`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ clientName: name, redirectUri: uri }),
+          }).then(handleResponse);
+          const data = await res.json();
+          log(`Client Created: ${data.clientId}`, "success");
+        } catch (e) {
+          log(e.message, "error");
+        }
       }
-
-      async function listClients() {
-          // Note: Backend might not have a generic "list clients" endpoint in AccountController?
-          // I see 'User.clientIds' in login response, but no dedicated list endpoint in AccountController.
-          // I will assume for now we just log what we know or user can check DB.
-          // Actually, let's check AccountController again...
-          // There is NO list clients endpoint in AccountController!
-          // But there IS getClient in ClientController? Or maybe inside login response.
-          // For now, I'll just put a placeholder log.
-          log("List Clients: API endpoint not found in AccountController. Check Login Response for associated Client IDs.", "info");
-      }
-
     </script>
   </body>
 </html>

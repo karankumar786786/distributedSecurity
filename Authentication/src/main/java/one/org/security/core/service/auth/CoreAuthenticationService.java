@@ -112,7 +112,7 @@ public class CoreAuthenticationService {
         } else if (request.reason() != CheckUserExistRequestAvailableEnum.OTHER) {
             if (!user.isBackupEmailVerified() && !user.isPhoneNumberVerified()) {
                 data.put("accountLost", true);
-                return new CheckUserExistResponseDTO(true, data, initSession, "", "");
+                return new CheckUserExistResponseDTO(true, data, initSession,user.getId().toHexString(),user.getUsername());
             }
             data.put("backUpEmail", user.isBackupEmailVerified());
             data.put("phoneNumberVerified", user.isPhoneNumberVerified());
@@ -120,7 +120,7 @@ public class CoreAuthenticationService {
             data = null;
         }
         ;
-        return new CheckUserExistResponseDTO(true, data, initSession, "", "");
+        return new CheckUserExistResponseDTO(true, data, initSession, user.getId().toHexString(), user.getUsername());
     }
 
     public String initPasswordLogin(String username) {

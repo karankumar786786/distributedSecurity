@@ -44,7 +44,7 @@ public class AuthenticationController {
                 CheckUserExistResponseDTO checkUserExistResponse = authenticationService.checkUserExist(request, rawDeviceBind,
                                 ipAddress);
                 String cookieData = checkUserExistResponse.initSession().signature() + "|" + checkUserExistResponse.initSession().keyId() + "|" + request.reason() + "|"
-                                + checkUserExistResponse.userId()+checkUserExistResponse.username();
+                                + checkUserExistResponse.userId()+"|"+checkUserExistResponse.username();
                 ResponseCookie cookie = ResponseCookie.from("INIT-SESSION", cookieData)
                                 .httpOnly(true)
                                 .secure(false) // true only for https

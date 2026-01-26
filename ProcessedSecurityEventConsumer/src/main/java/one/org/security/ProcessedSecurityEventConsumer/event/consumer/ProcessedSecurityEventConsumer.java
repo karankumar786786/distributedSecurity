@@ -44,6 +44,7 @@ public class ProcessedSecurityEventConsumer {
         return SecurityEvent.builder()
                 .id(avro.getId() != null ? new ObjectId(String.valueOf(avro.getId())) : new ObjectId())
                 .user(new ObjectId(String.valueOf(avro.getUser())))
+                .deviceHashKeyId(String.valueOf(avro.getDeviceHashKeyId()))
                 .deviceHash(String.valueOf(avro.getDeviceHash()))
                 .ipAddress(String.valueOf(avro.getIpAddress()))
                 .event(Event.valueOf(String.valueOf(avro.getEvent())))

@@ -13,6 +13,10 @@
       "type": "string"
     },
     {
+      "name": "deviceHashKeyId",
+      "type": "string"
+    },
+    {
       "name": "deviceHash",
       "type": "string"
     },
