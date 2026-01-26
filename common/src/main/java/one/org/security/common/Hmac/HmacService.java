@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-
-
 @Service
 @lombok.extern.slf4j.Slf4j
 public class HmacService {

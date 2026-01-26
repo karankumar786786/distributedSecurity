@@ -78,7 +78,7 @@ public class CoreAuthenticationService {
         }
         ;
         HmacDTO initSession = hmacService
-                .encode(rawDeviceBind + request.reason() + user.getId().toHexString() + user.getUsername());
+                .encode(rawDeviceBind + request.reason().name() + user.getId().toHexString() + user.getUsername());
 
         if (user.getNumberOfInitaiatedOperations() > maxLoginAttempts) {
             if (user.getLockingTime() != null
@@ -112,7 +112,8 @@ public class CoreAuthenticationService {
         } else if (request.reason() != CheckUserExistRequestAvailableEnum.OTHER) {
             if (!user.isBackupEmailVerified() && !user.isPhoneNumberVerified()) {
                 data.put("accountLost", true);
-                return new CheckUserExistResponseDTO(true, data, initSession,user.getId().toHexString(),user.getUsername());
+                return new CheckUserExistResponseDTO(true, data, initSession, user.getId().toHexString(),
+                        user.getUsername());
             }
             data.put("backUpEmail", user.isBackupEmailVerified());
             data.put("phoneNumberVerified", user.isPhoneNumberVerified());

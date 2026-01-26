@@ -59,8 +59,9 @@ public class DeviceVerificationFilter extends OncePerRequestFilter {
         String userId = datas[3];
         String username = datas[4];
 
-        String verificationString = rawDeviceBind+ reason + userId + username;
-        if (!hmacService.verify(new HmacDTO(null, verificationString, hash, hashKeyId))) {
+        String verificationString = rawDeviceBind + reason + userId + username;
+
+        if (!hmacService.verify(new HmacDTO(null, verificationString, hashKeyId, hash))) {
             response.sendError(400, "invalid session data or device");
             return;
         }

@@ -18,6 +18,7 @@ import one.org.security.api.dto.request.RegisterRequestDTO;
 import one.org.security.api.dto.response.CheckUserExistClientResponseDTO;
 import one.org.security.api.dto.response.CheckUserExistResponseDTO;
 import one.org.security.core.service.auth.CoreAuthenticationService;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
@@ -29,8 +30,7 @@ public class AuthenticationController {
         public ResponseEntity<Void> register(
                         @Validated @RequestBody RegisterRequestDTO registerRequest,
                         @RequestAttribute(name = "IP-ADDRESS") String ipAddress,
-                        @RequestAttribute(name = "RAW-DEVICE-BIND") String rawDeviceBind
-                ) {
+                        @RequestAttribute(name = "RAW-DEVICE-BIND") String rawDeviceBind) {
                 authenticationService.register(registerRequest, rawDeviceBind, ipAddress);
                 return new ResponseEntity<>(HttpStatus.CREATED);
         }
@@ -39,12 +39,13 @@ public class AuthenticationController {
         public ResponseEntity<CheckUserExistClientResponseDTO> checkUserExist(
                         @Validated @RequestBody CheckUserExistRequestDTO request,
                         @RequestAttribute("IP-ADDRESS") String ipAddress,
-                        @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind
-                ) {
-                CheckUserExistResponseDTO checkUserExistResponse = authenticationService.checkUserExist(request, rawDeviceBind,
+                        @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
+                CheckUserExistResponseDTO checkUserExistResponse = authenticationService.checkUserExist(request,
+                                rawDeviceBind,
                                 ipAddress);
-                String cookieData = checkUserExistResponse.initSession().signature() + "|" + checkUserExistResponse.initSession().keyId() + "|" + request.reason() + "|"
-                                + checkUserExistResponse.userId()+"|"+checkUserExistResponse.username();
+                String cookieData = checkUserExistResponse.initSession().signature() + "|"
+                                + checkUserExistResponse.initSession().keyId() + "|" + request.reason().name() + "|"
+                                + checkUserExistResponse.userId() + "|" + checkUserExistResponse.username();
                 ResponseCookie cookie = ResponseCookie.from("INIT-SESSION", cookieData)
                                 .httpOnly(true)
                                 .secure(false) // true only for https
@@ -53,7 +54,8 @@ public class AuthenticationController {
                                 .sameSite("Lax")
                                 .maxAge(300L)
                                 .build();
-                        CheckUserExistClientResponseDTO response = new CheckUserExistClientResponseDTO(checkUserExistResponse.exist(), checkUserExistResponse.data());
+                CheckUserExistClientResponseDTO response = new CheckUserExistClientResponseDTO(
+                                checkUserExistResponse.exist(), checkUserExistResponse.data());
                 return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.SET_COOKIE, cookie.toString())
                                 .body(response);
         }

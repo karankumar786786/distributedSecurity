@@ -73,7 +73,7 @@ public class AuthInitController {
                 }
                 LoginSuccessResponseDTO loginResponse = authenticationService
                                 .completePasswordLogin(loginRequestDTO, username, ipAddress, rawDeviceBind);
-                String sessionData = loginResponse.getUserId() + loginResponse.getUsername() + loginResponse.getHash() + loginResponse.getHashKeyId();
+                String sessionData = loginResponse.getUserId() +"|"+ loginResponse.getUsername() +"|"+ loginResponse.getHash()+"|" + loginResponse.getHashKeyId();
 
                 ResponseCookie sessionCookie = ResponseCookie.from("SESSION", sessionData)
                                 .httpOnly(true)
@@ -155,7 +155,7 @@ public class AuthInitController {
                 LoginSuccessResponseDTO loginResponse = fidoService
                                 .finishLogin(ipAddress, rawDeviceBind, request, username);
 
-                String sessionData = loginResponse.getUserId()+loginResponse.getUsername()+loginResponse.getHash()+loginResponse.getHashKeyId();
+                String sessionData = loginResponse.getUserId()+"|"+loginResponse.getUsername()+"|"+loginResponse.getHash()+"|"+loginResponse.getHashKeyId();
 
                 ResponseCookie sessionCookie = ResponseCookie.from("SESSION", sessionData)
                                 .httpOnly(true)
