@@ -1,0 +1,52 @@
+# ### 1. Check User Exist (Get Temp Token)
+# POST http://localhost:10000/auth/check-user-exist
+# Content-Type: application/json
+
+# {
+#     "username": "user",
+#     "reason": "LOGIN"
+# }
+
+# > {%
+# client.global.set("temp_token", response.body.token);
+# %}
+
+# ### 2. Login (Password) to get Session Cookie
+# POST http://localhost:10000/auth/login/password
+# Content-Type: application/json
+# X-Temp-Token: {{temp_token}}
+
+# {
+#     "credential": "password",
+#     "loginId": "{{temp_token}}"
+# }
+
+# ### 3. Create OAuth2 Client (Requires Login Session)
+# # Skipping this step if you already have Client ID/Secret.
+# # If not, run this after running Request #2.
+# POST http://localhost:10000/api/clients
+# Content-Type: application/json
+# {
+#     "clientName": "Test App",
+#     "redirectUri": "https://oauth.pstmn.io/v1/callback"
+# }
+
+# ### 4. Authorize (Browser Step - Manual)
+# # ------------------------------------------------------------------
+# # Copy the URL below, REPLACE THE PLACEHOLDERS with your actual values,
+# # and paste it into your browser.
+# # 
+# # http://localhost:10000/oauth2/authorize?response_type=code&client_id=YOUR_CLIENT_ID&scope=openid profile read write&redirect_uri=YOUR_REDIRECT_URI
+# #
+# # 1. You will be asked to login (if not already).
+# # 2. You will be redirected to: YOUR_REDIRECT_URI?code=YOUR_AUTH_CODE
+# # 3. Copy the 'code' value from the URL bar.
+# # ------------------------------------------------------------------
+
+### 5. Exchange Code for Token
+# REPLACE placeholders below with your values
+POST http://localhost:10000/oauth2/token
+Content-Type: application/x-www-form-urlencoded
+Authorization: Basic ec0d2109-bcd3-45c1-a567-458e15f7b7c1 a4a754d9-6322-4531-87af-3fcbe4a12497
+
+grant_type=authorization_code&code=JWllaRHd-D3dHYGl6zmOqlmIyCV4-oqitoo8_0_Vb7sBUnSIa_l5RhFDRzqPXPl1LAzGUUzJONV5GdTSGQ8yHCYMU3pnl0udmp_n9n8lZSrzxGAydUd8REGwzF7YOR9P&redirect_uri=http://localhost:8080/callback

@@ -10,9 +10,7 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     static_configs:
       - targets:
-        - 'host.docker.internal:10000' # Authentication
         - 'host.docker.internal:10002' # Authorization
-        - 'host.docker.internal:8082'  # Resource
         - 'host.docker.internal:10087' # passwordEncoding (HTTP)
         - 'host.docker.internal:10008' # MailStreamProcessor
         - 'host.docker.internal:10010' # SmsStreamProcessor

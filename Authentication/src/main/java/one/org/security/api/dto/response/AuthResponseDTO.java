@@ -1,0 +1,6 @@
+package one.org.security.api.dto.response;
+
+public record AuthResponseDTO(
+        String message) {
+
+}
