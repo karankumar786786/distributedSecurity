@@ -158,7 +158,7 @@ public class AccountController {
             @RequestAttribute("IP-ADDRESS") String ipAddress,
             @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind
         ) {
-        fidoRegistrationService.finishRegistration(user.getUsername(), request.getResponse());
+        fidoRegistrationService.finishRegistration(user.getId().toHexString(), request.getResponse());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

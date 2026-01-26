@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
+import one.org.security.infrastructure.persistence.UserRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -39,6 +39,8 @@ import one.org.security.core.service.User.UserService;
 @Slf4j
 public class FidoRegistrationService {
 
+    private final UserRepository userRepository;
+
     private final UserService userService;
     private final RedisService redisService;
 
@@ -52,12 +54,13 @@ public class FidoRegistrationService {
             RedisService redisService,
             @Value("${fido.rp.id:localhost}") String rpId,
             @Value("${fido.rp.name:Security Service}") String rpName,
-            @Value("${fido.rp.origins:http://localhost:10000,http://localhost:3000,http://localhost:8080}") Set<String> origins) {
+            @Value("${fido.rp.origins:http://localhost:10000,http://localhost:3000,http://localhost:8080}") Set<String> origins, UserRepository userRepository) {
         this.userService = userService;
         this.redisService = redisService;
         this.rpId = rpId;
         this.rpName = rpName;
         this.origins = origins;
+        this.userRepository = userRepository;
     }
 
     @PostConstruct
@@ -102,9 +105,9 @@ public class FidoRegistrationService {
         return options.toCredentialsCreateJson();
     }
 
-    public void finishRegistration(String username, String responseJson) {
+    public void finishRegistration(String userId, String responseJson) {
         try {
-            String optionsJson = redisService.getValue("fido_reg:" + username);
+            String optionsJson = redisService.getValue("fido_reg:" + userId);
             if (optionsJson == null) {
                 throw new UnauthorizedOperationException("Registration session expired");
             }
@@ -119,7 +122,7 @@ public class FidoRegistrationService {
                             .response(pkc)
                             .build());
 
-            User user = userService.getUserById(new ObjectId(username));
+            User user = userService.getUserById(new ObjectId(userId));
             ByteArray userHandle = options.getUser().getId();
 
             FidoCredential credential = FidoCredential.builder()
@@ -134,7 +137,7 @@ public class FidoRegistrationService {
             user.setPasskeyEnabled(true);
             userService.saveUser(user);
 
-            redisService.deleteValue("fido_reg:" + username);
+            redisService.deleteValue("fido_reg:" + userId);
         } catch (RegistrationFailedException | java.io.IOException e) {
             throw new RuntimeException("Registration failed", e);
         }
