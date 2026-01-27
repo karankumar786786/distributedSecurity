@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Builder
 @Data
-public class StandardApiResponse {
+public class StandardErrorApiResponse {
     private int status;
     private String message;
     private List<String> details;

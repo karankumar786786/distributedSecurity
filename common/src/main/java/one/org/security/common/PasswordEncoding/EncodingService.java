@@ -1,4 +1,4 @@
-package one.org.security.core.service.PasswordEncoding;
+package one.org.security.common.PasswordEncoding;
 
 import org.springframework.stereotype.Service;
 import net.devh.boot.grpc.client.inject.GrpcClient;

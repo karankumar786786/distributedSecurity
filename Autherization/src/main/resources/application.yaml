@@ -1,3 +1,36 @@
 spring:
   application:
     name: Autherization
+
+oauth2:
+  keys:
+    key-id: "key-id"
+    private-key: |
+      -----BEGIN PRIVATE KEY-----
+      MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDEUtsI9oAT3td3
+      xqtLm/we0cQdnxmcFPwQ/gxAoPiPDHxuTx5rGf0G1G942O7u0zxaADvLXZPg4Mkx
+      cFv3llKcWQzc9giA5Om0zsRCM2esCppfAYAIxq9KgzzslXWLs0HaLJa+lx/F8daM
+      7KDNfxodWojpSiE66fVlqpQkr4Zh/YPgN3Zb5kIjDP2opbxOLx1Nvpg+PApzulWS
+      RIDfE3zA7B8Q4cplWtn9mW0k+iiXlVqqChCJpCvVW+xGPcbLOw46dO9Yqir+xpcj
+      2OrbwexnWPUgCNC1go2oLxOAyvbgY+LcQXSNxUCIPw3d3FadVIBgcrR9fOO/fEvg
+      WxqzbOmlAgMBAAECggEALysQBJaC3aNN5fFl0O/scnQoGAzUcJdrG2MKSxHRvj67
+      +53HO2i+TeCG2sRWHavDRYVmWF1GjQI83IO4GON1PCq6CDGVh/BXxTDjXttuZluS
+      zM41toYT8gVXgykCmZqrMPHDEw4InHyW9XtZxB2sRs6sc85zbu3sn21NFAZW9V4x
+      S/TC/9pF0QME30VxOcvlaOqZiHATQr8b9tOalbQTeCqds2EE4lPuhaG21DN01wMt
+      RiPfp8s7SmuSSllKiLPoWf19b1WqHowt8lXCshKoGzTEjOoUXWwoY8iIQidhQIE3
+      QUleD9zvTZxBP5/5nk/eY5qB5IWqS2uLUfizq7mEUQKBgQDwvrVresk8qnzlzS3e
+      WmI/wGy6OjOFsH7E0WvvJlUAA7tt5Kbf6mbpiz6WliAyfp8+FbNxjGLtxHYmJigX
+      9MnyVMyJm3EsjVvGX0yhHEiPu7iXTrKYENvJ0kpX2RuxVSVbFIDC7IdHclXiOl5O
+      HW795Z92D0wHewboffETM9AY8QKBgQDQw47hErzRZAwolRnceiIIDvjOB3Qy0stG
+      ED8h52UTYHrHjW9uIoKrcwN2WLTZ2FWKGk8ShsxeLYff2wBqNQm3lrnfT05wfvrg
+      dwhtogIZmECpW/UeJWWbzelygGgCPYJv9CC+GKS8O+CQX5C58l4kttg1+svWif1y
+      SPL8w9279QKBgQDrMrYVYikWTs2kyPamBBF2jSzsJ45Mbyj6aksTopRqZjsH2to5
+      akzOn84u2k5sZo523kaoiWnhNw3iqWaEOQ/O44/MZIOF7jiaLmK0B+jQG6r0j9sl
+      e1ru6rbc6mwGrNPJDtfZF7H2WDqVwUZ+9HyKKnrGoZ06tbQDEX+jrfwBUQKBgQC9
+      eeDCU1lgyudmJf206Hzex4f2pzlFr6CjVLeYNAa/EYAegjYyxcvHhLoNvfFXD0yD
+      7eD6tbHjgHukJ4c23jCVmo3VKovM+tMEy8SwjKxPQqrdjALre5G/WaKaNAUyk1VB
+      +1eEcaWC2u2022flvR7JP9L5G0nKzK9l/OPdmoAzyQKBgQCS1EuvMIFWoqKBEgXl
+      jPBmr3P2B1aqp/IitkQB+0ADAtHNm84iZ/opAojDJ00b3xPuSqJLmNuzPgENGYEf
+      y+b0/6ZsRDqXWnfQ3nVRCZITtQ+rFPJ6orTQSAZwi98PlUSRdXnrhK/NDvp51CUG
+      YRNaFNskYefJtCsc28hrk7/8xA==
+      -----END PRIVATE KEY-----

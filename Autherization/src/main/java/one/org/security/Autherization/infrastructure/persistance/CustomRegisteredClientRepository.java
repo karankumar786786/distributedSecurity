@@ -1,0 +1,65 @@
+package one.org.security.Autherization.infrastructure.persistance;
+
+import java.time.Duration;
+
+
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
+
+import one.org.security.Autherization.core.domain.entity.ClientEntity;
+import one.org.security.Autherization.core.service.Client.ClientService;
+
+@Component
+public class CustomRegisteredClientRepository implements RegisteredClientRepository {
+
+    @Autowired
+    private ClientService clientService;
+
+    @Override
+    public void save(RegisteredClient registeredClient) {
+        throw new UnsupportedOperationException("this method is not supported");
+    }
+
+    @Override
+    public RegisteredClient findById(String id) {
+        ClientEntity client = clientService.findById(new ObjectId(id));
+        return toRegisteredClient(client);
+    }
+
+    @Override
+    public RegisteredClient findByClientId(String clientId) {
+        ClientEntity client = clientService.findByClientId(clientId);
+        return toRegisteredClient(client);
+    }
+
+    private RegisteredClient toRegisteredClient(ClientEntity client) {
+        return RegisteredClient.withId(client.getId().toHexString())
+                .clientId(client.getClientId())
+                .clientSecret(client.getClientSecret())
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .redirectUri(client.getRedirectUrl())
+                .scope("read")
+                .clientSettings(ClientSettings.builder()
+                        .requireAuthorizationConsent(true)
+                        .requireProofKey(true)
+                        .build())
+                .tokenSettings(TokenSettings.builder()
+                        .authorizationCodeTimeToLive(Duration.ofMinutes(5))
+                        .accessTokenTimeToLive(Duration.ofMinutes(5))
+                        .idTokenSignatureAlgorithm(SignatureAlgorithm.ES256)
+                        .build())
+                .build();
+    }
+}

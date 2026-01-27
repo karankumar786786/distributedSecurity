@@ -9,12 +9,12 @@ import one.org.security.api.dto.request.ChangeBackupEmailRequestDTO;
 import one.org.security.api.dto.request.ChangePasswordRequestDTO;
 import one.org.security.api.dto.request.ChangePhoneNumberRequestDTO;
 import one.org.security.api.dto.request.VerifyOtpRequestDTO;
+import one.org.security.common.PasswordEncoding.EncodingService;
 import one.org.security.common.enums.Event;
 import one.org.security.core.domain.entity.SecurityEvent;
 import one.org.security.core.domain.entity.User;
 import one.org.security.core.service.otp.OtpService;
 import one.org.security.core.service.Cache.RedisService;
-import one.org.security.core.service.PasswordEncoding.EncodingService;
 import one.org.security.core.service.SecurityEvent.SecurityEventService;
 import one.org.security.core.service.User.UserService;
 
