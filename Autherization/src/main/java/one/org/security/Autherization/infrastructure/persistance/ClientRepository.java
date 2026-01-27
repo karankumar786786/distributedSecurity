@@ -12,4 +12,6 @@ import one.org.security.Autherization.core.domain.entity.ClientEntity;
 public interface ClientRepository extends MongoRepository<ClientEntity, ObjectId> {
     Optional<ClientEntity> findByClientId(String clientId);
 
+    java.util.List<ClientEntity> findByUserId(ObjectId userId);
+
 }
