@@ -1,8 +1,17 @@
 spring:
   application:
     name: Autherization
-
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  cache:
+    type: redis
+  mongodb:
+    uri: mongodb://admin:secret@localhost:27017/security?authSource=admin
 oauth2:
+  server:
+    issuer: karan
   keys:
     key-id: "key-id"
     private-key: |
@@ -34,3 +43,15 @@ oauth2:
       y+b0/6ZsRDqXWnfQ3nVRCZITtQ+rFPJ6orTQSAZwi98PlUSRdXnrhK/NDvp51CUG
       YRNaFNskYefJtCsc28hrk7/8xA==
       -----END PRIVATE KEY-----
+server:
+  port: 12000
+hmac:
+  oldkeyId: "hmac-key-2025-12"
+  newkeyId: "hmac-key-2026-01"
+  oldkey: "old-hmac-secret-key-old-hmac-secret-key"
+  newkey: "new-hmac-secret-key-new-hmac-secret-key"
+grpc:
+  client:
+    password-encoding-service:
+      address: "static://localhost:9000"
+      negotiation-type: plaintext

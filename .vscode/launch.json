@@ -30,7 +30,8 @@
             "mainClass": "one.org.security.SecurityEventStreamProcessor.SecurityEventStreamProcessorApplication",
             "projectName": "SecurityEventStreamProcessor",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=62486 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=SecurityEventStreamProcessor"
         },
         {
             "type": "java",
@@ -40,7 +41,8 @@
             "mainClass": "one.org.security.ProcessedSmsConsumer.ProcessedSmsConsumerApplication",
             "projectName": "ProcessedSmsConsumer",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=62465 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=ProcessedSmsConsumer"
         },
         {
             "type": "java",
@@ -50,7 +52,8 @@
             "mainClass": "one.org.security.ProcessedSecurityEventConsumer.ProcessedSecurityEventConsumerApplication",
             "projectName": "ProcessedSecurityEventConsumer",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=62461 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=ProcessedSecurityEventConsumer"
         },
         {
             "type": "java",
@@ -60,7 +63,8 @@
             "mainClass": "one.org.security.ProcessedMailConsumer.ProcessedMailConsumerApplication",
             "projectName": "ProcessedMailConsumer",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=62457 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=ProcessedMailConsumer"
         },
         {
             "type": "java",
@@ -70,7 +74,8 @@
             "mainClass": "one.org.security.MailStreamProcessor.MailStreamProcessorApplication",
             "projectName": "MailStreamProcessor",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=62437 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=MailStreamProcessor"
         },
         {
             "type": "java",
@@ -111,6 +116,16 @@
             "cwd": "${workspaceFolder}",
             "mainClass": "one.org.security.Client.ClientApplication",
             "projectName": "Client",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-AutherizationApplication<Autherization>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "one.org.security.Autherization.AutherizationApplication",
+            "projectName": "Autherization",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
         }

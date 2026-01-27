@@ -33,7 +33,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 @Configuration
 public class ServerConfig {
 
-    @Value("${oauth2:server:issuer}")
+    @Value("${oauth2.server.issuer}")
     private String issuer;
 
     @Bean

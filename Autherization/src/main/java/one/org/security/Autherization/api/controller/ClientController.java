@@ -41,7 +41,7 @@ public class ClientController {
     public ResponseEntity<CreateClientResponseDTO> createClient(
             @RequestBody @Validated CreateClientRequestDTO request,
             @AuthenticationPrincipal UserMockEntity user) {
-        String clientSecret = UUID.randomUUID().toString();
+        String clientSecret = UUID.randomUUID().toString().replaceAll("\\-", "");
         ClientEntity client = ClientEntity.builder()
                 .clientId(request.clientId())
                 .clientSecret(customEncodingService.encode(clientSecret))

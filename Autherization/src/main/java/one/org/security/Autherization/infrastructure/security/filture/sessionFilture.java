@@ -19,7 +19,7 @@ import one.org.security.Autherization.core.domain.entity.UserMockEntity;
 import one.org.security.common.Hmac.HmacDTO;
 import one.org.security.common.Hmac.HmacService;
 
-public class sessionFilture extends OncePerRequestFilter {
+public class SessionFilture extends OncePerRequestFilter {
 
     @Autowired
     private HmacService hmacService;
