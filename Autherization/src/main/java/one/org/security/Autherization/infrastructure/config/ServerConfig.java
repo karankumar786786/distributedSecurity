@@ -3,7 +3,6 @@ package one.org.security.Autherization.infrastructure.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
@@ -12,7 +11,6 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
 import org.springframework.security.core.Authentication;
 
 import one.org.security.Autherization.core.domain.entity.UserMockEntity;
-import one.org.security.Autherization.core.service.Encoding.CustomEncodingService;
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.interfaces.RSAPrivateKey;
@@ -35,11 +33,6 @@ public class ServerConfig {
 
     @Value("${oauth2.server.issuer}")
     private String issuer;
-
-    @Bean
-    public PasswordEncoder passwordEncoder(CustomEncodingService customEncodingService) {
-        return customEncodingService;
-    }
 
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {

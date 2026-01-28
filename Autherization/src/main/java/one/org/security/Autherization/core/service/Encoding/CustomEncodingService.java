@@ -13,6 +13,7 @@ public class CustomEncodingService implements PasswordEncoder {
 
     @Override
     public String encode(CharSequence rawPassword) {
+        System.out.println("CustomEncodingService: encode called for " + rawPassword);
         if (rawPassword == null) {
             return null;
         }
@@ -21,9 +22,13 @@ public class CustomEncodingService implements PasswordEncoder {
 
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
+        System.out.println(
+                "CustomEncodingService: matches called. Raw: " + rawPassword + ", Encoded: " + encodedPassword);
         if (rawPassword == null || encodedPassword == null) {
             return false;
         }
-        return encodingService.verify(rawPassword.toString(), encodedPassword);
+        boolean result = encodingService.verify(rawPassword.toString(), encodedPassword);
+        System.out.println("CustomEncodingService: matches result: " + result);
+        return result;
     }
 }

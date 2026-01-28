@@ -11,7 +11,7 @@ spring:
     uri: mongodb://admin:secret@localhost:27017/security?authSource=admin
 oauth2:
   server:
-    issuer: karan
+    issuer: http://localhost:12000
   keys:
     key-id: "key-id"
     private-key: |
