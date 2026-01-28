@@ -2,7 +2,6 @@ package one.org.security.Autherization.infrastructure.persistance;
 
 import java.time.Duration;
 
-
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,19 +35,34 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
 
     @Override
     public RegisteredClient findByClientId(String clientId) {
-        ClientEntity client = clientService.findByClientId(clientId);
-        return toRegisteredClient(client);
+        try {
+            ClientEntity client = clientService.findByClientId(clientId);
+            return toRegisteredClient(client);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private RegisteredClient toRegisteredClient(ClientEntity client) {
-        return RegisteredClient.withId(client.getId().toHexString())
+        RegisteredClient.Builder builder = RegisteredClient.withId(client.getId().toHexString())
                 .clientId(client.getClientId())
                 .clientSecret(client.getClientSecret())
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .redirectUri(client.getRedirectUrl())
+                // Add all supported scopes
+                .scope("openid")
                 .scope("read")
+                .scope("uid")
+                .scope("username");
+
+        // Conditionally add write scope based on your MongoDB entity
+        if (client.isWriteAllowed()) {
+            builder.scope("write");
+        }
+
+        return builder
                 .clientSettings(ClientSettings.builder()
                         .requireAuthorizationConsent(true)
                         .requireProofKey(true)

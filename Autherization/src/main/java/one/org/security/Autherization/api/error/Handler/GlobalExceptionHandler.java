@@ -87,6 +87,13 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.FORBIDDEN, "Access Denied", List.of(ex.getMessage()));
     }
 
+    @ExceptionHandler(NoSuchMethodError.class)
+    public ResponseEntity<StandardErrorApiResponse> handleNoSuchMethodError(NoSuchMethodError ex) {
+        ex.printStackTrace();
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, "Method Not Found Error: " + ex.getMessage(),
+                List.of(ex.toString()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<StandardErrorApiResponse> handleGenericException(Exception ex) {
         ex.printStackTrace(); // Log the error ideally

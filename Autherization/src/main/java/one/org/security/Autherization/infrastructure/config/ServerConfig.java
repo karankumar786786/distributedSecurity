@@ -1,32 +1,30 @@
 package one.org.security.Autherization.infrastructure.config;
 
+import com.nimbusds.jose.jwk.Curve;
+import com.nimbusds.jose.jwk.ECKey;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
+import one.org.security.Autherization.core.domain.entity.UserMockEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 
-import org.springframework.security.core.Authentication;
-
-import one.org.security.Autherization.core.domain.entity.UserMockEntity;
 import java.security.KeyFactory;
-import java.security.interfaces.RSAPrivateCrtKey;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.ECPublicKey;
+import java.security.spec.ECPoint;
+import java.security.spec.ECPublicKeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.RSAPublicKeySpec;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.math.BigInteger;
-
-import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.proc.SecurityContext;
 
 @Configuration
 public class ServerConfig {
@@ -36,7 +34,10 @@ public class ServerConfig {
 
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder().issuer(issuer).build();
+        return AuthorizationServerSettings.builder()
+                .issuer(issuer)
+                .jwkSetEndpoint("/oauth2/jwks") // Explicitly set this path
+                .build();
     }
 
     @Bean
@@ -44,7 +45,6 @@ public class ServerConfig {
         return context -> {
             if (OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType())) {
                 Authentication principal = context.getPrincipal();
-                // Principal is the UsernamePasswordAuthenticationToken you set in SessionFilter
                 if (principal.getPrincipal() instanceof UserMockEntity user) {
                     context.getClaims().claim("uid", user.getId().toString());
                     context.getClaims().claim("sub", user.getUsername());
@@ -54,58 +54,52 @@ public class ServerConfig {
     }
 
     @Bean
-    public JWKSource<SecurityContext> jwkSource(
-            KeyProperties keyProperties) {
+    public JWKSource<SecurityContext> jwkSource(KeyProperties keyProperties) {
         List<JWK> keys = new ArrayList<>();
-
         if (keyProperties.getPrivateKey() != null && keyProperties.getKeyId() != null) {
-            keys.add(parseKey(keyProperties.getPrivateKey(), keyProperties.getKeyId()));
+            keys.add(parseECKey(keyProperties.getPrivateKey(), keyProperties.getKeyId()));
         }
-
         JWKSet jwkSet = new JWKSet(keys);
         return (jwkSelector, securityContext) -> jwkSelector.select(jwkSet);
     }
 
-    private RSAKey parseKey(String keyContent, String keyId) {
+    private ECKey parseECKey(String keyContent, String keyId) {
         try {
-            // Remove header and footer and newlines
             String privateKeyPEM = keyContent
                     .replace("-----BEGIN PRIVATE KEY-----", "")
                     .replace("-----END PRIVATE KEY-----", "")
                     .replaceAll("\\s", "");
 
             byte[] encoded = Base64.getDecoder().decode(privateKeyPEM);
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            KeyFactory keyFactory = KeyFactory.getInstance("EC");
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(encoded);
-            RSAPrivateKey privateKey = (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
+            ECPrivateKey privateKey = (ECPrivateKey) keyFactory.generatePrivate(keySpec);
 
-            // We need the public key too for JWK.
-            // Since we only have private key in properties, we can derive public key from
-            // it?
-            // RSAPrivateKeyCrtSpec has pub exponent?
-            // Wait, usually we need both. But RSAPrivateKey (CRT) has modulus and public
-            // exponent.
+            // Derive Public Key from Private Key for the P-256 Curve
+            ECPublicKey publicKey = deriveECPublicKey(privateKey);
 
-            RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(privateKey.getModulus(), BigInteger.valueOf(65537)); // 65537
-                                                                                                                       // is
-                                                                                                                       // standard
-                                                                                                                       // public
-                                                                                                                       // exponent
-            // Better: cast to RSAPrivateCrtKey if possible to get public exponent
-            if (privateKey instanceof RSAPrivateCrtKey) {
-                RSAPrivateCrtKey crtKey = (RSAPrivateCrtKey) privateKey;
-                publicKeySpec = new RSAPublicKeySpec(crtKey.getModulus(), crtKey.getPublicExponent());
-            }
-
-            RSAPublicKey publicKey = (RSAPublicKey) keyFactory.generatePublic(publicKeySpec);
-
-            return new RSAKey.Builder(publicKey)
+            return new ECKey.Builder(Curve.P_256, publicKey)
                     .privateKey(privateKey)
                     .keyID(keyId)
                     .build();
         } catch (Exception e) {
-            throw new IllegalStateException("Failed to parse key with ID: " + keyId, e);
+            throw new IllegalStateException("Failed to parse EC key with ID: " + keyId, e);
         }
     }
 
+    // Logic to derive EC Public Key from Private Key using the Generator Point
+    private ECPublicKey deriveECPublicKey(ECPrivateKey privateKey) throws Exception {
+        KeyFactory keyFactory = KeyFactory.getInstance("EC");
+        java.security.spec.ECParameterSpec params = privateKey.getParams();
+
+        // Use the private key scalar 's' to find the public point 'W'
+        // W = s * G (where G is the generator point of the curve)
+        java.math.BigInteger s = privateKey.getS();
+        ECPoint w = org.bouncycastle.jcajce.provider.asymmetric.util.EC5Util.convertPoint(
+                new org.bouncycastle.math.ec.FixedPointCombMultiplier().multiply(
+                        org.bouncycastle.jcajce.provider.asymmetric.util.EC5Util.convertSpec(params).getG(),
+                        s));
+
+        return (ECPublicKey) keyFactory.generatePublic(new ECPublicKeySpec(w, params));
+    }
 }
