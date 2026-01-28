@@ -43,23 +43,30 @@ public class SecurityConfig {
                 .with(authorizationServerConfigurer, (authorizationServer) -> authorizationServer
                         .oidc(oidc -> oidc
                                 .providerConfigurationEndpoint(providerConfiguration -> providerConfiguration
-                                        .providerConfigurationCustomizer(config -> config.idTokenSigningAlgorithms(a -> {a.clear();a.add(SignatureAlgorithm.ES256.toString());})
-                                                .scopes(scopes -> {
-                                                    scopes.add("read");
-                                                    scopes.add("write");
-                                                    scopes.add("uid");
-                                                    scopes.add("username");
-                                                })))))
+                                        .providerConfigurationCustomizer(
+                                                config -> config.idTokenSigningAlgorithms(a -> {
+                                                    a.clear();
+                                                    a.add(SignatureAlgorithm.ES256.toString());
+                                                })
+                                                        .scopes(scopes -> {
+                                                            scopes.add("read");
+                                                            scopes.add("write");
+                                                            scopes.add("uid");
+                                                            scopes.add("username");
+                                                        })))))
                 .authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
                 .exceptionHandling(exceptions -> exceptions
                         .defaultAuthenticationEntryPointFor(
-                                new LoginUrlAuthenticationEntryPoint("/login"),
+                                new one.org.security.Autherization.infrastructure.security.LoggingAuthenticationEntryPoint(
+                                        "/login"),
                                 new MediaTypeRequestMatcher(MediaType.TEXT_HTML)))
                 // 3. IMPORTANT: Your filters must run here to provide the Principal during
                 // /authorize
-                .addFilterBefore(processDeviceFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(sessionFilture(), ProcessDeviceFilter.class);
-
+                // Using HeaderWriterFilter as anchor as it is standard in the chain
+                .addFilterAfter(processDeviceFilter(), org.springframework.security.web.header.HeaderWriterFilter.class)
+                .addFilterAfter(sessionFilture(), ProcessDeviceFilter.class)
+                .addFilterAfter(new one.org.security.Autherization.infrastructure.security.filture.DebugFilter(),
+                        SessionFilture.class);
         return http.build();
     }
 
@@ -68,9 +75,11 @@ public class SecurityConfig {
     public SecurityFilterChain standardSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .formLogin(org.springframework.security.config.Customizer.withDefaults()) // Enable default login page
                 // 4. Ensure endpoints handled by Order 1 are ignored here
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/login").permitAll() // Explicitly permit login
                         .anyRequest().authenticated())
                 .addFilterBefore(processDeviceFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(sessionFilture(), ProcessDeviceFilter.class);

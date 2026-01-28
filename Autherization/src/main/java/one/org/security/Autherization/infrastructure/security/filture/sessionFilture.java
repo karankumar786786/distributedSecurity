@@ -27,13 +27,18 @@ public class SessionFilture extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-                 try {
+        try {
             String rawDeviceBind = (String) request.getAttribute("RAW-DEVICE-BIND");
             Cookie[] cookies = request.getCookies();
+            System.out.println("DEBUG: SessionFilter - Cookies found: " + (cookies != null ? cookies.length : 0));
+
+            // Non-blocking checks: if any check fails, proceed without setting
+            // authentication
             if (cookies == null) {
-                response.sendError(400, "invalid device session - no cookies");
+                filterChain.doFilter(request, response);
                 return;
             }
+
             String sessionData = null;
             for (Cookie c : cookies) {
                 if ("SESSION".equals(c.getName())) {
@@ -42,26 +47,44 @@ public class SessionFilture extends OncePerRequestFilter {
             }
 
             if (sessionData == null) {
-                response.sendError(400, "invalid session - no SESSION cookie");
+                filterChain.doFilter(request, response);
                 return;
             }
 
             String[] data = sessionData.split("\\|");
             if (data.length < 4) {
-                response.sendError(400, "invalid session - malformed data");
+                filterChain.doFilter(request, response);
                 return;
             }
+
             String userId = data[0];
             String username = data[1];
             String hashedSessionBind = data[2];
             String hashedSessionBindKeyId = data[3];
-            String rawSessionBind = rawDeviceBind+userId+username;
-            boolean verifyDevice = hmacService.verify(new HmacDTO(null, rawSessionBind, hashedSessionBindKeyId, hashedSessionBind));
-            if (!verifyDevice) {
-                response.sendError(400, "invalid device session - hmac failed");
+
+            // If device bind is missing (e.g. from ProcessDeviceFilter check failure or
+            // skip), continue anonymous
+            if (rawDeviceBind == null) {
+                System.out.println("DEBUG: SessionFilter - WAITING for RAW-DEVICE-BIND. Proceeding anonymous.");
+                filterChain.doFilter(request, response);
                 return;
             }
 
+            String rawSessionBind = rawDeviceBind + userId + username;
+            boolean verifyDevice = hmacService
+                    .verify(new HmacDTO(null, rawSessionBind, hashedSessionBindKeyId, hashedSessionBind));
+
+            if (!verifyDevice) {
+                System.out.println("DEBUG: SessionFilter - HMAC Verification Failed for user: " + username);
+                // If verification fails explicitly, we might want to log it and continue
+                // anonymous
+                // or return 400. For now, continuing anonymous is safer for the auth flow,
+                // preventing hard blocks on potential edge cases, but strict security might
+                // require 401.
+                // Given the issue, let's treat it as invalid session -> anonymous.
+                filterChain.doFilter(request, response);
+                return;
+            }
 
             UserMockEntity user = UserMockEntity.builder()
                     .id(new ObjectId(userId))
@@ -72,6 +95,11 @@ public class SessionFilture extends OncePerRequestFilter {
                     user, null, user.getAuthorities());
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            System.out.println("DEBUG: SessionFilter - Authentication set for user: " + username + " on URI: "
+                    + request.getRequestURI());
+            System.out.println("DEBUG: Authentication.isAuthenticated() = " + authentication.isAuthenticated());
+
+            // Refresh cookie
             ResponseCookie sessionCookie = ResponseCookie.from("SESSION", sessionData).httpOnly(true)
                     .secure(false)
                     .path("/")
@@ -79,11 +107,14 @@ public class SessionFilture extends OncePerRequestFilter {
                     .maxAge(60 * 60 * 24) // 1 day
                     .build();
             response.addHeader(HttpHeaders.SET_COOKIE, sessionCookie.toString());
+
             filterChain.doFilter(request, response);
         } catch (Exception e) {
             logger.error("Error in SessionFilter", e);
-            response.sendError(500, "Internal Server Error in SessionFilter: " + e.getMessage());
+            // In case of error, proceed to next filter to avoid blocking valid error
+            // handling or other flows
+            filterChain.doFilter(request, response);
         }
     }
-    
+
 }

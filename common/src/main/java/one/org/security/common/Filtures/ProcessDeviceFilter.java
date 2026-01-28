@@ -19,28 +19,30 @@ public class ProcessDeviceFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         System.out.println("Processing Device Filter: " + request.getRequestURI());
+
         String rawDeviceData = rawDeviceDataUtil.getRawDeviceHash(request);
+
         if (rawDeviceData == null || !rawDeviceData.contains("|")) {
             response.sendError(400, "Device data header missing");
             return;
         }
+
         String[] parts = rawDeviceData.split("\\|");
         if (parts.length < 4) {
             response.sendError(400, "Device data malformed");
             return;
         }
-        ;
+
         String ipAddress = parts[1];
         String deviceBind = parts[3];
+
         if ("unknown".equals(deviceBind)) {
             response.sendError(400, "Device identification failed");
             return;
         }
-        ;
+
         request.setAttribute("IP-ADDRESS", ipAddress);
         request.setAttribute("RAW-DEVICE-BIND", deviceBind);
         filterChain.doFilter(request, response);
     }
-
-    
 }

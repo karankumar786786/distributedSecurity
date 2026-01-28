@@ -45,9 +45,15 @@ public class ServerConfig {
         return context -> {
             if (OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType())) {
                 Authentication principal = context.getPrincipal();
-                if (principal.getPrincipal() instanceof UserMockEntity user) {
+                Object principalObj = principal.getPrincipal();
+
+                if (principalObj instanceof UserMockEntity user) {
                     context.getClaims().claim("uid", user.getId().toString());
                     context.getClaims().claim("sub", user.getUsername());
+                } else if (principalObj instanceof org.springframework.security.core.userdetails.UserDetails userDetails) {
+                    context.getClaims().claim("sub", userDetails.getUsername());
+                } else {
+                    context.getClaims().claim("sub", principal.getName());
                 }
             }
         };

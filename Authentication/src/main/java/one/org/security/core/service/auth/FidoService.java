@@ -94,12 +94,15 @@ public class FidoService {
             throw new IllegalArgumentException("User not found");
         }
 
-        // Check locking
         if (user.getNumberOfInitaiatedOperations() > maxLoginAttempts) {
             if (user.getLockingTime() != null
                     && user.getLockingTime().plusHours(lockoutDurationHours).isAfter(LocalDateTime.now())) {
                 throw new AccountBlockedException("blocked");
             }
+        }
+
+        if (!user.isPasskeyEnabled()) {
+            throw new IllegalArgumentException("Passkey is not enabled for this account");
         }
 
         AssertionRequest request = relyingParty.startAssertion(
@@ -202,9 +205,14 @@ public class FidoService {
         @Override
         public Optional<ByteArray> getUserHandleForUsername(String username) {
             User user = userService.getUserByUsername(username);
-            if (user == null || user.getFidoCredential() == null)
+            if (user == null || user.getFidoCredential() == null) {
+                System.out.println("DEBUG: User not found or no creds for: " + username);
                 return Optional.empty();
-            return Optional.of(user.getFidoCredential().getUserHandle());
+            }
+            ByteArray handle = user.getFidoCredential().getUserHandle();
+            System.out.println(
+                    "DEBUG: DB User Handle for " + username + ": " + (handle != null ? handle.getBase64() : "null"));
+            return Optional.ofNullable(handle);
         }
 
         @Override
