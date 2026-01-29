@@ -4,19 +4,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.security.jackson2.SecurityJackson2Modules;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
-import org.springframework.security.oauth2.core.OAuth2RefreshToken;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
-import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
-import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationCode;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
-import org.springframework.security.oauth2.server.authorization.jackson2.OAuth2AuthorizationServerJackson2Module;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import one.org.security.Autherization.core.domain.entity.AuthorizationEntity;
 import one.org.security.Autherization.core.domain.entity.ClientEntity;
 
 @Service
@@ -24,21 +16,7 @@ public class RedisService {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     public RedisService() {
-        ClassLoader classLoader = RedisService.class.getClassLoader();
-        java.util.List<Module> securityModules = SecurityJackson2Modules.getModules(classLoader);
-        this.objectMapper.registerModules(securityModules);
-        this.objectMapper.registerModule(new OAuth2AuthorizationServerJackson2Module());
-
-        // This is required to allow deserialization of the OAuth2Authorization class
-        // which triggers the whitelist check.
-        this.objectMapper.addMixIn(OAuth2Authorization.class, OAuth2AuthorizationMixin.class);
-    }
-
-    @com.fasterxml.jackson.annotation.JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.CLASS)
-    public abstract static class OAuth2AuthorizationMixin {
     }
 
     public boolean saveClient(ClientEntity client) {
@@ -92,98 +70,125 @@ public class RedisService {
         }
     }
 
-    public void saveAuthorization(OAuth2Authorization authorization) {
+    public void saveAuthorizationEntity(AuthorizationEntity entity) {
         try {
-            System.out.println("DEBUG: RedisService.saveAuthorization called for id: " + authorization.getId());
-            String id = authorization.getId();
-            String value = objectMapper.writeValueAsString(authorization);
+            System.out.println("DEBUG: RedisService.saveAuthorizationEntity called for id: " + entity.getId());
+
+            // Strategy: Serialize the entire AuthorizationEntity to a Base64 string.
+            // This satisfies the "store as string" requirement and safely handles all
+            // nested complex types
+            // (like OAuth2AuthorizationRequest in attributes) without JSON deserialization
+            // issues.
+            String value = serializeObject(entity);
+            String id = entity.getId();
+
             stringRedisTemplate.opsForValue().set("auth:id:" + id, value, 10, TimeUnit.MINUTES);
-            System.out.println("DEBUG: Saved auth to redis with key: auth:id:" + id);
+            System.out.println("DEBUG: Saved auth entity to redis as BASE64 STRING. Key: auth:id:" + id);
 
-            if (authorization.getToken(OAuth2AuthorizationCode.class) != null) {
-                OAuth2Authorization.Token<OAuth2AuthorizationCode> token = authorization
-                        .getToken(OAuth2AuthorizationCode.class);
-                stringRedisTemplate.opsForValue().set("auth:code:" + token.getToken().getTokenValue(), id, 10,
+            // Same for indices - they just point to the ID
+            if (entity.getAuthorizationCode() != null) {
+                stringRedisTemplate.opsForValue().set("auth:code:" + entity.getAuthorizationCode().getTokenValue(), id,
+                        10,
                         TimeUnit.MINUTES);
-                System.out.println(
-                        "DEBUG: Saved auth code mapping: auth:code:" + token.getToken().getTokenValue() + " -> " + id);
+                System.out.println("DEBUG: Saved auth code mapping: auth:code:"
+                        + entity.getAuthorizationCode().getTokenValue() + " -> " + id);
             }
 
-            if (authorization.getRefreshToken() != null) {
-                OAuth2RefreshToken token = authorization.getRefreshToken().getToken();
-                stringRedisTemplate.opsForValue().set("auth:refresh_token:" + token.getTokenValue(), id, 10,
+            if (entity.getRefreshToken() != null) {
+                stringRedisTemplate.opsForValue().set("auth:refresh_token:" + entity.getRefreshToken().getTokenValue(),
+                        id, 10,
                         TimeUnit.MINUTES);
-                System.out.println("DEBUG: Saved refresh token mapping: auth:refresh_token:" + token.getTokenValue()
-                        + " -> " + id);
+                System.out.println("DEBUG: Saved refresh token mapping: auth:refresh_token:"
+                        + entity.getRefreshToken().getTokenValue() + " -> " + id);
             }
 
-            if (authorization.getAccessToken() != null) {
-                OAuth2AccessToken token = authorization.getAccessToken().getToken();
-                stringRedisTemplate.opsForValue().set("auth:access_token:" + token.getTokenValue(), id, 10,
+            if (entity.getAccessToken() != null) {
+                stringRedisTemplate.opsForValue().set("auth:access_token:" + entity.getAccessToken().getTokenValue(),
+                        id, 10,
                         TimeUnit.MINUTES);
-                System.out.println(
-                        "DEBUG: Saved access token mapping: auth:access_token:" + token.getTokenValue() + " -> " + id);
+                System.out.println("DEBUG: Saved access token mapping: auth:access_token:"
+                        + entity.getAccessToken().getTokenValue() + " -> " + id);
             }
 
-            String state = authorization.getAttribute(OAuth2ParameterNames.STATE);
+            String state = entity.getState();
             if (state != null) {
                 stringRedisTemplate.opsForValue().set("auth:state:" + state, id, 10, TimeUnit.MINUTES);
                 System.out.println("DEBUG: Saved state mapping: auth:state:" + state + " -> " + id);
             }
 
         } catch (Exception e) {
-            System.out.println("ERROR: RedisService.saveAuthorization failed: " + e.getMessage());
+            System.out.println("ERROR: RedisService.saveAuthorizationEntity failed: " + e.getMessage());
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
-    public void removeAuthorization(OAuth2Authorization authorization) {
-        System.out.println("DEBUG: RedisService.removeAuthorization called for id: " + authorization.getId());
-        String id = authorization.getId();
+    public void removeAuthorization(String id) {
+        System.out.println("DEBUG: RedisService.removeAuthorization called for id: " + id);
+        AuthorizationEntity entity = findAuthorizationEntityById(id);
+        if (entity == null)
+            return;
+
         stringRedisTemplate.delete("auth:id:" + id);
 
-        if (authorization.getToken(OAuth2AuthorizationCode.class) != null) {
-            OAuth2Authorization.Token<OAuth2AuthorizationCode> token = authorization
-                    .getToken(OAuth2AuthorizationCode.class);
-            stringRedisTemplate.delete("auth:code:" + token.getToken().getTokenValue());
+        if (entity.getAuthorizationCode() != null) {
+            stringRedisTemplate.delete("auth:code:" + entity.getAuthorizationCode().getTokenValue());
         }
 
-        if (authorization.getRefreshToken() != null) {
-            OAuth2RefreshToken token = authorization.getRefreshToken().getToken();
-            stringRedisTemplate.delete("auth:refresh_token:" + token.getTokenValue());
+        if (entity.getRefreshToken() != null) {
+            stringRedisTemplate.delete("auth:refresh_token:" + entity.getRefreshToken().getTokenValue());
         }
 
-        if (authorization.getAccessToken() != null) {
-            OAuth2AccessToken token = authorization.getAccessToken().getToken();
-            stringRedisTemplate.delete("auth:access_token:" + token.getTokenValue());
+        if (entity.getAccessToken() != null) {
+            stringRedisTemplate.delete("auth:access_token:" + entity.getAccessToken().getTokenValue());
         }
 
-        String state = authorization.getAttribute(OAuth2ParameterNames.STATE);
-        if (state != null) {
-            stringRedisTemplate.delete("auth:state:" + state);
+        if (entity.getState() != null) {
+            stringRedisTemplate.delete("auth:state:" + entity.getState());
         }
     }
 
-    public OAuth2Authorization findById(String id) {
+    // Helper to serialize any object to Base64 String
+    private String serializeObject(java.io.Serializable obj) throws java.io.IOException {
+        if (obj == null)
+            return null;
+        try (java.io.ByteArrayOutputStream sh = new java.io.ByteArrayOutputStream();
+                java.io.ObjectOutputStream os = new java.io.ObjectOutputStream(sh)) {
+            os.writeObject(obj);
+            return java.util.Base64.getEncoder().encodeToString(sh.toByteArray());
+        }
+    }
+
+    // Helper to deserialize Base64 String back to Object
+    private Object deserializeObject(String str) throws java.io.IOException, ClassNotFoundException {
+        if (str == null)
+            return null;
+        byte[] data = java.util.Base64.getDecoder().decode(str);
+        try (java.io.ByteArrayInputStream sh = new java.io.ByteArrayInputStream(data);
+                java.io.ObjectInputStream is = new java.io.ObjectInputStream(sh)) {
+            return is.readObject();
+        }
+    }
+
+    public AuthorizationEntity findAuthorizationEntityById(String id) {
         try {
-            System.out.println("DEBUG: RedisService.findById called for id: " + id);
+            System.out.println("DEBUG: RedisService.findAuthorizationEntityById called for id: " + id);
             String value = stringRedisTemplate.opsForValue().get("auth:id:" + id);
             if (value != null) {
-                System.out.println("DEBUG: Found authorization for id: " + id);
-                return objectMapper.readValue(value, OAuth2Authorization.class);
+                System.out.println("DEBUG: Found base64 string for id: " + id);
+                return (AuthorizationEntity) deserializeObject(value);
             } else {
-                System.out.println("DEBUG: Authorization NOT found for id: " + id);
+                System.out.println("DEBUG: Authorization entity NOT found for id: " + id);
             }
         } catch (Exception e) {
-            System.out.println("ERROR: RedisService.findById failed: " + e.getMessage());
+            System.out.println("ERROR: RedisService.findAuthorizationEntityById failed: " + e.getMessage());
             e.printStackTrace();
         }
         return null;
     }
 
-    public OAuth2Authorization findByToken(String token, OAuth2TokenType tokenType) {
-        System.out.println("DEBUG: RedisService.findByToken called. TokenType: "
+    public AuthorizationEntity findAuthorizationEntityByToken(String token, OAuth2TokenType tokenType) {
+        System.out.println("DEBUG: RedisService.findAuthorizationEntityByToken called. TokenType: "
                 + (tokenType != null ? tokenType.getValue() : "null") + ", Token: " + token);
         if (tokenType == null) {
             return null;
@@ -202,7 +207,7 @@ public class RedisService {
         System.out.println("DEBUG: Resolved ID from token/state: " + id);
 
         if (id != null) {
-            return findById(id);
+            return findAuthorizationEntityById(id);
         }
         return null;
     }
