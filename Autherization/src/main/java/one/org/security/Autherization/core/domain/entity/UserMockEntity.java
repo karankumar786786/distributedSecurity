@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Data
 @AllArgsConstructor
 public class UserMockEntity implements UserDetails {
+    private static final long serialVersionUID = 1L;
     private ObjectId id;
     private String username;
     private String password; // Added to satisfy UserDetails

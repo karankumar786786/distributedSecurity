@@ -13,7 +13,14 @@ public class RawDeviceDataUtil {
         } else {
             ip = ip.split(",")[0].trim();
         }
-        String ua = request.getHeader("User-Agent");
+        String ua = request.getHeader("X-Device-User-Agent");
+        if (ua == null || ua.isEmpty()) {
+            ua = request.getHeader("User-Agent");
+            System.out.println("DEBUG: RawDeviceDataUtil - Using User-Agent header: " + ua);
+        } else {
+            System.out.println("DEBUG: RawDeviceDataUtil - Using X-Device-User-Agent header: " + ua);
+        }
+
         if (ua == null)
             ua = "unknown";
         ua = ua.replaceAll("[\\r\\n]", "").replaceAll("\\s+", " ").trim();

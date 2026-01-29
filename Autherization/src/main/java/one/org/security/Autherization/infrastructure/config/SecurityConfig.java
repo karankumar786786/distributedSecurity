@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.configurers.oauth2.ser
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
@@ -22,68 +21,78 @@ import one.org.security.common.Filtures.ProcessDeviceFilter;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Bean
-    public SessionFilture sessionFilture() {
-        return new SessionFilture();
-    }
+        @Bean
+        public SessionFilture sessionFilture() {
+                return new SessionFilture();
+        }
 
-    @Bean
-    public ProcessDeviceFilter processDeviceFilter() {
-        return new ProcessDeviceFilter();
-    }
+        @Bean
+        public ProcessDeviceFilter processDeviceFilter() {
+                return new ProcessDeviceFilter();
+        }
 
-    @Bean
-    @Order(1)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
-        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
+        @Bean
+        @Order(1)
+        public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+                OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
 
-        http
-                // 1. Explicitly capture ALL OIDC and OAuth2 paths
-                .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
-                .with(authorizationServerConfigurer, (authorizationServer) -> authorizationServer
-                        .oidc(oidc -> oidc
-                                .providerConfigurationEndpoint(providerConfiguration -> providerConfiguration
-                                        .providerConfigurationCustomizer(
-                                                config -> config.idTokenSigningAlgorithms(a -> {
-                                                    a.clear();
-                                                    a.add(SignatureAlgorithm.ES256.toString());
-                                                })
-                                                        .scopes(scopes -> {
-                                                            scopes.add("read");
-                                                            scopes.add("write");
-                                                            scopes.add("uid");
-                                                            scopes.add("username");
-                                                        })))))
-                .authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
-                .exceptionHandling(exceptions -> exceptions
-                        .defaultAuthenticationEntryPointFor(
-                                new one.org.security.Autherization.infrastructure.security.LoggingAuthenticationEntryPoint(
-                                        "/login"),
-                                new MediaTypeRequestMatcher(MediaType.TEXT_HTML)))
-                // 3. IMPORTANT: Your filters must run here to provide the Principal during
-                // /authorize
-                // Using HeaderWriterFilter as anchor as it is standard in the chain
-                .addFilterAfter(processDeviceFilter(), org.springframework.security.web.header.HeaderWriterFilter.class)
-                .addFilterAfter(sessionFilture(), ProcessDeviceFilter.class)
-                .addFilterAfter(new one.org.security.Autherization.infrastructure.security.filture.DebugFilter(),
-                        SessionFilture.class);
-        return http.build();
-    }
+                http
+                                .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+                                .requestCache(cache -> cache.disable())
+                                .csrf(csrf -> csrf.ignoringRequestMatchers(
+                                                authorizationServerConfigurer.getEndpointsMatcher()))
+                                .with(authorizationServerConfigurer, (authorizationServer) -> authorizationServer
+                                                .oidc(oidc -> oidc
+                                                                .providerConfigurationEndpoint(
+                                                                                providerConfiguration -> providerConfiguration
+                                                                                                .providerConfigurationCustomizer(
+                                                                                                                config -> config.idTokenSigningAlgorithms(
+                                                                                                                                a -> {
+                                                                                                                                        a.clear();
+                                                                                                                                        a.add(SignatureAlgorithm.ES256
+                                                                                                                                                        .toString());
+                                                                                                                                })
+                                                                                                                                .scopes(scopes -> {
+                                                                                                                                        scopes.add("read");
+                                                                                                                                        scopes.add("write");
+                                                                                                                                        scopes.add("uid");
+                                                                                                                                        scopes.add("username");
+                                                                                                                                })))))
+                                .authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
+                                .exceptionHandling(exceptions -> exceptions
+                                                .defaultAuthenticationEntryPointFor(
+                                                                new one.org.security.Autherization.infrastructure.security.LoggingAuthenticationEntryPoint(
+                                                                                "/login"),
+                                                                new MediaTypeRequestMatcher(MediaType.TEXT_HTML)))
+                                // 3. IMPORTANT: Your filters must run here to provide the Principal during
+                                // /authorize
+                                // Using HeaderWriterFilter as anchor as it is standard in the chain
+                                .addFilterAfter(processDeviceFilter(),
+                                                org.springframework.security.web.header.HeaderWriterFilter.class)
+                                .addFilterAfter(sessionFilture(), ProcessDeviceFilter.class)
+                                .addFilterAfter(new one.org.security.Autherization.infrastructure.security.filture.DebugFilter(),
+                                                SessionFilture.class);
+                return http.build();
+        }
 
-    @Bean
-    @Order(2)
-    public SecurityFilterChain standardSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .formLogin(org.springframework.security.config.Customizer.withDefaults()) // Enable default login page
-                // 4. Ensure endpoints handled by Order 1 are ignored here
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login").permitAll() // Explicitly permit login
-                        .anyRequest().authenticated())
-                .addFilterBefore(processDeviceFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(sessionFilture(), ProcessDeviceFilter.class);
+        @Bean
+        @Order(2)
+        public SecurityFilterChain standardSecurityFilterChain(HttpSecurity http) throws Exception {
+                http
+                                .csrf(csrf -> csrf.disable())
+                                .formLogin(org.springframework.security.config.Customizer.withDefaults()) // Enable
+                                                                                                          // default
+                                                                                                          // login page
+                                // 4. Ensure endpoints handled by Order 1 are ignored here
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .authorizeHttpRequests(authorize -> authorize
+                                                .requestMatchers("/login").permitAll() // Explicitly permit login
+                                                .requestMatchers("/error").permitAll()
+                                                .anyRequest().authenticated())
+                                .addFilterBefore(processDeviceFilter(), UsernamePasswordAuthenticationFilter.class)
+                                .addFilterAfter(sessionFilture(), ProcessDeviceFilter.class);
 
-        return http.build();
-    }
+                return http.build();
+        }
 }

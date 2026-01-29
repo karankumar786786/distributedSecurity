@@ -21,22 +21,27 @@ public class ProcessDeviceFilter extends OncePerRequestFilter {
         System.out.println("Processing Device Filter: " + request.getRequestURI());
 
         String rawDeviceData = rawDeviceDataUtil.getRawDeviceHash(request);
+        System.out.println("DEBUG: ProcessDeviceFilter - RawDeviceData: " + rawDeviceData);
 
         if (rawDeviceData == null || !rawDeviceData.contains("|")) {
+            System.out.println("DEBUG: ProcessDeviceFilter - rawDeviceData missing or invalid format");
             response.sendError(400, "Device data header missing");
             return;
         }
 
         String[] parts = rawDeviceData.split("\\|");
         if (parts.length < 4) {
+            System.out.println("DEBUG: ProcessDeviceFilter - parts length < 4: " + parts.length);
             response.sendError(400, "Device data malformed");
             return;
         }
 
         String ipAddress = parts[1];
         String deviceBind = parts[3];
+        System.out.println("DEBUG: ProcessDeviceFilter - Extracted IP: " + ipAddress + ", UA: " + deviceBind);
 
         if ("unknown".equals(deviceBind)) {
+            System.out.println("DEBUG: ProcessDeviceFilter - UA is unknown");
             response.sendError(400, "Device identification failed");
             return;
         }

@@ -36,9 +36,16 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
     @Override
     public RegisteredClient findByClientId(String clientId) {
         try {
+            System.out.println("DEBUG: Looking up client: " + clientId);
             ClientEntity client = clientService.findByClientId(clientId);
+            if (client == null) {
+                System.out.println("DEBUG: Client NOT FOUND: " + clientId);
+                return null;
+            }
+            System.out.println("DEBUG: Found client: " + clientId + ", RedirectURL: " + client.getRedirectUrl());
             return toRegisteredClient(client);
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }

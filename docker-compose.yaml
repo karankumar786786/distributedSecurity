@@ -24,6 +24,7 @@ services:
       - --rpc-addr redpanda:33145
       - --advertise-rpc-addr redpanda:33145
       - --mode dev-container
+    restart: always
     ports:
       - "8080:8080"
       - "19092:19092"
@@ -37,6 +38,7 @@ services:
       - "8001:8001"
     environment:
       REDIS_ARGS: "--appendonly yes"
+    restart: always
     volumes:
       - redis_data:/data
 
@@ -52,6 +54,7 @@ services:
       --rpc-address 0.0.0.0
       --broadcast-rpc-address 127.0.0.1
       --enable-cache 0
+    restart: always
     ports:
       - "9042:9042"
       - "9180:9180"
@@ -69,6 +72,7 @@ services:
       KAFKA_SCHEMAREGISTRY_URLS: http://redpanda:8081
       REDPANDA_ADMINAPI_ENABLED: "true"
       REDPANDA_ADMINAPI_URLS: http://redpanda:9644
+    restart: always
     depends_on:
       - redpanda
   mongo:

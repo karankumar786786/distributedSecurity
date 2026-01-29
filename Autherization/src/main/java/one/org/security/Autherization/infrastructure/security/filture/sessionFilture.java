@@ -83,7 +83,7 @@ public class SessionFilture extends OncePerRequestFilter {
                 // require 401.
                 // Given the issue, let's treat it as invalid session -> anonymous.
                 filterChain.doFilter(request, response);
-                return;
+                 return;
             }
 
             UserMockEntity user = UserMockEntity.builder()
