@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Consent Required</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+      }
+      .container {
+        max-width: 500px;
+        margin: 0 auto;
+        border: 1px solid #ccc;
+        padding: 20px;
+        border-radius: 5px;
+      }
+      .scope {
+        margin: 10px 0;
+      }
+      .actions {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Consent Required</h1>
+      <p>
+        The application <b th:text="${clientId}"></b> wants to access your
+        account <b th:text="${principalName}"></b>.
+      </p>
+    <p>DEBUG State: <span th:text="${state}"></span></p>
+
+      <form action="/oauth2/authorize" method="post">
+        <input type="hidden" name="client_id" th:value="${clientId}" />
+        <input type="hidden" name="state" th:value="${state}" />
+
+        <h3>Permissions requested:</h3>
+        <div class="scope" th:each="scope : ${scopes}">
+          <input type="checkbox" name="scope" th:value="${scope}" checked />
+          <label th:text="${scope}"></label>
+        </div>
+
+        <div class="actions">
+          <button type="submit" id="submit-consent">Approve</button>
+          <button type="button" onclick="cancel()">Cancel</button>
+        </div>
+      </form>
+    </div>
+    <script>
+      function cancel() {
+        window.history.back();
+      }
+    </script>
+  </body>
+</html>

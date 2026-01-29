@@ -15,6 +15,7 @@ import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.http.MediaType;
 
 import one.org.security.Autherization.infrastructure.security.filture.SessionFilture;
+import one.org.security.Autherization.infrastructure.security.filture.LoggingFilter;
 import one.org.security.common.Filtures.ProcessDeviceFilter;
 
 @Configuration
@@ -32,9 +33,16 @@ public class SecurityConfig {
         }
 
         @Bean
+        public LoggingFilter loggingFilter() {
+                return new LoggingFilter();
+        }
+
+        @Bean
         @Order(1)
         public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
                 OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
+                authorizationServerConfigurer.authorizationEndpoint(
+                                authorizationEndpoint -> authorizationEndpoint.consentPage("/oauth2/consent"));
 
                 http
                                 .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())

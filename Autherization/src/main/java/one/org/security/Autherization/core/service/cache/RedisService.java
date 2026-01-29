@@ -31,6 +31,14 @@ public class RedisService {
         java.util.List<Module> securityModules = SecurityJackson2Modules.getModules(classLoader);
         this.objectMapper.registerModules(securityModules);
         this.objectMapper.registerModule(new OAuth2AuthorizationServerJackson2Module());
+
+        // This is required to allow deserialization of the OAuth2Authorization class
+        // which triggers the whitelist check.
+        this.objectMapper.addMixIn(OAuth2Authorization.class, OAuth2AuthorizationMixin.class);
+    }
+
+    @com.fasterxml.jackson.annotation.JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.CLASS)
+    public abstract static class OAuth2AuthorizationMixin {
     }
 
     public boolean saveClient(ClientEntity client) {
@@ -86,40 +94,52 @@ public class RedisService {
 
     public void saveAuthorization(OAuth2Authorization authorization) {
         try {
+            System.out.println("DEBUG: RedisService.saveAuthorization called for id: " + authorization.getId());
             String id = authorization.getId();
             String value = objectMapper.writeValueAsString(authorization);
             stringRedisTemplate.opsForValue().set("auth:id:" + id, value, 10, TimeUnit.MINUTES);
+            System.out.println("DEBUG: Saved auth to redis with key: auth:id:" + id);
 
             if (authorization.getToken(OAuth2AuthorizationCode.class) != null) {
                 OAuth2Authorization.Token<OAuth2AuthorizationCode> token = authorization
                         .getToken(OAuth2AuthorizationCode.class);
                 stringRedisTemplate.opsForValue().set("auth:code:" + token.getToken().getTokenValue(), id, 10,
                         TimeUnit.MINUTES);
+                System.out.println(
+                        "DEBUG: Saved auth code mapping: auth:code:" + token.getToken().getTokenValue() + " -> " + id);
             }
 
             if (authorization.getRefreshToken() != null) {
                 OAuth2RefreshToken token = authorization.getRefreshToken().getToken();
                 stringRedisTemplate.opsForValue().set("auth:refresh_token:" + token.getTokenValue(), id, 10,
                         TimeUnit.MINUTES);
+                System.out.println("DEBUG: Saved refresh token mapping: auth:refresh_token:" + token.getTokenValue()
+                        + " -> " + id);
             }
 
             if (authorization.getAccessToken() != null) {
                 OAuth2AccessToken token = authorization.getAccessToken().getToken();
                 stringRedisTemplate.opsForValue().set("auth:access_token:" + token.getTokenValue(), id, 10,
                         TimeUnit.MINUTES);
+                System.out.println(
+                        "DEBUG: Saved access token mapping: auth:access_token:" + token.getTokenValue() + " -> " + id);
             }
 
             String state = authorization.getAttribute(OAuth2ParameterNames.STATE);
             if (state != null) {
                 stringRedisTemplate.opsForValue().set("auth:state:" + state, id, 10, TimeUnit.MINUTES);
+                System.out.println("DEBUG: Saved state mapping: auth:state:" + state + " -> " + id);
             }
 
         } catch (Exception e) {
+            System.out.println("ERROR: RedisService.saveAuthorization failed: " + e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
     public void removeAuthorization(OAuth2Authorization authorization) {
+        System.out.println("DEBUG: RedisService.removeAuthorization called for id: " + authorization.getId());
         String id = authorization.getId();
         stringRedisTemplate.delete("auth:id:" + id);
 
@@ -147,17 +167,27 @@ public class RedisService {
 
     public OAuth2Authorization findById(String id) {
         try {
+            System.out.println("DEBUG: RedisService.findById called for id: " + id);
             String value = stringRedisTemplate.opsForValue().get("auth:id:" + id);
             if (value != null) {
+                System.out.println("DEBUG: Found authorization for id: " + id);
                 return objectMapper.readValue(value, OAuth2Authorization.class);
+            } else {
+                System.out.println("DEBUG: Authorization NOT found for id: " + id);
             }
         } catch (Exception e) {
+            System.out.println("ERROR: RedisService.findById failed: " + e.getMessage());
             e.printStackTrace();
         }
         return null;
     }
 
     public OAuth2Authorization findByToken(String token, OAuth2TokenType tokenType) {
+        System.out.println("DEBUG: RedisService.findByToken called. TokenType: "
+                + (tokenType != null ? tokenType.getValue() : "null") + ", Token: " + token);
+        if (tokenType == null) {
+            return null;
+        }
         String id = null;
         if (OAuth2ParameterNames.STATE.equals(tokenType.getValue())) {
             id = stringRedisTemplate.opsForValue().get("auth:state:" + token);
@@ -168,6 +198,8 @@ public class RedisService {
         } else if (OAuth2TokenType.REFRESH_TOKEN.equals(tokenType)) {
             id = stringRedisTemplate.opsForValue().get("auth:refresh_token:" + token);
         }
+
+        System.out.println("DEBUG: Resolved ID from token/state: " + id);
 
         if (id != null) {
             return findById(id);
