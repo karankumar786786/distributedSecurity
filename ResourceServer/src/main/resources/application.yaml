@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: ResourceServer
+server:
+  port: 11000

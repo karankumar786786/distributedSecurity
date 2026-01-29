@@ -29,25 +29,42 @@ public class CustomAuthcodeService implements OAuth2AuthorizationService {
 
     @Override
     public void save(OAuth2Authorization authorization) {
+        System.out.println("DEBUG: CustomAuthcodeService.save called for id: " + authorization.getId());
         AuthorizationEntity entity = toEntity(authorization);
+        System.out.println("DEBUG: CustomAuthcodeService saving entity: " + entity);
         redisService.saveAuthorizationEntity(entity);
     }
 
     @Override
     public void remove(OAuth2Authorization authorization) {
+        System.out.println("DEBUG: CustomAuthcodeService.remove called for id: " + authorization.getId());
         redisService.removeAuthorization(authorization.getId());
     }
 
     @Override
     public OAuth2Authorization findById(String id) {
+        System.out.println("DEBUG: CustomAuthcodeService.findById called for id: " + id);
         AuthorizationEntity entity = redisService.findAuthorizationEntityById(id);
-        return entity != null ? toObject(entity) : null;
+        if (entity == null) {
+            System.out.println("DEBUG: CustomAuthcodeService.findById: Entity not found for id: " + id);
+            return null;
+        }
+        System.out.println("DEBUG: CustomAuthcodeService.findById: Found entity, converting to domain object.");
+        return toObject(entity);
     }
 
     @Override
     public OAuth2Authorization findByToken(String token, OAuth2TokenType tokenType) {
+        System.out.println("DEBUG: CustomAuthcodeService.findByToken called. Token: " + token + ", Type: "
+                + (tokenType != null ? tokenType.getValue() : "null"));
         AuthorizationEntity entity = redisService.findAuthorizationEntityByToken(token, tokenType);
-        return entity != null ? toObject(entity) : null;
+        if (entity == null) {
+            System.out.println("DEBUG: CustomAuthcodeService.findByToken: Entity not found.");
+            return null;
+        }
+        System.out.println("DEBUG: CustomAuthcodeService.findByToken: Found entity, converting to domain object "
+                + entity.getId());
+        return toObject(entity);
     }
 
     private AuthorizationEntity toEntity(OAuth2Authorization authorization) {
@@ -95,46 +112,61 @@ public class CustomAuthcodeService implements OAuth2AuthorizationService {
     }
 
     private OAuth2Authorization toObject(AuthorizationEntity entity) {
-        RegisteredClient registeredClient = registeredClientRepository.findById(entity.getRegisteredClientId());
-        if (registeredClient == null) {
-            throw new RuntimeException("Registered client not found: " + entity.getRegisteredClientId());
+        try {
+            RegisteredClient registeredClient = registeredClientRepository.findById(entity.getRegisteredClientId());
+            if (registeredClient == null) {
+                throw new RuntimeException("Registered client not found: " + entity.getRegisteredClientId());
+            }
+
+            OAuth2Authorization.Builder builder = OAuth2Authorization.withRegisteredClient(registeredClient)
+                    .id(entity.getId())
+                    .principalName(entity.getPrincipalName())
+                    .authorizationGrantType(new AuthorizationGrantType(entity.getAuthorizationGrantType()))
+                    .authorizedScopes(entity.getAuthorizedScopes())
+                    .attributes(attrs -> attrs.putAll(entity.getAttributes()));
+
+            if (entity.getState() != null) {
+                builder.attribute(OAuth2ParameterNames.STATE, entity.getState());
+            }
+
+            if (entity.getAuthorizationCode() != null) {
+                TokenEntity t = entity.getAuthorizationCode();
+                builder.token(new OAuth2AuthorizationCode(t.getTokenValue(), t.getIssuedAt(), t.getExpiresAt()),
+                        meta -> meta.putAll(t.getMetadata()));
+            }
+
+            if (entity.getAccessToken() != null) {
+                TokenEntity t = entity.getAccessToken();
+                builder.token(
+                        new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER, t.getTokenValue(), t.getIssuedAt(),
+                                t.getExpiresAt(), entity.getAuthorizedScopes()),
+                        meta -> meta.putAll(t.getMetadata()));
+            }
+
+            if (entity.getRefreshToken() != null) {
+                TokenEntity t = entity.getRefreshToken();
+                builder.token(new OAuth2RefreshToken(t.getTokenValue(), t.getIssuedAt(), t.getExpiresAt()),
+                        meta -> meta.putAll(t.getMetadata()));
+            }
+
+            if (entity.getOidcIdToken() != null) {
+                TokenEntity t = entity.getOidcIdToken();
+                builder.token(new OidcIdToken(t.getTokenValue(), t.getIssuedAt(), t.getExpiresAt(), t.getClaims()),
+                        meta -> meta.putAll(t.getMetadata()));
+            }
+
+            return builder.build();
+        } catch (Exception e) {
+            System.out.println("ERROR: CustomAuthcodeService.toObject failed: " + e.getMessage());
+            e.printStackTrace();
+            try (java.io.PrintWriter pw = new java.io.PrintWriter(
+                    new java.io.FileWriter("/tmp/auth_debug_error.log", true))) {
+                pw.println("Timestamp: " + java.time.Instant.now());
+                e.printStackTrace(pw);
+            } catch (Exception io) {
+                // ignore
+            }
+            throw e; // Re-throw to ensure the flow fails
         }
-
-        OAuth2Authorization.Builder builder = OAuth2Authorization.withRegisteredClient(registeredClient)
-                .id(entity.getId())
-                .principalName(entity.getPrincipalName())
-                .authorizationGrantType(new AuthorizationGrantType(entity.getAuthorizationGrantType()))
-                .authorizedScopes(entity.getAuthorizedScopes())
-                .attributes(attrs -> attrs.putAll(entity.getAttributes()));
-
-        if (entity.getState() != null) {
-            builder.attribute(OAuth2ParameterNames.STATE, entity.getState());
-        }
-
-        if (entity.getAuthorizationCode() != null) {
-            TokenEntity t = entity.getAuthorizationCode();
-            builder.token(new OAuth2AuthorizationCode(t.getTokenValue(), t.getIssuedAt(), t.getExpiresAt()),
-                    meta -> meta.putAll(t.getMetadata()));
-        }
-
-        if (entity.getAccessToken() != null) {
-            TokenEntity t = entity.getAccessToken();
-            builder.token(new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER, t.getTokenValue(), t.getIssuedAt(),
-                    t.getExpiresAt(), entity.getAuthorizedScopes()), meta -> meta.putAll(t.getMetadata()));
-        }
-
-        if (entity.getRefreshToken() != null) {
-            TokenEntity t = entity.getRefreshToken();
-            builder.token(new OAuth2RefreshToken(t.getTokenValue(), t.getIssuedAt(), t.getExpiresAt()),
-                    meta -> meta.putAll(t.getMetadata()));
-        }
-
-        if (entity.getOidcIdToken() != null) {
-            TokenEntity t = entity.getOidcIdToken();
-            builder.token(new OidcIdToken(t.getTokenValue(), t.getIssuedAt(), t.getExpiresAt(), t.getClaims()),
-                    meta -> meta.putAll(t.getMetadata()));
-        }
-
-        return builder.build();
     }
 }

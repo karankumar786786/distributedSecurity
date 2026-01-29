@@ -55,6 +55,7 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
                 .clientId(client.getClientId())
                 .clientSecret(client.getClientSecret())
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .redirectUri(client.getRedirectUrl())
@@ -77,7 +78,7 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
                 .tokenSettings(TokenSettings.builder()
                         .authorizationCodeTimeToLive(Duration.ofMinutes(5))
                         .accessTokenTimeToLive(Duration.ofMinutes(5))
-                        .idTokenSignatureAlgorithm(SignatureAlgorithm.ES256)
+                        .idTokenSignatureAlgorithm(SignatureAlgorithm.RS256)
                         .build())
                 .build();
     }

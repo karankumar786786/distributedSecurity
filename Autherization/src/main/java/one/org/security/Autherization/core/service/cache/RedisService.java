@@ -188,26 +188,39 @@ public class RedisService {
     }
 
     public AuthorizationEntity findAuthorizationEntityByToken(String token, OAuth2TokenType tokenType) {
-        System.out.println("DEBUG: RedisService.findAuthorizationEntityByToken called. TokenType: "
-                + (tokenType != null ? tokenType.getValue() : "null") + ", Token: " + token);
-        if (tokenType == null) {
-            return null;
-        }
-        String id = null;
-        if (OAuth2ParameterNames.STATE.equals(tokenType.getValue())) {
-            id = stringRedisTemplate.opsForValue().get("auth:state:" + token);
-        } else if (OAuth2ParameterNames.CODE.equals(tokenType.getValue())) {
-            id = stringRedisTemplate.opsForValue().get("auth:code:" + token);
-        } else if (OAuth2TokenType.ACCESS_TOKEN.equals(tokenType)) {
-            id = stringRedisTemplate.opsForValue().get("auth:access_token:" + token);
-        } else if (OAuth2TokenType.REFRESH_TOKEN.equals(tokenType)) {
-            id = stringRedisTemplate.opsForValue().get("auth:refresh_token:" + token);
-        }
+        try {
+            System.out.println("DEBUG: RedisService.findAuthorizationEntityByToken called. TokenType: "
+                    + (tokenType != null ? tokenType.getValue() : "null") + ", Token: " + token);
+            if (tokenType == null) {
+                return null;
+            }
+            String id = null;
+            if (OAuth2ParameterNames.STATE.equals(tokenType.getValue())) {
+                id = stringRedisTemplate.opsForValue().get("auth:state:" + token);
+            } else if (OAuth2ParameterNames.CODE.equals(tokenType.getValue())) {
+                id = stringRedisTemplate.opsForValue().get("auth:code:" + token);
+            } else if (OAuth2TokenType.ACCESS_TOKEN.equals(tokenType)) {
+                id = stringRedisTemplate.opsForValue().get("auth:access_token:" + token);
+            } else if (OAuth2TokenType.REFRESH_TOKEN.equals(tokenType)) {
+                id = stringRedisTemplate.opsForValue().get("auth:refresh_token:" + token);
+            }
 
-        System.out.println("DEBUG: Resolved ID from token/state: " + id);
+            System.out.println("DEBUG: Resolved ID from token/state: " + id);
 
-        if (id != null) {
-            return findAuthorizationEntityById(id);
+            if (id != null) {
+                return findAuthorizationEntityById(id);
+            }
+        } catch (Exception e) {
+            System.out.println("ERROR: RedisService.findAuthorizationEntityByToken CRASHED: " + e.getMessage());
+            e.printStackTrace();
+            // Try to log to file as backup
+            try (java.io.PrintWriter pw = new java.io.PrintWriter(
+                    new java.io.FileWriter("/tmp/redis_crash.log", true))) {
+                pw.println("Timestamp: " + java.time.Instant.now());
+                e.printStackTrace(pw);
+            } catch (Exception io) {
+            }
+            throw e; // Bubble up
         }
         return null;
     }
