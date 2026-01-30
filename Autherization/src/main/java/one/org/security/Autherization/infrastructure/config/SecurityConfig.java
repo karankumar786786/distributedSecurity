@@ -63,8 +63,9 @@ public class SecurityConfig {
                                                                                                                                 .scopes(scopes -> {
                                                                                                                                         scopes.add("read");
                                                                                                                                         scopes.add("write");
-                                                                                                                                        scopes.add("uid");
                                                                                                                                         scopes.add("username");
+                                                                                                                                        scopes.add("profile");
+                                                                                                                                        scopes.add("personaldata");
                                                                                                                                 })))))
                                 .authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
                                 .exceptionHandling(exceptions -> exceptions

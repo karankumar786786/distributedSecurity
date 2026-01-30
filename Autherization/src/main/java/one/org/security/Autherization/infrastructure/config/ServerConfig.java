@@ -35,7 +35,6 @@ public class ServerConfig {
                 Object principalObj = principal.getPrincipal();
 
                 if (principalObj instanceof UserMockEntity user) {
-                    context.getClaims().claim("uid", user.getId().toString());
                     context.getClaims().claim("sub", user.getUsername());
                 } else if (principalObj instanceof org.springframework.security.core.userdetails.UserDetails userDetails) {
                     context.getClaims().claim("sub", userDetails.getUsername());

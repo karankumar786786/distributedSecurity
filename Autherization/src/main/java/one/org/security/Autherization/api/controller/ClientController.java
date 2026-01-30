@@ -47,7 +47,11 @@ public class ClientController {
                 .clientSecret(customEncodingService.encode(clientSecret))
                 .userId(user.getId())
                 .redirectUrl(request.redirectUrl())
-                .writeAllowed(false)
+                .writeAllowed(request.write())
+                .allowPersonalData(request.personalDataAccess())
+                .allowProfile(request.profile())
+                .writeAllowed(request.write())
+                .showConsentForm(true)
                 .build();
         clientService.saveClient(client);
         CreateClientResponseDTO response = new CreateClientResponseDTO(client.getClientId(), clientSecret);

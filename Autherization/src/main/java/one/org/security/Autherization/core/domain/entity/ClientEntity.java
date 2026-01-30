@@ -23,4 +23,7 @@ public class ClientEntity {
     private String clientSecret;
     private String redirectUrl;
     private boolean writeAllowed;
+    private boolean showConsentForm;
+    private boolean allowProfile;
+    private boolean allowPersonalData;
 }

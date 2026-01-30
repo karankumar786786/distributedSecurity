@@ -57,22 +57,24 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .redirectUri(client.getRedirectUrl())
                 // Add all supported scopes
                 .scope("openid")
                 .scope("read")
-                .scope("uid")
                 .scope("username");
-
         // Conditionally add write scope based on your MongoDB entity
         if (client.isWriteAllowed()) {
             builder.scope("write");
         }
-
+        if (client.isAllowProfile()) {
+            builder.scope("profile");
+        }
+        if (client.isAllowPersonalData()) {
+            builder.scope("personal");
+        }
         return builder
                 .clientSettings(ClientSettings.builder()
-                        .requireAuthorizationConsent(true)
+                        .requireAuthorizationConsent(client.isShowConsentForm())
                         .requireProofKey(true)
                         .build())
                 .tokenSettings(TokenSettings.builder()

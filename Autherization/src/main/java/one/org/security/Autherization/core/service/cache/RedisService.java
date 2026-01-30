@@ -22,14 +22,19 @@ public class RedisService {
     public boolean saveClient(ClientEntity client) {
         try {
             String key = "client:" + client.getClientId();
-            // id|userId|clientId|clientSecret|redirectUrl|writeAllowed
-            String value = client.getId().toString() + "|" +
-                    client.getUserId().toString() + "|" +
-                    client.getClientId() + "|" +
-                    client.getClientSecret() + "|" +
-                    client.getRedirectUrl() + "|" +
-                    client.isWriteAllowed();
-            stringRedisTemplate.opsForValue().set(key, value, 15, java.util.concurrent.TimeUnit.MINUTES);
+            // id|userId|clientId|clientSecret|redirectUrl|writeAllowed|showConsentForm|allowProfile|allowPersonalData
+            StringBuilder value = new StringBuilder();
+            value.append(client.getId().toString()).append("|")
+                    .append(client.getUserId().toString()).append("|")
+                    .append(client.getClientId()).append("|")
+                    .append(client.getClientSecret()).append("|")
+                    .append(client.getRedirectUrl()).append("|")
+                    .append(client.isWriteAllowed()).append("|")
+                    .append(client.isShowConsentForm()).append("|")
+                    .append(client.isAllowProfile()).append("|")
+                    .append(client.isAllowPersonalData());
+
+            stringRedisTemplate.opsForValue().set(key, value.toString(), 15, java.util.concurrent.TimeUnit.MINUTES);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -43,7 +48,7 @@ public class RedisService {
             String value = stringRedisTemplate.opsForValue().get(key);
             if (value != null) {
                 String[] parts = value.split("\\|");
-                if (parts.length >= 6) {
+                if (parts.length >= 9) {
                     return ClientEntity.builder()
                             .id(new org.bson.types.ObjectId(parts[0]))
                             .userId(new org.bson.types.ObjectId(parts[1]))
@@ -51,6 +56,9 @@ public class RedisService {
                             .clientSecret(parts[3])
                             .redirectUrl(parts[4])
                             .writeAllowed(Boolean.parseBoolean(parts[5]))
+                            .showConsentForm(Boolean.parseBoolean(parts[6]))
+                            .allowProfile(Boolean.parseBoolean(parts[7]))
+                            .allowPersonalData(Boolean.parseBoolean(parts[8]))
                             .build();
                 }
             }
