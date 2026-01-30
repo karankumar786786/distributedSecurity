@@ -16,10 +16,42 @@ oauth2:
     key-id: "key-id"
     private-key: |
       -----BEGIN PRIVATE KEY-----
-      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
+      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
+      JLRtBscWyr6sHDC/em6cQQY=
       -----END PRIVATE KEY-----
+      -----BEGIN PUBLIC KEY-----
+      MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnDsKk9Kf2X9AFqyPjy9c
+      i/JEs1ufBws7HxmYtiyxFaQOaxlPPDy/0KozYR3aK5FM+Ij34hIVMggslj46gcS2
+      aXHGbS9NOslbTTyglWbWwdNtEtZQ/btjBweyV1PTH6+Ye4FzuGYkzxTROi6VGzlk
+      Fb5r1GeDqqZ44IZr7zBo2tCW9Olxqhj++ZnOd6EarAisM459nVObzJnL1ib9Db5F
+      LrZyySJqxVAs542eCJ0w1T04D5iFsbTGbqK/q5f54aHiW8Z50mtlKEoIHYVvqU+f
+      dOMAsW1R/QNAf3nJV3ke40TQda4DDVQlMmog6F6CZncH8kkchDC9xh9YGN/zbCYL
+      7QIDAQAB
+      -----END PUBLIC KEY-----
 server:
   port: 12000
 hmac:

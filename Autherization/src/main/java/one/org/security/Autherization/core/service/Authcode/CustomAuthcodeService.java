@@ -77,6 +77,17 @@ public class CustomAuthcodeService implements OAuth2AuthorizationService {
                 .attributes(authorization.getAttributes())
                 .state(authorization.getAttribute(OAuth2ParameterNames.STATE));
 
+        System.out.println(
+                "DEBUG: CustomAuthcodeService.toEntity: Attributes keys: " + authorization.getAttributes().keySet());
+        Object authRequest = authorization
+                .getAttribute("org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest");
+        if (authRequest != null) {
+            System.out.println("DEBUG: CustomAuthcodeService.toEntity: OAuth2AuthorizationRequest PRESENT. Type: "
+                    + authRequest.getClass().getName());
+        } else {
+            System.out.println("DEBUG: CustomAuthcodeService.toEntity: OAuth2AuthorizationRequest MISSING!");
+        }
+
         OAuth2Authorization.Token<OAuth2AuthorizationCode> code = authorization.getToken(OAuth2AuthorizationCode.class);
         if (code != null) {
             builder.authorizationCode(toTokenEntity(code));
@@ -123,7 +134,19 @@ public class CustomAuthcodeService implements OAuth2AuthorizationService {
                     .principalName(entity.getPrincipalName())
                     .authorizationGrantType(new AuthorizationGrantType(entity.getAuthorizationGrantType()))
                     .authorizedScopes(entity.getAuthorizedScopes())
-                    .attributes(attrs -> attrs.putAll(entity.getAttributes()));
+                    .attributes(attrs -> {
+                        attrs.putAll(entity.getAttributes());
+                        System.out
+                                .println("DEBUG: CustomAuthcodeService.toObject: Loaded attributes: " + attrs.keySet());
+                        if (attrs.containsKey(
+                                "org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest")) {
+                            System.out.println(
+                                    "DEBUG: CustomAuthcodeService.toObject: OAuth2AuthorizationRequest FOUND in attributes.");
+                        } else {
+                            System.out.println(
+                                    "DEBUG: CustomAuthcodeService.toObject: OAuth2AuthorizationRequest NOT FOUND in attributes!");
+                        }
+                    });
 
             if (entity.getState() != null) {
                 builder.attribute(OAuth2ParameterNames.STATE, entity.getState());

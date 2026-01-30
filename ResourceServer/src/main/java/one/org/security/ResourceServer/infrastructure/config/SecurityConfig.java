@@ -20,7 +20,7 @@ public class SecurityConfig {
     @Bean
     public JwtDecoder jwtDecoder(OAuth2ResourceServerProperties properties) {
         return NimbusJwtDecoder.withJwkSetUri(properties.getJwt().getJwkSetUri())
-                .jwsAlgorithm(SignatureAlgorithm.ES256)
+                .jwsAlgorithm(SignatureAlgorithm.RS256)
                 .build();
     }
 

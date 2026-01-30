@@ -1,6 +1,5 @@
 package one.org.security.Autherization.infrastructure.config;
 
-
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
@@ -13,8 +12,6 @@ import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
-
-
 
 @Configuration
 public class ServerConfig {
@@ -46,36 +43,45 @@ public class ServerConfig {
                     context.getClaims().claim("sub", principal.getName());
                 }
             }
+            System.out.println("DEBUG: Token Customizer finished for principal: " + context.getPrincipal().getName());
         };
+
     }
 
     @Bean
-    public JWKSource<SecurityContext> jwkSource() {
-        com.nimbusds.jose.jwk.RSAKey rsaKey = generateRsa();
+    public JWKSource<SecurityContext> jwkSource(KeyProperties keyProperties) {
+        com.nimbusds.jose.jwk.RSAKey rsaKey = null;
+        try {
+            // Parses both Private and Public keys from the PEM content in application.yaml
+            com.nimbusds.jose.jwk.JWK jwk = com.nimbusds.jose.jwk.JWK
+                    .parseFromPEMEncodedObjects(keyProperties.getPrivateKey());
+            java.util.List<com.nimbusds.jose.jwk.JWK> jwks = java.util.Collections.singletonList(jwk);
+
+            if (!jwks.isEmpty() && jwks.get(0) instanceof com.nimbusds.jose.jwk.RSAKey) {
+                rsaKey = (com.nimbusds.jose.jwk.RSAKey) jwks.get(0);
+                // Ensure it has a Key ID
+                rsaKey = new com.nimbusds.jose.jwk.RSAKey.Builder(rsaKey.toRSAPublicKey())
+                        .privateKey(rsaKey.toRSAPrivateKey())
+                        .keyID(keyProperties.getKeyId())
+                        .build();
+            } else {
+                throw new IllegalStateException(
+                        "Could not parse RSA Key from configuration. Ensure 'oauth2.keys.private-key' contains both valid RSA Private and Public Keys.");
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException("Error parsing RSA key from configuration", e);
+        }
+
+        try {
+            if (rsaKey != null && rsaKey.toRSAPrivateKey() == null) {
+                System.err.println("WARNING: RSA Private Key is null after parsing!");
+            } else if (rsaKey != null) {
+                System.out.println("SUCCESS: RSA Private Key loaded successfully.");
+            }
+        } catch (Exception e) {
+            System.err.println("ERROR: Failed to check private key: " + e.getMessage());
+        }
         JWKSet jwkSet = new JWKSet(rsaKey);
         return (jwkSelector, securityContext) -> jwkSelector.select(jwkSet);
-    }
-
-    private static com.nimbusds.jose.jwk.RSAKey generateRsa() {
-        java.security.KeyPair keyPair = generateRsaKey();
-        java.security.interfaces.RSAPublicKey publicKey = (java.security.interfaces.RSAPublicKey) keyPair.getPublic();
-        java.security.interfaces.RSAPrivateKey privateKey = (java.security.interfaces.RSAPrivateKey) keyPair
-                .getPrivate();
-        return new com.nimbusds.jose.jwk.RSAKey.Builder(publicKey)
-                .privateKey(privateKey)
-                .keyID(java.util.UUID.randomUUID().toString())
-                .build();
-    }
-
-    private static java.security.KeyPair generateRsaKey() {
-        java.security.KeyPair keyPair;
-        try {
-            java.security.KeyPairGenerator keyPairGenerator = java.security.KeyPairGenerator.getInstance("RSA");
-            keyPairGenerator.initialize(2048);
-            keyPair = keyPairGenerator.generateKeyPair();
-        } catch (Exception ex) {
-            throw new IllegalStateException(ex);
-        }
-        return keyPair;
     }
 }
