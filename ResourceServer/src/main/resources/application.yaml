@@ -1,5 +1,11 @@
 spring:
   application:
     name: ResourceServer
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:12000
+          jwk-set-uri: http://localhost:12000/oauth2/jwks
 server:
   port: 11000

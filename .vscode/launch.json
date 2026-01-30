@@ -1,133 +1,144 @@
 {
-    "configurations": [
-        {
-            "type": "java",
-            "name": "Spring Boot-PasswordEncodingServiceApplication<passwordEncoding>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "one.org.security.passwordEncoding.PasswordEncodingServiceApplication",
-            "projectName": "passwordEncoding",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env",
-            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=56979 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=passwordEncoding"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-SmsStreamProcessorApplication<SmsStreamProcessor>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "one.org.security.SmsStreamProcessor.SmsStreamProcessorApplication",
-            "projectName": "SmsStreamProcessor",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env",
-            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=56926 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=SmsStreamProcessor"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-SecurityEventStreamProcessorApplication<SecurityEventStreamProcessor>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "one.org.security.SecurityEventStreamProcessor.SecurityEventStreamProcessorApplication",
-            "projectName": "SecurityEventStreamProcessor",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env",
-            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=62486 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=SecurityEventStreamProcessor"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-ProcessedSmsConsumerApplication<ProcessedSmsConsumer>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "one.org.security.ProcessedSmsConsumer.ProcessedSmsConsumerApplication",
-            "projectName": "ProcessedSmsConsumer",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env",
-            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=62465 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=ProcessedSmsConsumer"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-ProcessedSecurityEventConsumerApplication<ProcessedSecurityEventConsumer>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "one.org.security.ProcessedSecurityEventConsumer.ProcessedSecurityEventConsumerApplication",
-            "projectName": "ProcessedSecurityEventConsumer",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env",
-            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=62461 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=ProcessedSecurityEventConsumer"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-ProcessedMailConsumerApplication<ProcessedMailConsumer>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "one.org.security.ProcessedMailConsumer.ProcessedMailConsumerApplication",
-            "projectName": "ProcessedMailConsumer",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env",
-            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=62457 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=ProcessedMailConsumer"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-MailStreamProcessorApplication<MailStreamProcessor>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "one.org.security.MailStreamProcessor.MailStreamProcessorApplication",
-            "projectName": "MailStreamProcessor",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env",
-            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=62437 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=MailStreamProcessor"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-SecurityApplication<security>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "one.org.security.SecurityApplication",
-            "projectName": "security",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env",
-            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=52068 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=security"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-AuthorizationApplication<Authorization>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "one.org.security.Authorization.AuthorizationApplication",
-            "projectName": "Authorization",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env",
-            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=52091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=Authorization"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-ResourceApplication<Resource>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "one.org.security.Resource.ResourceApplication",
-            "projectName": "Resource",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-ClientApplication<Client>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "one.org.security.Client.ClientApplication",
-            "projectName": "Client",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-AutherizationApplication<Autherization>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "one.org.security.Autherization.AutherizationApplication",
-            "projectName": "Autherization",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env"
-        }
-    ]
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-PasswordEncodingServiceApplication<passwordEncoding>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "one.org.security.passwordEncoding.PasswordEncodingServiceApplication",
+      "projectName": "passwordEncoding",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=56979 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=passwordEncoding"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-SmsStreamProcessorApplication<SmsStreamProcessor>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "one.org.security.SmsStreamProcessor.SmsStreamProcessorApplication",
+      "projectName": "SmsStreamProcessor",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=56926 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=SmsStreamProcessor"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-SecurityEventStreamProcessorApplication<SecurityEventStreamProcessor>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "one.org.security.SecurityEventStreamProcessor.SecurityEventStreamProcessorApplication",
+      "projectName": "SecurityEventStreamProcessor",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=62486 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=SecurityEventStreamProcessor"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-ProcessedSmsConsumerApplication<ProcessedSmsConsumer>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "one.org.security.ProcessedSmsConsumer.ProcessedSmsConsumerApplication",
+      "projectName": "ProcessedSmsConsumer",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=62465 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=ProcessedSmsConsumer"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-ProcessedSecurityEventConsumerApplication<ProcessedSecurityEventConsumer>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "one.org.security.ProcessedSecurityEventConsumer.ProcessedSecurityEventConsumerApplication",
+      "projectName": "ProcessedSecurityEventConsumer",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=62461 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=ProcessedSecurityEventConsumer"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-ProcessedMailConsumerApplication<ProcessedMailConsumer>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "one.org.security.ProcessedMailConsumer.ProcessedMailConsumerApplication",
+      "projectName": "ProcessedMailConsumer",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=62457 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=ProcessedMailConsumer"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-MailStreamProcessorApplication<MailStreamProcessor>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "one.org.security.MailStreamProcessor.MailStreamProcessorApplication",
+      "projectName": "MailStreamProcessor",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=62437 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=MailStreamProcessor"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-SecurityApplication<security>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "one.org.security.SecurityApplication",
+      "projectName": "security",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=52068 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=security"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-AuthorizationApplication<Authorization>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "one.org.security.Authorization.AuthorizationApplication",
+      "projectName": "Authorization",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=52091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=Authorization"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-ResourceApplication<Resource>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "one.org.security.Resource.ResourceApplication",
+      "projectName": "Resource",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-ClientApplication<Client>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "one.org.security.Client.ClientApplication",
+      "projectName": "Client",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-AutherizationApplication<Autherization>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "one.org.security.Autherization.AutherizationApplication",
+      "projectName": "Autherization",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=63211 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=Autherization"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-ResourceServerApplication<ResourceServer>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "one.org.security.ResourceServer.ResourceServerApplication",
+      "projectName": "ResourceServer",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
 }
