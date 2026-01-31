@@ -126,7 +126,11 @@ public class CustomAuthcodeService implements OAuth2AuthorizationService {
         try {
             RegisteredClient registeredClient = registeredClientRepository.findById(entity.getRegisteredClientId());
             if (registeredClient == null) {
-                throw new RuntimeException("Registered client not found: " + entity.getRegisteredClientId());
+                // Return null so the authorization service treats this as "not found"
+                // This triggers an invalid_grant error instead of a 500 crash
+                System.out.println("WARNING: Registered client not found for ID: " + entity.getRegisteredClientId()
+                        + ". Treating authorization as invalid.");
+                return null;
             }
 
             OAuth2Authorization.Builder builder = OAuth2Authorization.withRegisteredClient(registeredClient)
@@ -180,16 +184,10 @@ public class CustomAuthcodeService implements OAuth2AuthorizationService {
 
             return builder.build();
         } catch (Exception e) {
-            System.out.println("ERROR: CustomAuthcodeService.toObject failed: " + e.getMessage());
-            e.printStackTrace();
-            try (java.io.PrintWriter pw = new java.io.PrintWriter(
-                    new java.io.FileWriter("/tmp/auth_debug_error.log", true))) {
-                pw.println("Timestamp: " + java.time.Instant.now());
-                e.printStackTrace(pw);
-            } catch (Exception io) {
-                // ignore
-            }
-            throw e; // Re-throw to ensure the flow fails
+            System.out.println("WARN: CustomAuthcodeService.toObject failed: " + e.getMessage());
+            // Return null to indicate the authorization cannot be reconstructed
+            // The flow will restart or fail gracefully
+            return null;
         }
     }
 }

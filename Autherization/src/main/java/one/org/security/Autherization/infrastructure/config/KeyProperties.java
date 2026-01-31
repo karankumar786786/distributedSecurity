@@ -9,6 +9,12 @@ import lombok.Data;
 @Configuration
 @ConfigurationProperties(prefix = "oauth2.keys")
 public class KeyProperties {
-    private String keyId;
-    private String privateKey;
+    private KeyInfo current;
+    private KeyInfo old;
+
+    @Data
+    public static class KeyInfo {
+        private String keyId;
+        private String privateKey;
+    }
 }
