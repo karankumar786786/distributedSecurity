@@ -54,7 +54,8 @@ public class FidoRegistrationService {
             RedisService redisService,
             @Value("${fido.rp.id:localhost}") String rpId,
             @Value("${fido.rp.name:Security Service}") String rpName,
-            @Value("${fido.rp.origins:http://localhost:10000,http://localhost:3000,http://localhost:8080}") Set<String> origins, UserRepository userRepository) {
+            @Value("${fido.rp.origins:http://localhost:10000,http://localhost:3000,http://localhost:8080}") Set<String> origins,
+            UserRepository userRepository) {
         this.userService = userService;
         this.redisService = redisService;
         this.rpId = rpId;
@@ -62,6 +63,9 @@ public class FidoRegistrationService {
         this.origins = origins;
         this.userRepository = userRepository;
     }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private one.org.security.core.service.Security.SecurityIntegrityService securityIntegrityService;
 
     @PostConstruct
     public void init() {
@@ -131,7 +135,10 @@ public class FidoRegistrationService {
                     .publicKey(result.getPublicKeyCose())
                     .signatureCount(result.getSignatureCount())
                     .name("Passkey " + LocalDateTime.now())
+                    .name("Passkey " + LocalDateTime.now())
                     .build();
+
+            securityIntegrityService.encodeFido(credential);
 
             user.setFidoCredential(credential);
             user.setPasskeyEnabled(true);

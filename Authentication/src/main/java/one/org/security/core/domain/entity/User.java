@@ -32,8 +32,7 @@ public class User implements UserDetails {
     @NonNull
     @Indexed(unique = true)
     private String username;
-    // private SecurityIntegrity security;
-    private String password;
+    private SecurityIntegrity security;
     private String backupEmail;
     private boolean isAccountLocked;
     private List<String> knownDeviceHashes;
@@ -78,10 +77,10 @@ public class User implements UserDetails {
         return !isAccountLocked; // Connects your field to the framework
     }
 
-    // @Override
-    // public String getPassword() {
-    //     return this.security.getHashedPassword();
-    // }
+    @Override
+    public String getPassword() {
+        return this.security.getHashedPassword();
+    }
 
 
 }

@@ -45,6 +45,8 @@ public class FidoService {
     private final RedisService redisService;
     private final SecurityEventService securityEventService;
     private final HmacService hmacService;
+    @org.springframework.beans.factory.annotation.Autowired
+    private one.org.security.core.service.Security.SecurityIntegrityService securityIntegrityService;
 
     private final String rpId;
     private final String rpName;
@@ -134,6 +136,21 @@ public class FidoService {
 
             if (result.isSuccess()) {
                 User user = userService.getUserByUsername(username);
+
+                // Verify Integrity
+                if (user.getFidoCredential() != null) {
+                    boolean isValid = securityIntegrityService.verifyFido(user.getFidoCredential());
+                    if (!isValid) {
+                        // Decide if we throw bad credentials or security exception
+                        // If invalid, it means DB tampering or key mismatch not handled by rotation
+                        logSecurityEvent(user, Event.LOGIN_FAIL, "FIDO Integrity Check Failed", ipAddress, null, null);
+                        throw new one.org.security.api.Errors.CustomExceptions.UnauthorizedOperationException(
+                                "Security Integrity Check Failed");
+                    }
+                    // If valid and rotated, user.getFidoCredential() is updated in place by
+                    // verifyFido
+                }
+
                 // Reset counters
                 userService.resetCompletedOperations(user.getId());
 

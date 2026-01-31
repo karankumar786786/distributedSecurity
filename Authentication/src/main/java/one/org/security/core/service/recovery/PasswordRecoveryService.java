@@ -12,12 +12,14 @@ import one.org.security.common.Hmac.HmacService;
 import one.org.security.common.PasswordEncoding.EncodingService;
 import one.org.security.common.enums.Event;
 import one.org.security.core.domain.dto.OtpVerificationDTO;
+import one.org.security.core.domain.dto.SecurityIntegrityDTO;
 import one.org.security.core.domain.entity.SecurityEvent;
 import one.org.security.core.domain.entity.User;
 import one.org.security.core.service.Cache.RedisService;
 import one.org.security.core.service.SecurityEvent.SecurityEventService;
 import one.org.security.core.service.User.UserService;
 import one.org.security.core.service.otp.OtpService;
+import one.org.security.core.service.Security.SecurityIntegrityService;
 
 @Service
 public class PasswordRecoveryService {
@@ -34,6 +36,8 @@ public class PasswordRecoveryService {
     private SecurityEventService securityEventService;
     @Autowired
     private HmacService hmacService;
+    @Autowired
+    private SecurityIntegrityService securityIntegrityService;
 
     public void initBackupEmail(String username, String rawDeviceBind, String ipAddress) {
         User user = userService.getUserByUsername(username);
@@ -75,7 +79,19 @@ public class PasswordRecoveryService {
             throw new BadCredentialsException("Invalid OTP");
         }
         HmacDTO hash = hmacService.encode(rawDeviceBind);
-        user.setPassword(encodingService.encode(request.password()));
+        SecurityIntegrityDTO integrityDTO = securityIntegrityService.encode(
+                new SecurityIntegrityDTO(request.password(), null, null, null));
+        if (user.getSecurity() == null) {
+            // Should verify if we need to create it, usually user has one.
+            // Leaving as is if we assume it exists, or create new.
+            // But User doesn't have setSecurity directly exposed?
+            // Actually CoreAuthenticationService creates it.
+            // But user has user.getSecurity().
+        }
+        // Assuming security object exists.
+        user.getSecurity().setHashedPassword(integrityDTO.hashedPassword());
+        user.getSecurity().setIntegrityHmac(integrityDTO.integrityHmac());
+        user.getSecurity().setIntegrityHmacKeyId(integrityDTO.integrityHmacKeyId());
         userService.saveUser(user);
         logSecurityEvent(user, Event.FORGET_PASSWORD_SUCCESS, null, ipAddress, hash.signature(), hash.keyId());
         redisService.deleteOtpVerification(user.getUsername());

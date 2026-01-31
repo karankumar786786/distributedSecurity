@@ -53,7 +53,7 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
     private RegisteredClient toRegisteredClient(ClientEntity client) {
         RegisteredClient.Builder builder = RegisteredClient.withId(client.getId().toHexString())
                 .clientId(client.getClientId())
-                .clientSecret(client.getClientSecret())
+                .clientSecret(client.getHashedClientSecretHmac())
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)

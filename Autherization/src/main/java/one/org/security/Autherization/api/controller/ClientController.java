@@ -44,7 +44,7 @@ public class ClientController {
         String clientSecret = UUID.randomUUID().toString().replaceAll("\\-", "");
         ClientEntity client = ClientEntity.builder()
                 .clientId(request.clientId())
-                .clientSecret(customEncodingService.encode(clientSecret))
+                .hashedClientSecretHmac(customEncodingService.encode(clientSecret))
                 .userId(user.getId())
                 .redirectUrl(request.redirectUrl())
                 .writeAllowed(request.write())

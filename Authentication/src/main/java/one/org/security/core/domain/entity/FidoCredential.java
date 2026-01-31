@@ -29,4 +29,10 @@ public class FidoCredential {
 
     @Field("name")
     private String name; // e.g., "My MacBook"
+
+    @Field("integrity_hmac_key_id")
+    private String integrityHmacKeyId;
+
+    @Field("integrity_hmac")
+    private String integrityHmac;
 }

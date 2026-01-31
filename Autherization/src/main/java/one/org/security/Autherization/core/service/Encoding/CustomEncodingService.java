@@ -3,13 +3,12 @@ package one.org.security.Autherization.core.service.Encoding;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import one.org.security.common.PasswordEncoding.EncodingService;
 
 @Component
 public class CustomEncodingService implements PasswordEncoder {
 
     @Autowired
-    private EncodingService encodingService;
+    private HmacEncodingService hmacEncodingService;
 
     @Override
     public String encode(CharSequence rawPassword) {
@@ -17,7 +16,7 @@ public class CustomEncodingService implements PasswordEncoder {
         if (rawPassword == null) {
             return null;
         }
-        return encodingService.encode(rawPassword.toString());
+        return hmacEncodingService.encode(rawPassword.toString());
     }
 
     @Override
@@ -27,7 +26,7 @@ public class CustomEncodingService implements PasswordEncoder {
         if (rawPassword == null || encodedPassword == null) {
             return false;
         }
-        boolean result = encodingService.verify(rawPassword.toString(), encodedPassword);
+        boolean result = hmacEncodingService.verify(rawPassword.toString(), encodedPassword);
         System.out.println("CustomEncodingService: matches result: " + result);
         return result;
     }

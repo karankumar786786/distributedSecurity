@@ -20,7 +20,7 @@ public class ClientEntity {
     private ObjectId userId;
     @Indexed(unique = true)
     private String clientId;
-    private String clientSecret;
+    private String hashedClientSecretHmac;
     private String redirectUrl;
     private boolean writeAllowed;
     private boolean showConsentForm;

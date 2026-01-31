@@ -67,3 +67,14 @@ security:
   policy:
     max-login-attempts: 3
     lockout-duration-hours: 6
+integrity:
+  oldkeyId: "697dffd149bb626fc64990d2"
+  newkeyId: "697dffef49bb626fc64990d3"
+  oldkey: "old-hmac-secret-key-old-hmac-secret-key"
+  newkey: "new-hmac-secret-key-new-hmac-secret-key"
+  fidoOldkeyId: "697e001a49bb626fc64990d4"
+  fidoNewkeyId: "697e003d49bb626fc64990d5"
+  fidoOldkey: "fido-old-hmac-secret-key-fido-old-hmac-secret-key"
+  fidoNewkey: "fido-new-hmac-secret-key-fido-new-hmac-secret-key"
+encryption:
+  master-key: "1234567890123456"

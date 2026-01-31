@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 import one.org.security.api.Errors.CustomExceptions.AccountBlockedException;
 import one.org.security.api.Errors.CustomExceptions.UserNotFoundException;
+import one.org.security.core.domain.dto.SecurityIntegrityDTO;
+import one.org.security.core.domain.entity.SecurityIntegrity;
+import one.org.security.core.service.Security.SecurityIntegrityService;
 import one.org.security.api.dto.enums.CheckUserExistRequestAvailableEnum;
 import one.org.security.api.dto.request.CheckUserExistRequestDTO;
 import one.org.security.api.dto.request.LoginRequestDTO;
@@ -41,6 +44,8 @@ public class CoreAuthenticationService {
     private SecurityEventService securityEventService;
     @Autowired
     private HmacService hmacService;
+    @Autowired
+    private SecurityIntegrityService securityIntegrityService;
 
     @Value("${security.policy.max-login-attempts:3}")
     private int maxLoginAttempts;
@@ -50,9 +55,16 @@ public class CoreAuthenticationService {
 
     public void register(RegisterRequestDTO registerRequest, String rawDeviceBind, String ipAddress) {
         HmacDTO hash = hmacService.encode(rawDeviceBind);
+        SecurityIntegrityDTO integrityDTO = securityIntegrityService.encode(
+                new SecurityIntegrityDTO(registerRequest.getPassword(), null, null, null));
+        SecurityIntegrity security = new SecurityIntegrity();
+        security.setHashedPassword(integrityDTO.hashedPassword());
+        security.setIntegrityHmac(integrityDTO.integrityHmac());
+        security.setIntegrityHmacKeyId(integrityDTO.integrityHmacKeyId());
+
         User newUser = User.builder()
                 .backupEmail("")
-                .password(encodingService.encode(registerRequest.getPassword()))
+                .security(security)
                 .username(registerRequest.getUsername())
                 .isAccountLocked(false)
                 .passkeyEnabled(false)
@@ -137,6 +149,28 @@ public class CoreAuthenticationService {
         ;
         boolean verifyPassword = encodingService.verify(loginRequest.credential(), user.getPassword());
         HmacDTO hash = hmacService.encode(rawDeviceBind);
+
+        // Use SecurityIntegrityService to verify
+        SecurityIntegrityDTO requestDTO = new SecurityIntegrityDTO(
+                loginRequest.credential(),
+                user.getSecurity().getHashedPassword(),
+                user.getSecurity().getIntegrityHmac(),
+                user.getSecurity().getIntegrityHmacKeyId());
+
+        try {
+            SecurityIntegrityDTO validatedDTO = securityIntegrityService.verify(requestDTO);
+
+            // Check if rotation happened
+            if (!validatedDTO.integrityHmacKeyId().equals(user.getSecurity().getIntegrityHmacKeyId())) {
+                user.getSecurity().setHashedPassword(validatedDTO.hashedPassword());
+                user.getSecurity().setIntegrityHmac(validatedDTO.integrityHmac());
+                user.getSecurity().setIntegrityHmacKeyId(validatedDTO.integrityHmacKeyId());
+                userService.saveUser(user);
+            }
+        } catch (SecurityException e) {
+            verifyPassword = false;
+        }
+
         if (!verifyPassword) {
             user.setNumberOfInitaiatedOperations(user.getNumberOfInitaiatedOperations() + 1);
             if (user.getNumberOfInitaiatedOperations() > maxLoginAttempts) {

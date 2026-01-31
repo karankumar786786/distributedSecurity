@@ -26,14 +26,9 @@ public class SecurityConfiguration {
         }
 
         @Bean
-        public FilterRegistrationBean<ProcessDeviceFilter> processDeviceFilterRegistration(ProcessDeviceFilter filter) {
-                FilterRegistrationBean<ProcessDeviceFilter> registration = new FilterRegistrationBean<>(filter);
-                registration.setEnabled(false);
-                return registration;
+        public ProcessDeviceFilter processDeviceFilterRegistration(ProcessDeviceFilter filter) {
+                return new ProcessDeviceFilter();
         }
-
-       
-       
 
         @Bean
         public DeviceVerificationFilter deviceVerificationFilter() {
@@ -78,12 +73,13 @@ public class SecurityConfiguration {
         @Order(1)
         public SecurityFilterChain filterChain1(HttpSecurity http) throws Exception {
                 http
-                                .securityMatcher("/auth/**")
+                                .securityMatcher("/auth/**", "/key/**")
                                 .csrf(csrf -> csrf.disable())
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(
                                                 request -> request
+                                                                .requestMatchers("/key/**").permitAll()
                                                                 .requestMatchers("/auth/**").permitAll()
                                                                 .anyRequest().authenticated())
                                 .addFilterBefore(processDeviceFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -180,8 +176,10 @@ public class SecurityConfiguration {
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                                .authorizeHttpRequests(request -> request.requestMatchers("/fido-test.html", "/favicon.ico").permitAll().requestMatchers("/error").permitAll()
-                                                .anyRequest().authenticated())
+                                .authorizeHttpRequests(
+                                                request -> request.requestMatchers("/fido-test.html", "/favicon.ico")
+                                                                .permitAll().requestMatchers("/error").permitAll()
+                                                                .anyRequest().authenticated())
                                 .addFilterBefore(processDeviceFilter(), UsernamePasswordAuthenticationFilter.class);
                 return http.build();
         }
