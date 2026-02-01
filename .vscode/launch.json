@@ -139,6 +139,16 @@
       "projectName": "ResourceServer",
       "args": "",
       "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-ClientApplication<client>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "one.org.security.client.ClientApplication",
+      "projectName": "client",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
     }
   ]
 }

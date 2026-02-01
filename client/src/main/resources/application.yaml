@@ -1,3 +1,33 @@
 spring:
   application:
     name: client
+  security:
+    oauth2:
+      client:
+        registration:
+          testclient1:
+            provider: spring
+            client-id: testclient1
+            client-secret: b598562a633e48a6a016c680ebcee695
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: openid, read
+            client-name: testclient1
+        provider:
+          spring:
+            issuer-uri: http://localhost:12000
+            user-info-uri: http://localhost:11000/user/info
+            # JWK Set URI is usually discovered from issuer, but can be explicit if needed
+            # jwk-set-uri: http://localhost:12000/oauth2/jwks
+
+server:
+  port: 13000
+  servlet:
+    session:
+      cookie:
+        same-site: lax
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: TRACE

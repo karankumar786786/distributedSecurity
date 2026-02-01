@@ -33,9 +33,11 @@ public class SecurityConfig {
                         autherize -> autherize
                                 .requestMatchers(HttpMethod.GET, "/read").hasAnyAuthority("SCOPE_read")
                                 .requestMatchers(HttpMethod.GET, "/write").hasAllAuthorities("SCOPE_write")
+                                .requestMatchers(HttpMethod.GET,"/user/info").hasAllAuthorities("SCOPE_read")
                                 .anyRequest().authenticated())
                 .oauth2ResourceServer(
-                        oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+                        oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+                ;
         return http.build();
     }
 }
