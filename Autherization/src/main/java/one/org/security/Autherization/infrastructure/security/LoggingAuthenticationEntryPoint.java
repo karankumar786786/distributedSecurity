@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,10 +11,10 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class LoggingAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    private final AuthenticationEntryPoint delegate;
+    private final String loginFormUrl;
 
     public LoggingAuthenticationEntryPoint(String loginFormUrl) {
-        this.delegate = new LoginUrlAuthenticationEntryPoint(loginFormUrl);
+        this.loginFormUrl = loginFormUrl;
     }
 
     @Override
@@ -23,7 +22,15 @@ public class LoggingAuthenticationEntryPoint implements AuthenticationEntryPoint
             AuthenticationException authException) throws IOException, ServletException {
         System.out.println("DEBUG: LoggingAuthenticationEntryPoint - Commencing redirect due to exception: "
                 + authException.getMessage());
-        authException.printStackTrace();
-        delegate.commence(request, response, authException);
+
+        String queryString = request.getQueryString();
+        String currentUrl = request.getRequestURL().toString() + (queryString == null ? "" : "?" + queryString);
+
+        String redirectUrl = org.springframework.web.util.UriComponentsBuilder.fromHttpUrl(loginFormUrl)
+                .queryParam("return_to", currentUrl)
+                .build()
+                .toUriString();
+
+        response.sendRedirect(redirectUrl);
     }
 }

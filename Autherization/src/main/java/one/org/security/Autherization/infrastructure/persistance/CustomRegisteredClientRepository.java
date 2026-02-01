@@ -92,8 +92,7 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
                 .build();
 
         System.out.println("DEBUG: Returning RegisteredClient: " + registeredClient.getClientId());
-        System.out.println("DEBUG: Grant Types: " + registeredClient.getAuthorizationGrantTypes());
-        System.out.println("DEBUG: Scopes: " + registeredClient.getScopes());
+        System.out.println("DEBUG: ALLOWED SCOPES: " + registeredClient.getScopes());
         System.out.println("DEBUG: Redirect URIs: " + registeredClient.getRedirectUris());
 
         return registeredClient;

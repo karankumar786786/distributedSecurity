@@ -1,6 +1,5 @@
 package one.org.security.Autherization.infrastructure.config;
 
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -71,6 +70,8 @@ public class SecurityConfig {
                                                                                                                                         scopes.add("personaldata");
                                                                                                                                 })))))
                                 .authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .exceptionHandling(exceptions -> exceptions
                                                 .defaultAuthenticationEntryPointFor(
                                                                 new one.org.security.Autherization.infrastructure.security.LoggingAuthenticationEntryPoint(

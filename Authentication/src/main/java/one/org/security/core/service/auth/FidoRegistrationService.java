@@ -54,7 +54,7 @@ public class FidoRegistrationService {
             RedisService redisService,
             @Value("${fido.rp.id:localhost}") String rpId,
             @Value("${fido.rp.name:Security Service}") String rpName,
-            @Value("${fido.rp.origins:http://localhost:10000,http://localhost:3000,http://localhost:8080}") Set<String> origins,
+            @Value("${fido.rp.origins:http://localhost:10000,http://localhost:3000,http://localhost:8080,http://localhost:5173}") Set<String> origins,
             UserRepository userRepository) {
         this.userService = userService;
         this.redisService = redisService;

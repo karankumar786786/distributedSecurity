@@ -11,7 +11,7 @@ spring:
             client-secret: b598562a633e48a6a016c680ebcee695
             authorization-grant-type: authorization_code
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-            scope: openid, read
+            scope: openid,read
             client-name: testclient1
         provider:
           spring:

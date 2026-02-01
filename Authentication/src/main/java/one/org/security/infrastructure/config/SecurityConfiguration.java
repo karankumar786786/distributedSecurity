@@ -74,6 +74,7 @@ public class SecurityConfiguration {
         public SecurityFilterChain filterChain1(HttpSecurity http) throws Exception {
                 http
                                 .securityMatcher("/auth/**", "/key/**")
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                                 .csrf(csrf -> csrf.disable())
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -91,6 +92,7 @@ public class SecurityConfiguration {
         public SecurityFilterChain filterChain2(HttpSecurity http) throws Exception {
                 http
                                 .securityMatcher("/init/**")
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                                 .csrf(csrf -> csrf.disable())
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -136,6 +138,7 @@ public class SecurityConfiguration {
         public SecurityFilterChain filterChain3(HttpSecurity http) throws Exception {
                 http
                                 .securityMatcher("/resend-otp/**")
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                                 .csrf(csrf -> csrf.disable())
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -158,6 +161,7 @@ public class SecurityConfiguration {
         public SecurityFilterChain filterChain4(HttpSecurity http) throws Exception {
                 http
                                 .securityMatcher("/account/**")
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                                 .csrf(csrf -> csrf.disable())
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -172,6 +176,7 @@ public class SecurityConfiguration {
         @Order(5)
         public SecurityFilterChain filterChain5(HttpSecurity http) throws Exception {
                 http
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                                 .csrf(csrf -> csrf.disable())
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -182,6 +187,20 @@ public class SecurityConfiguration {
                                                                 .anyRequest().authenticated())
                                 .addFilterBefore(processDeviceFilter(), UsernamePasswordAuthenticationFilter.class);
                 return http.build();
+        }
+
+        @Bean
+        public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+                org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
+                configuration.setAllowedOrigins(java.util.Arrays.asList("http://localhost:5173",
+                                "http://localhost:10000", "http://localhost:12000"));
+                configuration.setAllowedMethods(
+                                java.util.Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+                configuration.setAllowedHeaders(java.util.Arrays.asList("*"));
+                configuration.setAllowCredentials(true);
+                org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
+                return source;
         }
 
 }

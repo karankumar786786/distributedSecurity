@@ -19,7 +19,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import one.org.security.Autherization.api.error.CustomError.ClientNotFoundException;
 import one.org.security.Autherization.api.error.StandardErrorApiResponse;
 
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = "one.org.security.Autherization.api")
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ClientNotFoundException.class)

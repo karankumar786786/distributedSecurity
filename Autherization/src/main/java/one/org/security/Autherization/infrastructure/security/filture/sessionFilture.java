@@ -43,6 +43,7 @@ public class SessionFilture extends OncePerRequestFilter {
             for (Cookie c : cookies) {
                 if ("SESSION".equals(c.getName())) {
                     sessionData = c.getValue();
+                    break;
                 }
             }
 
@@ -50,7 +51,6 @@ public class SessionFilture extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
-
             String[] data = sessionData.split("\\|");
             if (data.length < 4) {
                 filterChain.doFilter(request, response);
@@ -63,11 +63,16 @@ public class SessionFilture extends OncePerRequestFilter {
             String hashedSessionBindKeyId = data[3];
 
             // If device bind is missing (e.g. from ProcessDeviceFilter check failure or
-            // skip), continue anonymous
+            // skip), try to get it from User-Agent header directly
             if (rawDeviceBind == null) {
-                System.out.println("DEBUG: SessionFilter - WAITING for RAW-DEVICE-BIND. Proceeding anonymous.");
-                filterChain.doFilter(request, response);
-                return;
+                rawDeviceBind = request.getHeader("User-Agent");
+                if (rawDeviceBind == null) {
+                    System.out.println(
+                            "DEBUG: SessionFilter - No RAW-DEVICE-BIND and no User-Agent. Proceeding anonymous.");
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+                System.out.println("DEBUG: SessionFilter - Using User-Agent header as fallback for device bind");
             }
 
             String rawSessionBind = rawDeviceBind + userId + username;
@@ -83,7 +88,7 @@ public class SessionFilture extends OncePerRequestFilter {
                 // require 401.
                 // Given the issue, let's treat it as invalid session -> anonymous.
                 filterChain.doFilter(request, response);
-                 return;
+                return;
             }
 
             UserMockEntity user = UserMockEntity.builder()
