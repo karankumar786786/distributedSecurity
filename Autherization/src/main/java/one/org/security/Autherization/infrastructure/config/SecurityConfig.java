@@ -75,7 +75,7 @@ public class SecurityConfig {
                                 .exceptionHandling(exceptions -> exceptions
                                                 .defaultAuthenticationEntryPointFor(
                                                                 new one.org.security.Autherization.infrastructure.security.LoggingAuthenticationEntryPoint(
-                                                                                "/login"),
+                                                                                "http://localhost:5713/login"),
                                                                 new MediaTypeRequestMatcher(MediaType.TEXT_HTML)))
                                 // 3. IMPORTANT: Your filters must run here to provide the Principal during
                                 // /authorize

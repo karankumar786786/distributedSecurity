@@ -14,23 +14,31 @@ import java.io.IOException;
 @Component
 public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(CustomAuthenticationFailureHandler.class);
+        private static final Logger logger = LoggerFactory.getLogger(CustomAuthenticationFailureHandler.class);
 
-    @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-            AuthenticationException exception) throws IOException, ServletException {
+        @Override
+        public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+                        AuthenticationException exception) throws IOException, ServletException {
 
-        logger.error("OAuth2 authentication failed: {}", exception.getMessage(), exception);
+                System.out.println("=== AUTHENTICATION FAILURE ===");
+                System.out.println("Request URI: " + request.getRequestURI());
+                System.out.println("Exception type: " + exception.getClass().getName());
+                System.out.println("!!! CRITICAL FAILURE !!!: " + exception.getMessage());
+                exception.printStackTrace();
+                logger.error("OAuth2 authentication failed: {}", exception.getMessage(), exception);
 
-        // Clean up cookies
-        CookieUtils.deleteCookie(request, response,
-                HttpCookieOAuth2AuthorizationRequestRepository.OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
-        CookieUtils.deleteCookie(request, response,
-                HttpCookieOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME);
+                // Clean up cookies
+                System.out.println("=== CLEANING UP COOKIES AFTER FAILURE ===");
+                CookieUtils.deleteCookie(request, response,
+                                HttpCookieOAuth2AuthorizationRequestRepository.OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
+                CookieUtils.deleteCookie(request, response,
+                                HttpCookieOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME);
 
-        // Redirect to login page with error
-        setDefaultFailureUrl("/login?error=true");
+                // Redirect to login page with error
+                setDefaultFailureUrl("/login?error=true");
 
-        super.onAuthenticationFailure(request, response, exception);
-    }
+                System.out.println("=== CALLING SUPER.onAuthenticationFailure ===");
+                super.onAuthenticationFailure(request, response, exception);
+                System.out.println("=== AUTHENTICATION FAILURE COMPLETE ===");
+        }
 }

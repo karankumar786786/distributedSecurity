@@ -21,17 +21,28 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
 
+        System.out.println("=== AUTHENTICATION SUCCESS ===");
+        System.out.println("Request URI: " + request.getRequestURI());
+        System.out.println("Authentication type: " + authentication.getClass().getName());
+
         logger.info("OAuth2 authentication successful");
 
         if (authentication.getPrincipal() instanceof OAuth2User) {
             OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+            System.out.println("=== OAUTH2 USER DETAILS ===");
+            System.out.println("Attributes: " + oAuth2User.getAttributes());
+            System.out.println("Authorities: " + oAuth2User.getAuthorities());
             logger.info("User authenticated: {}", oAuth2User.getAttributes());
 
             // Store user information in session
             request.getSession().setAttribute("user", oAuth2User.getAttributes());
+            System.out.println("User stored in session");
+        } else {
+            System.out.println("WARNING: Principal is not OAuth2User: " + authentication.getPrincipal().getClass());
         }
 
         // Clean up authorization request cookies
+        System.out.println("=== CLEANING UP COOKIES ===");
         CookieUtils.deleteCookie(request, response,
                 HttpCookieOAuth2AuthorizationRequestRepository.OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
         CookieUtils.deleteCookie(request, response,
@@ -41,6 +52,8 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         setDefaultTargetUrl("/");
         setAlwaysUseDefaultTargetUrl(false);
 
+        System.out.println("=== CALLING SUPER.onAuthenticationSuccess ===");
         super.onAuthenticationSuccess(request, response, authentication);
+        System.out.println("=== AUTHENTICATION SUCCESS COMPLETE ===");
     }
 }

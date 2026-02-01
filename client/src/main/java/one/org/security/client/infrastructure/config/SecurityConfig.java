@@ -29,16 +29,27 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        System.out.println("=== CONFIGURING SECURITY FILTER CHAIN ===");
         http
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/login", "/error").permitAll()
-                        .anyRequest().authenticated())
-                .oauth2Login(oauth2 -> oauth2
-                        .authorizationEndpoint(authorization -> authorization
-                                .authorizationRequestRepository(authorizationRequestRepository()))
-                        .successHandler(successHandler)
-                        .failureHandler(failureHandler)
-                        .defaultSuccessUrl("/", true));
+                .authorizeHttpRequests(authorize -> {
+                    System.out.println("=== CONFIGURING AUTHORIZATION RULES ===");
+                    authorize
+                            .requestMatchers("/", "/login", "/error").permitAll()
+                            .anyRequest().authenticated();
+                })
+                .oauth2Login(oauth2 -> {
+                    System.out.println("=== CONFIGURING OAUTH2 LOGIN ===");
+                    oauth2
+                            .authorizationEndpoint(authorization -> {
+                                System.out.println("=== SETTING AUTHORIZATION REQUEST REPOSITORY ===");
+                                authorization.authorizationRequestRepository(authorizationRequestRepository());
+                            })
+                            .successHandler(successHandler)
+                            .failureHandler(failureHandler)
+                            .defaultSuccessUrl("/", true);
+                    System.out.println("=== OAUTH2 LOGIN CONFIGURED ===");
+                });
+        System.out.println("=== SECURITY FILTER CHAIN BUILT ===");
         return http.build();
     }
 }

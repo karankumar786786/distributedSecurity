@@ -16,31 +16,54 @@ public class HttpCookieOAuth2AuthorizationRequestRepository
 
     @Override
     public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
-        return CookieUtils.getCookie(request, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME)
-                .map(cookie -> CookieUtils.deserialize(cookie, OAuth2AuthorizationRequest.class))
+        System.out.println("=== LOADING AUTHORIZATION REQUEST ===");
+        System.out.println("Request URI: " + request.getRequestURI());
+        OAuth2AuthorizationRequest authRequest = CookieUtils
+                .getCookie(request, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME)
+                .map(cookie -> {
+                    System.out.println("Found authorization request cookie");
+                    return CookieUtils.deserialize(cookie, OAuth2AuthorizationRequest.class);
+                })
                 .orElse(null);
+        if (authRequest != null) {
+            System.out.println("Loaded authorization request: " + authRequest.getAuthorizationUri());
+        } else {
+            System.out.println("No authorization request found in cookies");
+        }
+        return authRequest;
     }
 
     @Override
     public void saveAuthorizationRequest(OAuth2AuthorizationRequest authorizationRequest, HttpServletRequest request,
             HttpServletResponse response) {
+        System.out.println("=== SAVING AUTHORIZATION REQUEST ===");
         if (authorizationRequest == null) {
+            System.out.println("Authorization request is null, deleting cookies");
             CookieUtils.deleteCookie(request, response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
             CookieUtils.deleteCookie(request, response, REDIRECT_URI_PARAM_COOKIE_NAME);
             return;
         }
 
+        System.out.println("Saving authorization request to cookie");
+        System.out.println("Authorization URI: " + authorizationRequest.getAuthorizationUri());
+        System.out.println("Client ID: " + authorizationRequest.getClientId());
         CookieUtils.addCookie(response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME,
                 CookieUtils.serialize(authorizationRequest), cookieExpireSeconds);
         String redirectUriAfterLogin = request.getParameter(REDIRECT_URI_PARAM_COOKIE_NAME);
         if (StringUtils.isNotBlank(redirectUriAfterLogin)) {
+            System.out.println("Saving redirect URI: " + redirectUriAfterLogin);
             CookieUtils.addCookie(response, REDIRECT_URI_PARAM_COOKIE_NAME, redirectUriAfterLogin, cookieExpireSeconds);
         }
+        System.out.println("=== AUTHORIZATION REQUEST SAVED ===");
     }
 
     @Override
     public OAuth2AuthorizationRequest removeAuthorizationRequest(HttpServletRequest request,
             HttpServletResponse response) {
-        return this.loadAuthorizationRequest(request);
+        System.out.println("=== REMOVING AUTHORIZATION REQUEST ===");
+        OAuth2AuthorizationRequest authRequest = this.loadAuthorizationRequest(request);
+        System.out.println(
+                "Removed authorization request: " + (authRequest != null ? authRequest.getAuthorizationUri() : "null"));
+        return authRequest;
     }
 }
