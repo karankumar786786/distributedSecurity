@@ -23,6 +23,11 @@ public class AuthorizationEntity implements java.io.Serializable {
     private Set<String> authorizedScopes;
     private Map<String, Object> attributes;
     private String state;
+    private String clientState;
+
+    private String codeChallenge;
+    private String codeChallengeMethod;
+    private String codeVerifier;
 
     private TokenEntity authorizationCode;
     private TokenEntity accessToken;

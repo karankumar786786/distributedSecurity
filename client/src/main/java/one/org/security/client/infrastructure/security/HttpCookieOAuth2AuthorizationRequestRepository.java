@@ -1,5 +1,8 @@
 package one.org.security.client.infrastructure.security;
 
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,21 +17,33 @@ public class HttpCookieOAuth2AuthorizationRequestRepository
     public static final String REDIRECT_URI_PARAM_COOKIE_NAME = "redirect_uri";
     private static final int cookieExpireSeconds = 180;
 
+    private void logToFile(String message) {
+        try (FileWriter fw = new FileWriter("/Users/rahulgupta/Desktop/distributedSecurity/AuthDebug.txt", true);
+                PrintWriter pw = new PrintWriter(fw)) {
+            pw.println(LocalDateTime.now() + " - [CLIENT] " + message);
+        } catch (Exception e) {
+        }
+    }
+
     @Override
     public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
-        System.out.println("=== LOADING AUTHORIZATION REQUEST ===");
-        System.out.println("Request URI: " + request.getRequestURI());
+        String requestUri = request.getRequestURI();
+        logToFile("LOADING AUTHORIZATION REQUEST for URI: " + requestUri);
+
         OAuth2AuthorizationRequest authRequest = CookieUtils
                 .getCookie(request, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME)
-                .map(cookie -> {
-                    System.out.println("Found authorization request cookie");
-                    return CookieUtils.deserialize(cookie, OAuth2AuthorizationRequest.class);
-                })
+                .map(cookie -> CookieUtils.deserialize(cookie, OAuth2AuthorizationRequest.class))
                 .orElse(null);
+
         if (authRequest != null) {
-            System.out.println("Loaded authorization request: " + authRequest.getAuthorizationUri());
+            String paramState = request.getParameter("state");
+            logToFile("  Loaded Cookie State:  " + authRequest.getState());
+            logToFile("  Request Param State: " + paramState);
+            if (paramState != null && !paramState.equals(authRequest.getState())) {
+                logToFile("  !!! STATE MISMATCH detected during load !!!");
+            }
         } else {
-            System.out.println("No authorization request found in cookies");
+            logToFile("  No authorization request found in cookies for " + requestUri);
         }
         return authRequest;
     }
@@ -36,34 +51,33 @@ public class HttpCookieOAuth2AuthorizationRequestRepository
     @Override
     public void saveAuthorizationRequest(OAuth2AuthorizationRequest authorizationRequest, HttpServletRequest request,
             HttpServletResponse response) {
-        System.out.println("=== SAVING AUTHORIZATION REQUEST ===");
+        logToFile("SAVING AUTHORIZATION REQUEST");
         if (authorizationRequest == null) {
-            System.out.println("Authorization request is null, deleting cookies");
+            logToFile("  Request is null, deleting cookies");
             CookieUtils.deleteCookie(request, response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
             CookieUtils.deleteCookie(request, response, REDIRECT_URI_PARAM_COOKIE_NAME);
             return;
         }
 
-        System.out.println("Saving authorization request to cookie");
-        System.out.println("Authorization URI: " + authorizationRequest.getAuthorizationUri());
-        System.out.println("Client ID: " + authorizationRequest.getClientId());
+        logToFile("  Client ID: " + authorizationRequest.getClientId());
+        logToFile("  State:     " + authorizationRequest.getState());
+        logToFile("  Challenge: " + authorizationRequest.getAttribute("code_challenge"));
+        logToFile("  Verifier:  " + authorizationRequest.getAttribute("code_verifier"));
+
         CookieUtils.addCookie(response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME,
                 CookieUtils.serialize(authorizationRequest), cookieExpireSeconds);
         String redirectUriAfterLogin = request.getParameter(REDIRECT_URI_PARAM_COOKIE_NAME);
         if (StringUtils.isNotBlank(redirectUriAfterLogin)) {
-            System.out.println("Saving redirect URI: " + redirectUriAfterLogin);
+            logToFile("  Saving redirect URI: " + redirectUriAfterLogin);
             CookieUtils.addCookie(response, REDIRECT_URI_PARAM_COOKIE_NAME, redirectUriAfterLogin, cookieExpireSeconds);
         }
-        System.out.println("=== AUTHORIZATION REQUEST SAVED ===");
     }
 
     @Override
     public OAuth2AuthorizationRequest removeAuthorizationRequest(HttpServletRequest request,
             HttpServletResponse response) {
-        System.out.println("=== REMOVING AUTHORIZATION REQUEST ===");
+        logToFile("REMOVING AUTHORIZATION REQUEST");
         OAuth2AuthorizationRequest authRequest = this.loadAuthorizationRequest(request);
-        System.out.println(
-                "Removed authorization request: " + (authRequest != null ? authRequest.getAuthorizationUri() : "null"));
         return authRequest;
     }
 }

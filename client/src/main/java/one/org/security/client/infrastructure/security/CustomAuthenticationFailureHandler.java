@@ -10,6 +10,10 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.io.StringWriter;
 
 @Component
 public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
@@ -24,6 +28,16 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
                 System.out.println("Request URI: " + request.getRequestURI());
                 System.out.println("Exception type: " + exception.getClass().getName());
                 System.out.println("!!! CRITICAL FAILURE !!!: " + exception.getMessage());
+
+                logToFile("CLIENT AUTH FAILURE: " + exception.getMessage());
+                if (exception.getCause() != null) {
+                        logToFile("  Cause: " + exception.getCause().getMessage());
+                }
+
+                StringWriter sw = new StringWriter();
+                exception.printStackTrace(new PrintWriter(sw));
+                logToFile("  Stack Trace: " + sw.toString());
+
                 exception.printStackTrace();
                 logger.error("OAuth2 authentication failed: {}", exception.getMessage(), exception);
 
@@ -40,5 +54,15 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
                 System.out.println("=== CALLING SUPER.onAuthenticationFailure ===");
                 super.onAuthenticationFailure(request, response, exception);
                 System.out.println("=== AUTHENTICATION FAILURE COMPLETE ===");
+        }
+
+        private void logToFile(String message) {
+                try (FileWriter fw = new FileWriter("/Users/rahulgupta/Desktop/distributedSecurity/AuthDebug.txt",
+                                true);
+                                PrintWriter pw = new PrintWriter(fw)) {
+                        pw.println(LocalDateTime.now() + " - [CLIENT] " + message);
+                } catch (Exception e) {
+                        // Ignore log errors
+                }
         }
 }

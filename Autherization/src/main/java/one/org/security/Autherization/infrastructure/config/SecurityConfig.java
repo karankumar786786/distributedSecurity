@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 
 import one.org.security.Autherization.infrastructure.security.filture.SessionFilture;
 import one.org.security.Autherization.infrastructure.security.filture.LoggingFilter;
+import one.org.security.Autherization.infrastructure.security.filture.TokenEndpointLoggingFilter;
 import one.org.security.common.Filtures.ProcessDeviceFilter;
 
 @Configuration
@@ -36,6 +37,11 @@ public class SecurityConfig {
         @Bean
         public LoggingFilter loggingFilter() {
                 return new LoggingFilter();
+        }
+
+        @Bean
+        public TokenEndpointLoggingFilter tokenEndpointLoggingFilter() {
+                return new TokenEndpointLoggingFilter();
         }
 
         @Bean
@@ -83,8 +89,9 @@ public class SecurityConfig {
                                 .addFilterAfter(processDeviceFilter(),
                                                 org.springframework.security.web.header.HeaderWriterFilter.class)
                                 .addFilterAfter(sessionFilture(), ProcessDeviceFilter.class)
+                                .addFilterAfter(tokenEndpointLoggingFilter(), SessionFilture.class)
                                 .addFilterAfter(new one.org.security.Autherization.infrastructure.security.filture.DebugFilter(),
-                                                SessionFilture.class);
+                                                TokenEndpointLoggingFilter.class);
                 return http.build();
         }
 
@@ -101,6 +108,7 @@ public class SecurityConfig {
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(authorize -> authorize
                                                 .requestMatchers("/key/client/**").permitAll()
+                                                .requestMatchers("/debug/**").permitAll()
                                                 .requestMatchers("/login").permitAll() // Explicitly permit login
                                                 .requestMatchers("/error").permitAll()
                                                 .anyRequest().authenticated())

@@ -28,13 +28,30 @@ public class SessionFilture extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
+            System.out.println("=================================================");
+            System.out.println("=== SESSION FILTER START ===");
+            System.out.println("Request URI: " + request.getRequestURI());
+            System.out.println("Request Method: " + request.getMethod());
+            System.out.println("Query String: " + request.getQueryString());
+
             String rawDeviceBind = (String) request.getAttribute("RAW-DEVICE-BIND");
+            System.out.println("RAW-DEVICE-BIND attribute: " + rawDeviceBind);
+
             Cookie[] cookies = request.getCookies();
             System.out.println("DEBUG: SessionFilter - Cookies found: " + (cookies != null ? cookies.length : 0));
+
+            if (cookies != null) {
+                System.out.println("=== ALL COOKIES ===");
+                for (Cookie c : cookies) {
+                    System.out.println("Cookie: " + c.getName() + " = "
+                            + c.getValue().substring(0, Math.min(50, c.getValue().length())) + "...");
+                }
+            }
 
             // Non-blocking checks: if any check fails, proceed without setting
             // authentication
             if (cookies == null) {
+                System.out.println("!!! NO COOKIES FOUND - Proceeding anonymous !!!");
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -43,16 +60,25 @@ public class SessionFilture extends OncePerRequestFilter {
             for (Cookie c : cookies) {
                 if ("SESSION".equals(c.getName())) {
                     sessionData = c.getValue();
+                    System.out.println("=== SESSION COOKIE FOUND ===");
+                    System.out.println("SESSION cookie value: " + sessionData);
                     break;
                 }
             }
 
             if (sessionData == null) {
+                System.out.println("!!! NO SESSION COOKIE - Proceeding anonymous !!!");
                 filterChain.doFilter(request, response);
                 return;
             }
+
+            System.out.println("=== PARSING SESSION DATA ===");
             String[] data = sessionData.split("\\|");
+            System.out.println("Session data parts: " + data.length);
+
             if (data.length < 4) {
+                System.out.println("!!! INVALID SESSION FORMAT (expected 4 parts, got " + data.length
+                        + ") - Proceeding anonymous !!!");
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -62,35 +88,44 @@ public class SessionFilture extends OncePerRequestFilter {
             String hashedSessionBind = data[2];
             String hashedSessionBindKeyId = data[3];
 
+            System.out.println("Parsed Session Data:");
+            System.out.println("  userId: " + userId);
+            System.out.println("  username: " + username);
+            System.out.println("  hashedSessionBind: "
+                    + hashedSessionBind.substring(0, Math.min(20, hashedSessionBind.length())) + "...");
+            System.out.println("  hashedSessionBindKeyId: " + hashedSessionBindKeyId);
+
             // If device bind is missing (e.g. from ProcessDeviceFilter check failure or
             // skip), try to get it from User-Agent header directly
             if (rawDeviceBind == null) {
+                System.out.println("=== RAW-DEVICE-BIND is null, using User-Agent fallback ===");
                 rawDeviceBind = request.getHeader("User-Agent");
                 if (rawDeviceBind == null) {
-                    System.out.println(
-                            "DEBUG: SessionFilter - No RAW-DEVICE-BIND and no User-Agent. Proceeding anonymous.");
+                    System.out.println("!!! NO RAW-DEVICE-BIND AND NO USER-AGENT - Proceeding anonymous !!!");
                     filterChain.doFilter(request, response);
                     return;
                 }
-                System.out.println("DEBUG: SessionFilter - Using User-Agent header as fallback for device bind");
+                System.out.println("Using User-Agent as device bind: "
+                        + rawDeviceBind.substring(0, Math.min(50, rawDeviceBind.length())) + "...");
             }
 
+            System.out.println("=== HMAC VERIFICATION ===");
             String rawSessionBind = rawDeviceBind + userId + username;
+            System.out.println("rawSessionBind constructed (first 50 chars): "
+                    + rawSessionBind.substring(0, Math.min(50, rawSessionBind.length())) + "...");
+
             boolean verifyDevice = hmacService
                     .verify(new HmacDTO(null, rawSessionBind, hashedSessionBindKeyId, hashedSessionBind));
+            System.out.println("HMAC Verification Result: " + verifyDevice);
 
             if (!verifyDevice) {
-                System.out.println("DEBUG: SessionFilter - HMAC Verification Failed for user: " + username);
-                // If verification fails explicitly, we might want to log it and continue
-                // anonymous
-                // or return 400. For now, continuing anonymous is safer for the auth flow,
-                // preventing hard blocks on potential edge cases, but strict security might
-                // require 401.
-                // Given the issue, let's treat it as invalid session -> anonymous.
+                System.out
+                        .println("!!! HMAC VERIFICATION FAILED for user: " + username + " - Proceeding anonymous !!!");
                 filterChain.doFilter(request, response);
                 return;
             }
 
+            System.out.println("=== CREATING AUTHENTICATION ===");
             UserMockEntity user = UserMockEntity.builder()
                     .id(new ObjectId(userId))
                     .username(username)
@@ -100,9 +135,11 @@ public class SessionFilture extends OncePerRequestFilter {
                     user, null, user.getAuthorities());
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            System.out.println("DEBUG: SessionFilter - Authentication set for user: " + username + " on URI: "
-                    + request.getRequestURI());
-            System.out.println("DEBUG: Authentication.isAuthenticated() = " + authentication.isAuthenticated());
+            System.out.println("✓✓✓ AUTHENTICATION SET SUCCESSFULLY ✓✓✓");
+            System.out.println("User: " + username);
+            System.out.println("URI: " + request.getRequestURI());
+            System.out.println("Authentication.isAuthenticated(): " + authentication.isAuthenticated());
+            System.out.println("Authorities: " + user.getAuthorities());
 
             // Refresh cookie
             ResponseCookie sessionCookie = ResponseCookie.from("SESSION", sessionData).httpOnly(true)
@@ -112,9 +149,16 @@ public class SessionFilture extends OncePerRequestFilter {
                     .maxAge(60 * 60 * 24) // 1 day
                     .build();
             response.addHeader(HttpHeaders.SET_COOKIE, sessionCookie.toString());
+            System.out.println("Session cookie refreshed");
+            System.out.println("=== SESSION FILTER END ===");
+            System.out.println("=================================================");
 
             filterChain.doFilter(request, response);
         } catch (Exception e) {
+            System.out.println("!!! EXCEPTION IN SESSION FILTER !!!");
+            System.out.println("Exception: " + e.getClass().getName());
+            System.out.println("Message: " + e.getMessage());
+            e.printStackTrace();
             logger.error("Error in SessionFilter", e);
             // In case of error, proceed to next filter to avoid blocking valid error
             // handling or other flows

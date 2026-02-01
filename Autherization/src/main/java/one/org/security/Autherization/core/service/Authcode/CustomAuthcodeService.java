@@ -1,5 +1,8 @@
 package one.org.security.Autherization.core.service.Authcode;
 
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
@@ -29,9 +32,10 @@ public class CustomAuthcodeService implements OAuth2AuthorizationService {
 
     @Override
     public void save(OAuth2Authorization authorization) {
-        System.out.println("DEBUG: CustomAuthcodeService.save called for id: " + authorization.getId());
+        logToFile("save called for ID: " + authorization.getId());
         AuthorizationEntity entity = toEntity(authorization);
-        System.out.println("DEBUG: CustomAuthcodeService saving entity: " + entity);
+        logToFile("Saving entity with code: "
+                + (entity.getAuthorizationCode() != null ? entity.getAuthorizationCode().getTokenValue() : "NULL"));
         redisService.saveAuthorizationEntity(entity);
     }
 
@@ -68,25 +72,66 @@ public class CustomAuthcodeService implements OAuth2AuthorizationService {
     }
 
     private AuthorizationEntity toEntity(OAuth2Authorization authorization) {
+        logToFile("toEntity called for ID: " + authorization.getId());
+
+        java.util.Map<String, Object> attributes = new java.util.HashMap<>(authorization.getAttributes());
+
+        String codeChallenge = null;
+        String codeChallengeMethod = null;
+        String codeVerifier = null;
+        org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest req = null;
+
+        Object authRequest = authorization
+                .getAttribute("org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest");
+        if (authRequest instanceof org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest) {
+            req = (org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest) authRequest;
+
+            codeChallenge = (String) req.getAdditionalParameters().get("code_challenge");
+            if (codeChallenge == null)
+                codeChallenge = (String) req.getAttribute("code_challenge");
+
+            codeChallengeMethod = (String) req.getAdditionalParameters().get("code_challenge_method");
+            if (codeChallengeMethod == null)
+                codeChallengeMethod = (String) req.getAttribute("code_challenge_method");
+
+            codeVerifier = (String) req.getAdditionalParameters().get("code_verifier");
+            if (codeVerifier == null)
+                codeVerifier = (String) req.getAttribute("code_verifier");
+
+            if (codeChallenge != null) {
+                attributes.put("code_challenge", codeChallenge);
+                logToFile("toEntity: Promoted code_challenge: " + codeChallenge);
+            }
+            if (codeChallengeMethod != null) {
+                attributes.put("code_challenge_method", codeChallengeMethod);
+                logToFile("toEntity: Promoted code_challenge_method: " + codeChallengeMethod);
+            }
+
+            logToFile("toEntity: Exhaustive AuthRequest Log:");
+            logToFile("  Attributes keys: " + req.getAttributes().keySet());
+            req.getAttributes().forEach((k, v) -> logToFile("    Attr: " + k + " = " + v));
+            logToFile("  Params keys: " + req.getAdditionalParameters().keySet());
+            req.getAdditionalParameters().forEach((k, v) -> logToFile("    Param: " + k + " = " + v));
+            logToFile("  Redirect URI: " + req.getRedirectUri());
+        } else {
+            logToFile("toEntity: OAuth2AuthorizationRequest MISSING or wrong type!");
+        }
+
         AuthorizationEntity.AuthorizationEntityBuilder builder = AuthorizationEntity.builder()
                 .id(authorization.getId())
                 .registeredClientId(authorization.getRegisteredClientId())
                 .principalName(authorization.getPrincipalName())
                 .authorizationGrantType(authorization.getAuthorizationGrantType().getValue())
                 .authorizedScopes(authorization.getAuthorizedScopes())
-                .attributes(authorization.getAttributes())
-                .state(authorization.getAttribute(OAuth2ParameterNames.STATE));
+                .attributes(attributes)
+                .state(authorization.getAttribute(OAuth2ParameterNames.STATE))
+                .clientState(req != null ? req.getState() : null)
+                .codeChallenge(codeChallenge)
+                .codeChallengeMethod(codeChallengeMethod)
+                .codeVerifier(codeVerifier);
 
-        System.out.println(
-                "DEBUG: CustomAuthcodeService.toEntity: Attributes keys: " + authorization.getAttributes().keySet());
-        Object authRequest = authorization
-                .getAttribute("org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest");
-        if (authRequest != null) {
-            System.out.println("DEBUG: CustomAuthcodeService.toEntity: OAuth2AuthorizationRequest PRESENT. Type: "
-                    + authRequest.getClass().getName());
-        } else {
-            System.out.println("DEBUG: CustomAuthcodeService.toEntity: OAuth2AuthorizationRequest MISSING!");
-        }
+        logToFile("toEntity: Tracking State: " + builder.build().getState());
+        logToFile("toEntity: Client State: " + builder.build().getClientState());
 
         OAuth2Authorization.Token<OAuth2AuthorizationCode> code = authorization.getToken(OAuth2AuthorizationCode.class);
         if (code != null) {
@@ -122,16 +167,26 @@ public class CustomAuthcodeService implements OAuth2AuthorizationService {
                 .build();
     }
 
+    private void logToFile(String message) {
+        try (FileWriter fw = new FileWriter("/Users/rahulgupta/Desktop/distributedSecurity/AuthDebug.txt", true);
+                PrintWriter pw = new PrintWriter(fw)) {
+            pw.println(LocalDateTime.now() + " - " + message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private OAuth2Authorization toObject(AuthorizationEntity entity) {
+        logToFile("toObject called for ID: " + entity.getId());
         try {
             RegisteredClient registeredClient = registeredClientRepository.findById(entity.getRegisteredClientId());
             if (registeredClient == null) {
-                // Return null so the authorization service treats this as "not found"
-                // This triggers an invalid_grant error instead of a 500 crash
+                logToFile("ERROR: RegisteredClient NOT FOUND for ID: " + entity.getRegisteredClientId());
                 System.out.println("WARNING: Registered client not found for ID: " + entity.getRegisteredClientId()
                         + ". Treating authorization as invalid.");
                 return null;
             }
+            logToFile("Found RegisteredClient: " + registeredClient.getClientId());
 
             OAuth2Authorization.Builder builder = OAuth2Authorization.withRegisteredClient(registeredClient)
                     .id(entity.getId())
@@ -140,20 +195,44 @@ public class CustomAuthcodeService implements OAuth2AuthorizationService {
                     .authorizedScopes(entity.getAuthorizedScopes())
                     .attributes(attrs -> {
                         attrs.putAll(entity.getAttributes());
-                        System.out
-                                .println("DEBUG: CustomAuthcodeService.toObject: Loaded attributes: " + attrs.keySet());
+                        logToFile("toObject: Loaded attributes keys: " + attrs.keySet());
+
+                        // Force restoration from flat fields for maximum reliability
+                        if (entity.getCodeChallenge() != null) {
+                            attrs.put("code_challenge", entity.getCodeChallenge());
+                            logToFile("toObject: Forcing code_challenge from flat field: " + entity.getCodeChallenge());
+                        }
+                        if (entity.getCodeChallengeMethod() != null) {
+                            attrs.put("code_challenge_method", entity.getCodeChallengeMethod());
+                            logToFile("toObject: Forcing code_challenge_method from flat field: "
+                                    + entity.getCodeChallengeMethod());
+                        }
+                        if (entity.getCodeVerifier() != null) {
+                            attrs.put("code_verifier", entity.getCodeVerifier());
+                            logToFile("toObject: Forcing code_verifier from flat field: " + entity.getCodeVerifier());
+                        }
+
                         if (attrs.containsKey(
                                 "org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest")) {
-                            System.out.println(
-                                    "DEBUG: CustomAuthcodeService.toObject: OAuth2AuthorizationRequest FOUND in attributes.");
-                        } else {
-                            System.out.println(
-                                    "DEBUG: CustomAuthcodeService.toObject: OAuth2AuthorizationRequest NOT FOUND in attributes!");
+                            Object authReqObj = attrs.get(
+                                    "org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest");
+                            if (authReqObj instanceof org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest) {
+                                org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest req = (org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest) authReqObj;
+                                logToFile("toObject: OAuth2AuthorizationRequest params keys: "
+                                        + req.getAdditionalParameters().keySet());
+                            }
                         }
                     });
 
             if (entity.getState() != null) {
                 builder.attribute(OAuth2ParameterNames.STATE, entity.getState());
+                logToFile("toObject: Tracking State restored: " + entity.getState());
+            }
+
+            if (entity.getClientState() != null) {
+                // This is important for the final redirect back to the client
+                builder.attribute("client_state", entity.getClientState());
+                logToFile("toObject: Client State available: " + entity.getClientState());
             }
 
             if (entity.getAuthorizationCode() != null) {

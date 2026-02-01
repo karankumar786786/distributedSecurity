@@ -121,7 +121,13 @@ public class RedisService {
             String state = entity.getState();
             if (state != null) {
                 stringRedisTemplate.opsForValue().set("auth:state:" + state, id, 10, TimeUnit.MINUTES);
-                System.out.println("DEBUG: Saved state mapping: auth:state:" + state + " -> " + id);
+                System.out.println("DEBUG: Saved tracking state mapping: auth:state:" + state + " -> " + id);
+            }
+
+            String clientState = entity.getClientState();
+            if (clientState != null && !clientState.equals(state)) {
+                stringRedisTemplate.opsForValue().set("auth:state:" + clientState, id, 10, TimeUnit.MINUTES);
+                System.out.println("DEBUG: Saved client state mapping: auth:state:" + clientState + " -> " + id);
             }
 
         } catch (Exception e) {
