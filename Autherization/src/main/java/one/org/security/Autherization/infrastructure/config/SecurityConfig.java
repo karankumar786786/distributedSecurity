@@ -59,7 +59,7 @@ public class SecurityConfig {
                                                                                                                 config -> config.idTokenSigningAlgorithms(
                                                                                                                                 a -> {
                                                                                                                                         a.clear();
-                                                                                                                                        a.add(SignatureAlgorithm.ES256
+                                                                                                                                        a.add(SignatureAlgorithm.RS256
                                                                                                                                                         .toString());
                                                                                                                                 })
                                                                                                                                 .scopes(scopes -> {
