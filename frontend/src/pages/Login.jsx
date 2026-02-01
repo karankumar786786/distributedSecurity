@@ -12,8 +12,50 @@ const Login = () => {
     
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const returnTo = searchParams.get('return_to');
     const paramUsername = searchParams.get('username');
+
+    const returnTo = React.useMemo(() => {
+        let base = searchParams.get('return_to');
+        console.log('[Login] return_to base:', base);
+        console.log('[Login] All search params:', Object.fromEntries(searchParams.entries()));
+        
+        if (!base) return null;
+
+        // If the return_to URL contains an OAuth2 authorize request, 
+        // fragmented parameters might have been parsed as top-level params.
+        // We reconstruct the full URL here.
+        const oauthParams = [
+            'response_type', 'client_id', 'scope', 'state', 'redirect_uri', 
+            'nonce', 'code_challenge', 'code_challenge_method'
+        ];
+        
+        // Check if this is an OAuth2 authorize endpoint
+        const isOAuthAuthorize = base.includes('/oauth2/authorize');
+        console.log('[Login] isOAuthAuthorize:', isOAuthAuthorize);
+        
+        if (isOAuthAuthorize) {
+            // Build the full OAuth2 URL with all parameters
+            const params = [];
+            oauthParams.forEach(p => {
+                const val = searchParams.get(p);
+                console.log(`[Login] Param ${p}:`, val);
+                if (val) {
+                    params.push(`${p}=${encodeURIComponent(val)}`);
+                }
+            });
+            
+            if (params.length > 0) {
+                // Remove any existing query string from base and rebuild
+                const baseWithoutQuery = base.split('?')[0];
+                const result = baseWithoutQuery + '?' + params.join('&');
+                console.log('[Login] Reconstructed returnTo:', result);
+                return result;
+            }
+        }
+        
+        console.log('[Login] Final returnTo:', base);
+        return base;
+    }, [searchParams]);
 
     useEffect(() => {
         if (paramUsername) {
