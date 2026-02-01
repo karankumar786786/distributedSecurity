@@ -75,3 +75,5 @@ hmac:
   newkeyId: "hmac-key-2026-01"
   oldkey: "old-hmac-secret-key-old-hmac-secret-key"
   newkey: "new-hmac-secret-key-new-hmac-secret-key"
+encryption:
+  master-key: "1234567890123456"

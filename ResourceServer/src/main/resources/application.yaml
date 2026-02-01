@@ -9,3 +9,6 @@ spring:
           jwk-set-uri: http://localhost:12000/oauth2/jwks
 server:
   port: 11000
+
+encryption:
+  master-key: "1234567890123456"

@@ -66,3 +66,6 @@ management:
 
 server:
   port: 10010
+
+encryption:
+  master-key: "1234567890123456"

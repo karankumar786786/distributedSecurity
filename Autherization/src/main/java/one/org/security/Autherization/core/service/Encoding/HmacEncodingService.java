@@ -38,10 +38,10 @@ public class HmacEncodingService {
     private ClientHmacRepository clientHmacRepository;
 
     public HmacEncodingService(
-            @Value("${hmac.oldkeyId}") String oldkeyid,
-            @Value("${hmac.newkeyId}") String newkeyid,
-            @Value("${hmac.oldkey}") String oldkey,
-            @Value("${hmac.newkey}") String newkey) {
+            @Value("${clienthmac.oldkeyId}") String oldkeyid,
+            @Value("${clienthmac.newkeyId}") String newkeyid,
+            @Value("${clienthmac.oldkey}") String oldkey,
+            @Value("${clienthmac.newkey}") String newkey) {
         this.oldKeyId = oldkeyid;
         this.newKeyId = newkeyid;
         this.oldkey = oldkey.getBytes(StandardCharsets.UTF_8);
@@ -51,7 +51,7 @@ public class HmacEncodingService {
     public String encode(String rawData) {
         // encode in hmac using new key
         String signature = performHash(rawData, this.newkey);
-        return signature + "|" + this.newKeyId;
+        return signature + "$" + this.newKeyId;
     }
 
     public ClientHmacEntity createKey(String plainKey) {
@@ -65,10 +65,10 @@ public class HmacEncodingService {
     }
 
     public boolean verify(String hashedData, String rawData) {
-        if (hashedData == null || !hashedData.contains("|")) {
+        if (hashedData == null || !hashedData.contains("$")) {
             return false;
         }
-        String[] data = hashedData.split("\\|");
+        String[] data = hashedData.split("\\$");
         if (data.length != 2) {
             return false;
         }

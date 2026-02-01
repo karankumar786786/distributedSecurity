@@ -1,11 +1,13 @@
 package one.org.security.Autherization.infrastructure.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
+
+import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.web.SecurityFilterChain;
@@ -50,6 +52,7 @@ public class SecurityConfig {
                                 .csrf(csrf -> csrf.ignoringRequestMatchers(
                                                 authorizationServerConfigurer.getEndpointsMatcher()))
                                 .with(authorizationServerConfigurer, (authorizationServer) -> authorizationServer
+                                                .authorizationEndpoint(auth -> auth.consentPage("/oauth2/consent"))
                                                 .oidc(oidc -> oidc
                                                                 .providerConfigurationEndpoint(
                                                                                 providerConfiguration -> providerConfiguration
@@ -96,6 +99,7 @@ public class SecurityConfig {
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(authorize -> authorize
+                                                .requestMatchers("/key/client/**").permitAll()
                                                 .requestMatchers("/login").permitAll() // Explicitly permit login
                                                 .requestMatchers("/error").permitAll()
                                                 .anyRequest().authenticated())

@@ -5,6 +5,7 @@ spring:
       port: 6379
     mongodb:
       uri: mongodb://admin:secret@localhost:27017/security?authSource=admin
+      auto-index-creation: true
   application:
     name: security
   cache:
@@ -68,12 +69,12 @@ security:
     max-login-attempts: 3
     lockout-duration-hours: 6
 integrity:
-  oldkeyId: "697dffd149bb626fc64990d2"
-  newkeyId: "697dffef49bb626fc64990d3"
+  oldkeyId: "697ecd3e54c0dc0f6fbc391a"
+  newkeyId: "697ecd5d54c0dc0f6fbc391b"
   oldkey: "old-hmac-secret-key-old-hmac-secret-key"
   newkey: "new-hmac-secret-key-new-hmac-secret-key"
-  fidoOldkeyId: "697e001a49bb626fc64990d4"
-  fidoNewkeyId: "697e003d49bb626fc64990d5"
+  fidoOldkeyId: "697ecd9a54c0dc0f6fbc391d"
+  fidoNewkeyId: "697ecd7954c0dc0f6fbc391c"
   fidoOldkey: "fido-old-hmac-secret-key-fido-old-hmac-secret-key"
   fidoNewkey: "fido-new-hmac-secret-key-fido-new-hmac-secret-key"
 encryption:

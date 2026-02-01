@@ -5,10 +5,8 @@ spring:
     redis:
       host: localhost
       port: 6379
-  cache:
-    type: redis
-  mongodb:
-    uri: mongodb://admin:secret@localhost:27017/security?authSource=admin
+    mongodb:
+      uri: mongodb://admin:secret@localhost:27017/security?authSource=admin
 oauth2:
   server:
     issuer: http://localhost:12000
@@ -100,6 +98,11 @@ hmac:
   newkeyId: "hmac-key-2026-01"
   oldkey: "old-hmac-secret-key-old-hmac-secret-key"
   newkey: "new-hmac-secret-key-new-hmac-secret-key"
+clienthmac:
+  oldkeyId: "697ece4ca0c82f1bf121b403"
+  newkeyId: "697ece65a0c82f1bf121b404"
+  oldkey: "old-hmac-secret-key-old-hmac-secret-key"
+  newkey: "new-hmac-secret-key-new-hmac-secret-key"
 grpc:
   client:
     password-encoding-service:
@@ -109,8 +112,8 @@ logging:
   level:
     root: INFO
     one.org.security: DEBUG
-    org.springframework.security: DEBUG
-    org.springframework.security.oauth2: DEBUG
+    org.springframework.security: TRACE
+    org.springframework.security.oauth2: TRACE
     org.springframework.web: INFO
     org.springframework.data.mongodb.core.MongoTemplate: INFO
 encryption:

@@ -16,8 +16,15 @@ import org.springframework.security.oauth2.server.authorization.settings.TokenSe
 import one.org.security.Autherization.core.domain.entity.ClientEntity;
 import one.org.security.Autherization.core.service.Client.ClientService;
 
+import org.springframework.context.annotation.Primary;
+
 @Component
+@Primary
 public class CustomRegisteredClientRepository implements RegisteredClientRepository {
+
+    public CustomRegisteredClientRepository() {
+        System.out.println("DEBUG: CustomRegisteredClientRepository INSTANTIATED");
+    }
 
     @Autowired
     private ClientService clientService;
@@ -72,7 +79,7 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
         if (client.isAllowPersonalData()) {
             builder.scope("personal");
         }
-        return builder
+        RegisteredClient registeredClient = builder
                 .clientSettings(ClientSettings.builder()
                         .requireAuthorizationConsent(client.isShowConsentForm())
                         .requireProofKey(true)
@@ -83,5 +90,12 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
                         .idTokenSignatureAlgorithm(SignatureAlgorithm.RS256)
                         .build())
                 .build();
+
+        System.out.println("DEBUG: Returning RegisteredClient: " + registeredClient.getClientId());
+        System.out.println("DEBUG: Grant Types: " + registeredClient.getAuthorizationGrantTypes());
+        System.out.println("DEBUG: Scopes: " + registeredClient.getScopes());
+        System.out.println("DEBUG: Redirect URIs: " + registeredClient.getRedirectUris());
+
+        return registeredClient;
     }
 }

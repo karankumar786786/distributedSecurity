@@ -64,3 +64,6 @@ management:
 
 server:
   port: 10008
+
+encryption:
+  master-key: "1234567890123456"

@@ -2,9 +2,11 @@ package one.org.security.Autherization.core.service.Encoding;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 @Component
+@Primary
 public class CustomEncodingService implements PasswordEncoder {
 
     @Autowired
@@ -26,7 +28,7 @@ public class CustomEncodingService implements PasswordEncoder {
         if (rawPassword == null || encodedPassword == null) {
             return false;
         }
-        boolean result = hmacEncodingService.verify(rawPassword.toString(), encodedPassword);
+        boolean result = hmacEncodingService.verify(encodedPassword, rawPassword.toString());
         System.out.println("CustomEncodingService: matches result: " + result);
         return result;
     }

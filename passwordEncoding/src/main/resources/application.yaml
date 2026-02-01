@@ -27,3 +27,6 @@ management:
       endpoint: http://localhost:4318/v1/traces
 server:
   port: 10087
+
+encryption:
+  master-key: "1234567890123456"
