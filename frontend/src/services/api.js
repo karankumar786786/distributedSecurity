@@ -1,14 +1,160 @@
 import axios from "axios";
 
 const API_BASE = "http://localhost:10000";
+const AUTH_SERVER_BASE = "http://localhost:12000";
+
+// JWT Token storage
+let authToken = null;
+
+// Init token storage (for login/password recovery flows)
+let initToken = null;
+
+// Recovery token storage (for password recovery flows)
+let recoveryToken = null;
+
+// Get stored auth token (from memory or localStorage)
+export const getAuthToken = () => {
+  if (authToken) return authToken;
+  authToken = localStorage.getItem("auth_token");
+  return authToken;
+};
+
+// Set auth token in memory and localStorage
+export const setAuthToken = (token) => {
+  authToken = token;
+  if (token) {
+    localStorage.setItem("auth_token", token);
+  } else {
+    localStorage.removeItem("auth_token");
+  }
+};
+
+// Clear auth token (logout)
+export const clearAuthToken = () => {
+  authToken = null;
+  localStorage.removeItem("auth_token");
+};
+
+// Get stored init token (in memory only - short-lived)
+export const getInitToken = () => initToken;
+
+// Set init token
+export const setInitToken = (token) => {
+  initToken = token;
+};
+
+// Clear init token
+export const clearInitToken = () => {
+  initToken = null;
+};
+
+// Get stored recovery token (in memory only - short-lived)
+export const getRecoveryToken = () => recoveryToken;
+
+// Set recovery token
+export const setRecoveryToken = (token) => {
+  recoveryToken = token;
+};
+
+// Clear recovery token
+export const clearRecoveryToken = () => {
+  recoveryToken = null;
+};
+
+// Check if user is authenticated
+export const isAuthenticated = () => {
+  return getAuthToken() !== null;
+};
 
 const api = axios.create({
   baseURL: API_BASE,
-  withCredentials: true, // Important for cookies (SESSION, INIT-SESSION)
+  withCredentials: false, // No cookies needed - fully stateless
   headers: {
     "Content-Type": "application/json",
   },
 });
+
+// Request interceptor to add Authorization header with JWT and init/recovery tokens
+api.interceptors.request.use(
+  (config) => {
+    const token = getAuthToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    // Add init token if available
+    const init = getInitToken();
+    if (init) {
+      config.headers["X-Init-Token"] = init;
+    }
+
+    // Add recovery token if available
+    const recovery = getRecoveryToken();
+    if (recovery) {
+      config.headers["X-Recovery-Token"] = recovery;
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
+
+// Response interceptor to handle 401 errors (token expired) and extract tokens
+api.interceptors.response.use(
+  (response) => {
+    // Extract init token from response header if present
+    const newInitToken = response.headers["x-init-token"];
+    if (newInitToken) {
+      setInitToken(newInitToken);
+      console.log("Init token stored from header");
+    }
+
+    // Extract recovery token from response header if present
+    const newRecoveryToken = response.headers["x-recovery-token"];
+    if (newRecoveryToken) {
+      setRecoveryToken(newRecoveryToken);
+      console.log("Recovery token stored from header");
+    }
+
+    // Extract auth token from response header if present
+    const newAuthToken = response.headers["x-auth-token"];
+    if (newAuthToken) {
+      setAuthToken(newAuthToken);
+      console.log("Auth token stored from header");
+    }
+
+    return response;
+  },
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      // Token expired or invalid - clear it
+      console.warn("Received 401 - clearing auth token");
+      clearAuthToken();
+    }
+    return Promise.reject(error);
+  },
+);
+
+// Create a separate axios instance for auth server requests
+export const authServerApi = axios.create({
+  baseURL: AUTH_SERVER_BASE,
+  withCredentials: false, // No cookies needed - fully stateless
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Add JWT to auth server requests too
+authServerApi.interceptors.request.use(
+  (config) => {
+    const token = getAuthToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
 
 // Helper: Base64URL to ArrayBuffer
 const b64ToBuf = (b) => {
@@ -32,6 +178,28 @@ export const checkUser = async (username) => {
     username,
     reason: "LOGIN",
   });
+
+  // Store init token from response body
+  if (response.data && response.data.initToken) {
+    setInitToken(response.data.initToken);
+    console.log("Init token stored from response body");
+  }
+
+  return response.data;
+};
+
+export const checkUserForPasswordRecovery = async (username) => {
+  const response = await api.post("/auth/check-user-exist", {
+    username,
+    reason: "FORGET_PASSWORD",
+  });
+
+  // Store init token from response body
+  if (response.data && response.data.initToken) {
+    setInitToken(response.data.initToken);
+    console.log("Init token stored for password recovery");
+  }
+
   return response.data;
 };
 
@@ -52,6 +220,13 @@ export const registerUser = async (
 
 export const initPasswordLogin = async () => {
   const response = await api.post("/init/login/password");
+
+  // Store init token from response body if present
+  if (response.data && response.data.initToken) {
+    setInitToken(response.data.initToken);
+    console.log("Init token updated after password login init");
+  }
+
   return response.data;
 };
 
@@ -59,7 +234,17 @@ export const completePasswordLogin = async (credential) => {
   const response = await api.post("/init/login/password/complete", {
     credential,
   });
-  return response.data;
+
+  // Extract and store JWT token from response
+  const tokenData = response.data;
+  if (tokenData && tokenData.token) {
+    setAuthToken(tokenData.token);
+    console.log("JWT token stored successfully");
+    // Clear init token after successful login
+    clearInitToken();
+  }
+
+  return tokenData;
 };
 
 // --- FIDO Registration ---
@@ -144,7 +329,13 @@ export const startFidoRegistration = async () => {
 export const initFidoLogin = async () => {
   const response = await api.post("/init/login/fido");
   console.log("FIDO Init Login Response:", response.data);
-  // Store options for the next step, or return them
+
+  // Store init token from response body if present
+  if (response.data && response.data.initToken) {
+    setInitToken(response.data.initToken);
+    console.log("Init token updated after FIDO login init");
+  }
+
   return response.data;
 };
 
@@ -197,10 +388,94 @@ export const completeFidoLogin = async (fidoOptions) => {
     console.log("Sending FIDO Login Completion Payload:", payload);
 
     const response = await api.post("/init/login/fido/complete", payload);
-    return response.data;
+
+    // Extract and store JWT token from response
+    const tokenData = response.data;
+    if (tokenData && tokenData.token) {
+      setAuthToken(tokenData.token);
+      console.log("JWT token stored successfully from FIDO login");
+      // Clear init token after successful login
+      clearInitToken();
+    }
+
+    return tokenData;
   } catch (err) {
     console.error("FIDO Login Error:", err);
     throw err;
+  }
+};
+
+// --- Password Recovery ---
+
+export const initPasswordRecoveryByEmail = async () => {
+  const response = await api.get("/init/forget-password/backup-email");
+
+  // Store recovery token from response body if present
+  if (response.data && response.data.recoveryToken) {
+    setRecoveryToken(response.data.recoveryToken);
+    console.log("Recovery token stored for email recovery");
+  }
+
+  return response.data;
+};
+
+export const initPasswordRecoveryByPhone = async () => {
+  const response = await api.get("/init/forget-password/phone-number");
+
+  // Store recovery token from response body if present
+  if (response.data && response.data.recoveryToken) {
+    setRecoveryToken(response.data.recoveryToken);
+    console.log("Recovery token stored for phone recovery");
+  }
+
+  return response.data;
+};
+
+export const completePasswordRecoveryByEmail = async (otp, newPassword) => {
+  const response = await api.post(
+    "/init/forget-password/backup-email/complete",
+    {
+      otp,
+      newPassword,
+    },
+  );
+
+  // Clear tokens after successful recovery
+  clearInitToken();
+  clearRecoveryToken();
+
+  return response.data;
+};
+
+export const completePasswordRecoveryByPhone = async (otp, newPassword) => {
+  const response = await api.post(
+    "/init/forget-password/phone-number/complete",
+    {
+      otp,
+      newPassword,
+    },
+  );
+
+  // Clear tokens after successful recovery
+  clearInitToken();
+  clearRecoveryToken();
+
+  return response.data;
+};
+
+// --- Logout ---
+
+export const logout = async () => {
+  try {
+    // Optionally call server logout endpoint
+    await api.patch("/account/logout");
+  } catch (err) {
+    console.warn("Logout API call failed:", err);
+  } finally {
+    // Always clear all tokens
+    clearAuthToken();
+    clearInitToken();
+    clearRecoveryToken();
   }
 };
 

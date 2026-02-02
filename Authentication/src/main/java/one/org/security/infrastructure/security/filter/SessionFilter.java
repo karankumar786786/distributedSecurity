@@ -5,98 +5,107 @@ import java.io.IOException;
 import org.bson.types.ObjectId;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import org.springframework.web.filter.OncePerRequestFilter;
 
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import one.org.security.common.Hmac.HmacDTO;
-import one.org.security.common.Hmac.HmacService;
+import lombok.extern.slf4j.Slf4j;
+import one.org.security.common.Jwt.JwtDTO;
+import one.org.security.common.Jwt.JwtService;
 import one.org.security.core.domain.entity.User;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- * This filture verify device and session and provive userId and clientids in a
- * array of string
+ * JWT-only session filter for complete stateless authentication.
+ * All authentication via Authorization: Bearer {token} header.
+ * No cookies are used.
  */
-
+@Slf4j
 public class SessionFilter extends OncePerRequestFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(SessionFilter.class);
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String BEARER_PREFIX = "Bearer ";
 
     @Autowired
-    private HmacService hmacService;
+    private JwtService jwtService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
+            log.debug("=== SESSION FILTER START === URI: {}", request.getRequestURI());
+
             String rawDeviceBind = (String) request.getAttribute("RAW-DEVICE-BIND");
-            Cookie[] cookies = request.getCookies();
-            if (cookies == null) {
-                response.sendError(400, "invalid device session - no cookies");
-                return;
-            }
-            String sessionData = null;
-            for (Cookie c : cookies) {
-                if ("SESSION".equals(c.getName())) {
-                    sessionData = c.getValue();
-                }
+            if (rawDeviceBind == null) {
+                rawDeviceBind = request.getHeader("User-Agent");
             }
 
-            if (sessionData == null) {
-                response.sendError(400, "invalid session - no SESSION cookie");
+            // JWT authentication only (stateless)
+            if (tryJwtAuthentication(request, rawDeviceBind)) {
+                log.debug("JWT authentication successful for: {}", request.getRequestURI());
+                filterChain.doFilter(request, response);
                 return;
             }
 
-            String[] data = sessionData.split("\\|");
-            if (data.length < 4) {
-                response.sendError(400, "invalid session - malformed data");
-                return;
-            }
-            String userId = data[0];
-            String username = data[1];
-            String hashedSessionBind = data[2];
-            String hashedSessionBindKeyId = data[3];
-            String rawSessionBind = rawDeviceBind+userId+username;
-            boolean verifyDevice = hmacService.verify(new HmacDTO(null, rawSessionBind, hashedSessionBindKeyId, hashedSessionBind));
-            if (!verifyDevice) {
-                response.sendError(400, "invalid device session - hmac failed");
-                return;
-            }
+            // No authentication - return error
+            log.warn("No valid JWT token found for: {}", request.getRequestURI());
+            response.sendError(401, "Authentication required - provide JWT token in Authorization header");
 
-
-            User user = User.builder()
-                    .id(new ObjectId(userId))
-                    .username(username)
-                    .build();
-
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    user, null, user.getAuthorities());
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            ResponseCookie sessionCookie = ResponseCookie.from("SESSION", sessionData).httpOnly(true)
-                    .secure(false)
-                    .path("/")
-                    .sameSite("Lax")
-                    .maxAge(60 * 60 * 24) // 1 day
-                    .build();
-            response.addHeader(HttpHeaders.SET_COOKIE, sessionCookie.toString());
-            filterChain.doFilter(request, response);
         } catch (Exception e) {
-            logger.error("Error in SessionFilter", e);
+            log.error("Exception in SessionFilter", e);
             response.sendError(500, "Internal Server Error in SessionFilter: " + e.getMessage());
         }
     }
 
+    /**
+     * Attempt JWT authentication from Authorization header.
+     * 
+     * @return true if authentication was successful
+     */
+    private boolean tryJwtAuthentication(HttpServletRequest request, String rawDeviceBind) {
+        String authHeader = request.getHeader(AUTHORIZATION_HEADER);
+
+        if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
+            log.debug("No JWT token found in Authorization header");
+            return false;
+        }
+
+        String token = authHeader.substring(BEARER_PREFIX.length());
+
+        JwtDTO jwtDTO;
+        if (rawDeviceBind != null) {
+            // Validate with device binding
+            jwtDTO = jwtService.validateTokenWithDevice(token, rawDeviceBind);
+        } else {
+            // Fallback to validation without device binding
+            jwtDTO = jwtService.validateToken(token);
+        }
+
+        if (jwtDTO == null) {
+            log.debug("JWT token validation failed");
+            return false;
+        }
+
+        // Create authenticated user
+        User user = User.builder()
+                .id(new ObjectId(jwtDTO.userId()))
+                .username(jwtDTO.username())
+                .build();
+
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                user, null, user.getAuthorities());
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // Store JWT claims as request attributes for downstream filters/controllers
+        request.setAttribute("JWT_USER_ID", jwtDTO.userId());
+        request.setAttribute("JWT_USERNAME", jwtDTO.username());
+
+        log.info("JWT authentication successful for user: {}", jwtDTO.username());
+        return true;
+    }
 }

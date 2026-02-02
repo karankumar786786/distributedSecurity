@@ -17,27 +17,30 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Bean
-    public JwtDecoder jwtDecoder(OAuth2ResourceServerProperties properties) {
-        return NimbusJwtDecoder.withJwkSetUri(properties.getJwt().getJwkSetUri())
-                .jwsAlgorithm(SignatureAlgorithm.RS256)
-                .build();
-    }
+        @Bean
+        public JwtDecoder jwtDecoder(OAuth2ResourceServerProperties properties) {
+                return NimbusJwtDecoder.withJwkSetUri(properties.getJwt().getJwkSetUri())
+                                .jwsAlgorithm(SignatureAlgorithm.RS256)
+                                .build();
+        }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
-        http
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(
-                        autherize -> autherize
-                                .requestMatchers(HttpMethod.GET, "/read").hasAnyAuthority("SCOPE_read")
-                                .requestMatchers(HttpMethod.GET, "/write").hasAllAuthorities("SCOPE_write")
-                                .requestMatchers(HttpMethod.GET,"/user/info").hasAllAuthorities("SCOPE_read")
-                                .anyRequest().authenticated())
-                .oauth2ResourceServer(
-                        oauth2 -> oauth2.jwt(Customizer.withDefaults()))
-                ;
-        return http.build();
-    }
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                http
+                                .csrf(csrf -> csrf.disable())
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .authorizeHttpRequests(
+                                                authorize -> authorize
+                                                                .requestMatchers(HttpMethod.GET, "/read")
+                                                                .hasAnyAuthority("SCOPE_read")
+                                                                .requestMatchers(HttpMethod.GET, "/write")
+                                                                .hasAllAuthorities("SCOPE_write")
+                                                                .requestMatchers(HttpMethod.GET, "/user/info")
+                                                                .hasAnyAuthority("SCOPE_read", "SCOPE_openid")
+                                                                .anyRequest().authenticated())
+                                .oauth2ResourceServer(
+                                                oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+                return http.build();
+        }
 }

@@ -1,10 +1,7 @@
 package one.org.security.api.controller.auth;
 
-import org.springframework.http.HttpHeaders;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +15,7 @@ import one.org.security.api.dto.request.RegisterRequestDTO;
 import one.org.security.api.dto.response.CheckUserExistClientResponseDTO;
 import one.org.security.api.dto.response.CheckUserExistResponseDTO;
 import one.org.security.core.service.auth.CoreAuthenticationService;
+import one.org.security.core.service.auth.InitSessionService;
 
 @RestController
 @RequestMapping("/auth")
@@ -25,6 +23,9 @@ public class AuthenticationController {
 
         @Autowired
         private CoreAuthenticationService authenticationService;
+
+        @Autowired
+        private InitSessionService initSessionService;
 
         @PostMapping("/register")
         public ResponseEntity<Void> register(
@@ -35,6 +36,10 @@ public class AuthenticationController {
                 return new ResponseEntity<>(HttpStatus.CREATED);
         }
 
+        /**
+         * Check if user exists and return init token for login flow.
+         * Returns init token in response body instead of setting cookies.
+         */
         @PostMapping("/check-user-exist")
         public ResponseEntity<CheckUserExistClientResponseDTO> checkUserExist(
                         @Validated @RequestBody CheckUserExistRequestDTO request,
@@ -43,20 +48,26 @@ public class AuthenticationController {
                 CheckUserExistResponseDTO checkUserExistResponse = authenticationService.checkUserExist(request,
                                 rawDeviceBind,
                                 ipAddress);
-                String cookieData = checkUserExistResponse.initSession().signature() + "|"
+
+                // Build session data (same format as before, for compatibility)
+                String sessionData = checkUserExistResponse.initSession().signature() + "|"
                                 + checkUserExistResponse.initSession().keyId() + "|" + request.reason().name() + "|"
                                 + checkUserExistResponse.userId() + "|" + checkUserExistResponse.username();
-                ResponseCookie cookie = ResponseCookie.from("INIT-SESSION", cookieData)
-                                .httpOnly(true)
-                                .secure(false) // true only for https
-                                // .domain("localhost")
-                                .path("/")
-                                .sameSite("Lax")
-                                .maxAge(300L)
-                                .build();
+
+                // Generate init token instead of cookie
+                String initToken = initSessionService.generateInitToken(
+                                checkUserExistResponse.userId(),
+                                checkUserExistResponse.username(),
+                                "INIT", // This is just the initial check, flow type will be set in next step
+                                sessionData);
+
                 CheckUserExistClientResponseDTO response = new CheckUserExistClientResponseDTO(
-                                checkUserExistResponse.exist(), checkUserExistResponse.data());
-                return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.SET_COOKIE, cookie.toString())
+                                checkUserExistResponse.exist(),
+                                checkUserExistResponse.data(),
+                                initToken);
+
+                return ResponseEntity.status(HttpStatus.OK)
+                                .header("X-Init-Token", initToken)
                                 .body(response);
         }
 }

@@ -1,14 +1,12 @@
 package one.org.security.api.controller.auth;
 
-import org.springframework.http.HttpHeaders;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,10 +17,13 @@ import one.org.security.api.dto.enums.CheckUserExistRequestAvailableEnum;
 import one.org.security.api.dto.request.FidoCompleteLoginRequestDTO;
 import one.org.security.api.dto.request.LoginRequestDTO;
 import one.org.security.api.dto.response.FidoInitResponseDTO;
+import one.org.security.api.dto.response.InitTokenResponseDTO;
 import one.org.security.api.dto.response.LoginSuccessResponseDTO;
+import one.org.security.api.dto.response.TokenResponseDTO;
 import one.org.security.core.service.auth.CoreAuthenticationService;
 import one.org.security.core.service.auth.FidoService;
-
+import one.org.security.core.service.auth.InitSessionService;
+import one.org.security.core.service.auth.InitSessionService.InitTokenData;
 
 @RestController
 @RequestMapping("/init")
@@ -34,155 +35,130 @@ public class AuthInitController {
         @Autowired
         private FidoService fidoService;
 
+        @Autowired
+        private InitSessionService initSessionService;
+
+        /**
+         * Initialize password login flow.
+         * Returns an init token instead of setting cookies.
+         */
         @PostMapping("/login/password")
-        public ResponseEntity<Void> initPasswordLogin(
+        public ResponseEntity<InitTokenResponseDTO> initPasswordLogin(
                         @RequestAttribute("USERNAME") String username,
+                        @RequestAttribute("USER-ID") String userId,
                         @RequestAttribute("INIT-SESSION") String sessionData) {
-                ResponseCookie initSessionCookie = ResponseCookie.from("INIT-SESSION", sessionData)
-                                .httpOnly(true)
-                                .secure(false)
-                                .path("/")
-                                .sameSite("Lax")
-                                .maxAge(300L)
-                                .build();
-                ResponseCookie loginPasswordCookie = ResponseCookie.from("LOGIN-SESSION", "LOGIN-PASSWORD-SESSION")
-                                .httpOnly(true)
-                                .secure(false)
-                                .path("/")
-                                .sameSite("Lax")
-                                .maxAge(300L)
-                                .build();
-                // 3. Attach both to the response headers
+
+                String initToken = initSessionService.generateInitToken(
+                                userId,
+                                username,
+                                "LOGIN-PASSWORD-SESSION",
+                                sessionData);
+
                 return ResponseEntity.ok()
-                                .header(HttpHeaders.SET_COOKIE, initSessionCookie.toString())
-                                .header(HttpHeaders.SET_COOKIE, loginPasswordCookie.toString())
-                                .build();
+                                .header("X-Init-Token", initToken)
+                                .body(new InitTokenResponseDTO(initToken, "PASSWORD"));
         }
 
+        /**
+         * Complete password login flow.
+         * Expects init token in X-Init-Token header.
+         */
         @PostMapping("/login/password/complete")
-        public ResponseEntity<Void> completePasswordLogin(
+        public ResponseEntity<TokenResponseDTO> completePasswordLogin(
                         @Validated @RequestBody LoginRequestDTO loginRequestDTO,
-                        @RequestAttribute("USERNAME") String username,
-                        // here init session is not required because username is extreacted from filture
-                        // and device hash will be regenerated now
-                        @RequestAttribute("LOGIN-SESSION") String loginSession,
+                        @RequestHeader(value = "X-Init-Token", required = true) String initToken,
                         @RequestAttribute("IP-ADDRESS") String ipAddress,
                         @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
-                if (!"LOGIN-PASSWORD-SESSION".equals(loginSession)) {
-                        throw new InvalidSessionException("invalid session");
+
+                // Validate init token
+                InitTokenData tokenData = initSessionService.validateInitToken(initToken);
+                if (tokenData == null) {
+                        throw new InvalidSessionException("Invalid or expired init token");
                 }
+
+                if (!"LOGIN-PASSWORD-SESSION".equals(tokenData.flowType())) {
+                        throw new InvalidSessionException("Invalid session type for password login");
+                }
+
                 LoginSuccessResponseDTO loginResponse = authenticationService
-                                .completePasswordLogin(loginRequestDTO, username, ipAddress, rawDeviceBind);
-                String sessionData = loginResponse.getUserId() +"|"+ loginResponse.getUsername() +"|"+ loginResponse.getHash()+"|" + loginResponse.getHashKeyId();
+                                .completePasswordLogin(loginRequestDTO, tokenData.username(), ipAddress, rawDeviceBind);
 
-                ResponseCookie sessionCookie = ResponseCookie.from("SESSION", sessionData)
-                                .httpOnly(true)
-                                .secure(false)
-                                .path("/")
-                                .sameSite("Lax")
-                                .maxAge(60 * 60 * 24) // 1 day
-                                .build();
-
-                ResponseCookie clearInitCookie = ResponseCookie.from("INIT-SESSION", "")
-                                .httpOnly(true)
-                                .secure(false)
-                                .path("/")
-                                .maxAge(0)
-                                .build();
-
-                ResponseCookie clearLoginCookie = ResponseCookie.from("LOGIN-SESSION", "")
-                                .httpOnly(true)
-                                .secure(false)
-                                .path("/")
-                                .maxAge(0)
-                                .build();
+                // Return JWT token in response body and header (no cookies)
+                TokenResponseDTO tokenResponse = new TokenResponseDTO(
+                                loginResponse.getToken(),
+                                loginResponse.getUserId(),
+                                loginResponse.getUsername(),
+                                null);
 
                 return ResponseEntity.ok()
-                                .header(HttpHeaders.SET_COOKIE, sessionCookie.toString())
-                                .header(HttpHeaders.SET_COOKIE, clearInitCookie.toString())
-                                .header(HttpHeaders.SET_COOKIE, clearLoginCookie.toString())
-                                .build();
+                                .header("X-Auth-Token", loginResponse.getToken())
+                                .body(tokenResponse);
         }
 
+        /**
+         * Initialize FIDO login flow.
+         * Returns an init token instead of setting cookies.
+         */
         @PostMapping("/login/fido")
         public ResponseEntity<FidoInitResponseDTO> initFidoLogin(
                         @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceData,
                         @RequestAttribute("USERNAME") String username,
+                        @RequestAttribute("USER-ID") String userId,
                         @RequestAttribute("INIT-SESSION") String sessionData)
                         throws JsonProcessingException {
+
                 String[] sessionDataArray = sessionData.split("\\|");
                 String reason = sessionDataArray[2];
                 if (!CheckUserExistRequestAvailableEnum.LOGIN.toString().equals(reason)) {
                         throw new InvalidSessionException("invalid session");
                 }
-                ;
-                ResponseCookie initSessionCookie = ResponseCookie.from("INIT-SESSION", sessionData)
-                                .httpOnly(true)
-                                .secure(false)
-                                .path("/")
-                                .sameSite("Lax")
-                                .maxAge(300L)
-                                .build();
-                ResponseCookie loginPasswordCookie = ResponseCookie.from("LOGIN-SESSION", "LOGIN-FIDO-SESSION")
-                                .httpOnly(true)
-                                .secure(false)
-                                .path("/")
-                                .sameSite("Lax")
-                                .maxAge(300L)
-                                .build();
-                // Assuming fidoService is also updated to use session
-                String response = fidoService.initiateLogin(username);
+
+                String initToken = initSessionService.generateInitToken(
+                                userId,
+                                username,
+                                "LOGIN-FIDO-SESSION",
+                                sessionData);
+
+                String fidoOptions = fidoService.initiateLogin(username);
+
                 return ResponseEntity.ok()
-                                .header(HttpHeaders.SET_COOKIE, initSessionCookie.toString())
-                                .header(HttpHeaders.SET_COOKIE, loginPasswordCookie.toString())
-                                .body(new FidoInitResponseDTO(response));
+                                .header("X-Init-Token", initToken)
+                                .body(new FidoInitResponseDTO(fidoOptions, initToken));
         }
 
+        /**
+         * Complete FIDO login flow.
+         * Expects init token in X-Init-Token header.
+         */
         @PostMapping("/login/fido/complete")
-        public ResponseEntity<Void> completeFidoLogin(
+        public ResponseEntity<TokenResponseDTO> completeFidoLogin(
                         @Validated @RequestBody FidoCompleteLoginRequestDTO request,
+                        @RequestHeader(value = "X-Init-Token", required = true) String initToken,
                         @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind,
-                        @RequestAttribute("INIT-SESSION") String initSessionData,
-                        @RequestAttribute("LOGIN-SESSION") String loginSession,
-                        @RequestAttribute("IP-ADDRESS") String ipAddress,
-                        @RequestAttribute("USERNAME") String username
-                ) {
+                        @RequestAttribute("IP-ADDRESS") String ipAddress) {
 
-                if (!"LOGIN-FIDO-SESSION".equals(loginSession)) {
-                        throw new InvalidSessionException("invalid session");
+                // Validate init token
+                InitTokenData tokenData = initSessionService.validateInitToken(initToken);
+                if (tokenData == null) {
+                        throw new InvalidSessionException("Invalid or expired init token");
+                }
+
+                if (!"LOGIN-FIDO-SESSION".equals(tokenData.flowType())) {
+                        throw new InvalidSessionException("Invalid session type for FIDO login");
                 }
 
                 LoginSuccessResponseDTO loginResponse = fidoService
-                                .finishLogin(ipAddress, rawDeviceBind, request, username);
+                                .finishLogin(ipAddress, rawDeviceBind, request, tokenData.username());
 
-                String sessionData = loginResponse.getUserId()+"|"+loginResponse.getUsername()+"|"+loginResponse.getHash()+"|"+loginResponse.getHashKeyId();
-
-                ResponseCookie sessionCookie = ResponseCookie.from("SESSION", sessionData)
-                                .httpOnly(true)
-                                .secure(false)
-                                .path("/")
-                                .sameSite("Lax")
-                                .maxAge(60 * 60 * 24) // 1 day
-                                .build();
-
-                ResponseCookie clearInitCookie = ResponseCookie.from("INIT-SESSION", "")
-                                .httpOnly(true)
-                                .secure(false)
-                                .path("/")
-                                .maxAge(0)
-                                .build();
-
-                ResponseCookie clearLoginCookie = ResponseCookie.from("LOGIN-SESSION", "")
-                                .httpOnly(true)
-                                .secure(false)
-                                .path("/")
-                                .maxAge(0)
-                                .build();
+                // Return JWT token in response body and header (no cookies)
+                TokenResponseDTO tokenResponse = new TokenResponseDTO(
+                                loginResponse.getToken(),
+                                loginResponse.getUserId(),
+                                loginResponse.getUsername(),
+                                null);
 
                 return ResponseEntity.ok()
-                                .header(HttpHeaders.SET_COOKIE, sessionCookie.toString())
-                                .header(HttpHeaders.SET_COOKIE, clearInitCookie.toString())
-                                .header(HttpHeaders.SET_COOKIE, clearLoginCookie.toString())
-                                .build();
+                                .header("X-Auth-Token", loginResponse.getToken())
+                                .body(tokenResponse);
         }
 }

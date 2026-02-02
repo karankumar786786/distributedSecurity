@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import one.org.security.Autherization.infrastructure.security.filture.SessionFilture;
 import one.org.security.Autherization.infrastructure.security.filture.LoggingFilter;
 import one.org.security.Autherization.infrastructure.security.filture.TokenEndpointLoggingFilter;
+import one.org.security.Autherization.infrastructure.security.filture.RateLimitFilter;
 import one.org.security.common.Filtures.ProcessDeviceFilter;
 
 @Configuration
@@ -42,6 +43,11 @@ public class SecurityConfig {
         @Bean
         public TokenEndpointLoggingFilter tokenEndpointLoggingFilter() {
                 return new TokenEndpointLoggingFilter();
+        }
+
+        @Bean
+        public RateLimitFilter rateLimitFilter() {
+                return new RateLimitFilter();
         }
 
         @Bean
@@ -85,9 +91,11 @@ public class SecurityConfig {
                                                                 new MediaTypeRequestMatcher(MediaType.TEXT_HTML)))
                                 // 3. IMPORTANT: Your filters must run here to provide the Principal during
                                 // /authorize
-                                // Using HeaderWriterFilter as anchor as it is standard in the chain
-                                .addFilterAfter(processDeviceFilter(),
+                                // Rate limiting filter runs first
+                                .addFilterAfter(rateLimitFilter(),
                                                 org.springframework.security.web.header.HeaderWriterFilter.class)
+                                // Using HeaderWriterFilter as anchor as it is standard in the chain
+                                .addFilterAfter(processDeviceFilter(), RateLimitFilter.class)
                                 .addFilterAfter(sessionFilture(), ProcessDeviceFilter.class)
                                 .addFilterAfter(tokenEndpointLoggingFilter(), SessionFilture.class)
                                 .addFilterAfter(new one.org.security.Autherization.infrastructure.security.filture.DebugFilter(),
@@ -111,7 +119,10 @@ public class SecurityConfig {
                                                 .requestMatchers("/debug/**").permitAll()
                                                 .requestMatchers("/login").permitAll() // Explicitly permit login
                                                 .requestMatchers("/error").permitAll()
+                                                .requestMatchers("/oauth2/revoke").permitAll() // Token revocation
+                                                                                               // endpoint
                                                 .anyRequest().authenticated())
+                                .addFilterBefore(rateLimitFilter(), UsernamePasswordAuthenticationFilter.class)
                                 .addFilterBefore(processDeviceFilter(), UsernamePasswordAuthenticationFilter.class)
                                 .addFilterAfter(sessionFilture(), ProcessDeviceFilter.class);
 

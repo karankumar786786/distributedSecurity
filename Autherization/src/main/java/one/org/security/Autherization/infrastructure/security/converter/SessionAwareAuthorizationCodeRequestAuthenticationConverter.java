@@ -1,38 +1,43 @@
 package one.org.security.Autherization.infrastructure.security.converter;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import one.org.security.Autherization.core.domain.entity.UserMockEntity;
-import one.org.security.common.Hmac.HmacDTO;
-import one.org.security.common.Hmac.HmacService;
+import one.org.security.common.Jwt.JwtDTO;
+import one.org.security.common.Jwt.JwtService;
 import org.bson.types.ObjectId;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AuthorizationCodeRequestAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2AuthorizationCodeRequestAuthenticationConverter;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 
+/**
+ * JWT-only authentication converter for OAuth2 authorization code requests.
+ * Reads JWT from Authorization header - no cookies.
+ */
 public class SessionAwareAuthorizationCodeRequestAuthenticationConverter implements AuthenticationConverter {
+
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String BEARER_PREFIX = "Bearer ";
 
     private final OAuth2AuthorizationCodeRequestAuthenticationConverter delegate = new OAuth2AuthorizationCodeRequestAuthenticationConverter();
 
-    private final HmacService hmacService;
+    private final JwtService jwtService;
 
-    public SessionAwareAuthorizationCodeRequestAuthenticationConverter(HmacService hmacService) {
-        this.hmacService = hmacService;
+    public SessionAwareAuthorizationCodeRequestAuthenticationConverter(JwtService jwtService) {
+        this.jwtService = jwtService;
     }
 
     @Override
     public Authentication convert(HttpServletRequest request) {
-        // First, try to restore authentication from session cookie
-        restoreAuthenticationFromSession(request);
+        // First, try to restore authentication from JWT token
+        restoreAuthenticationFromJwt(request);
 
         // Then delegate to the default converter
         return delegate.convert(request);
     }
 
-    private void restoreAuthenticationFromSession(HttpServletRequest request) {
+    private void restoreAuthenticationFromJwt(HttpServletRequest request) {
         // If already authenticated, skip
         Authentication existing = SecurityContextHolder.getContext().getAuthentication();
         if (existing != null && existing.isAuthenticated()
@@ -40,60 +45,41 @@ public class SessionAwareAuthorizationCodeRequestAuthenticationConverter impleme
             return;
         }
 
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
+        String authHeader = request.getHeader(AUTHORIZATION_HEADER);
+        if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
+            System.out.println("DEBUG: SessionAwareConverter - No JWT token in Authorization header");
             return;
         }
 
-        String sessionData = null;
-        for (Cookie c : cookies) {
-            if ("SESSION".equals(c.getName())) {
-                sessionData = c.getValue();
-                break;
-            }
-        }
-
-        if (sessionData == null) {
-            return;
-        }
-
-        String[] data = sessionData.split("\\|");
-        if (data.length < 4) {
-            return;
-        }
-
-        String userId = data[0];
-        String username = data[1];
-        String hashedSessionBind = data[2];
-        String hashedSessionBindKeyId = data[3];
+        String token = authHeader.substring(BEARER_PREFIX.length());
 
         // Get device bind from request attribute (set by ProcessDeviceFilter)
         String rawDeviceBind = (String) request.getAttribute("RAW-DEVICE-BIND");
         if (rawDeviceBind == null) {
-            // Try to extract from User-Agent directly as fallback
             rawDeviceBind = request.getHeader("User-Agent");
-            if (rawDeviceBind == null) {
-                return;
-            }
         }
 
-        String rawSessionBind = rawDeviceBind + userId + username;
-        boolean verifyDevice = hmacService.verify(
-                new HmacDTO(null, rawSessionBind, hashedSessionBindKeyId, hashedSessionBind));
+        JwtDTO jwtDTO;
+        if (rawDeviceBind != null) {
+            jwtDTO = jwtService.validateTokenWithDevice(token, rawDeviceBind);
+        } else {
+            jwtDTO = jwtService.validateToken(token);
+        }
 
-        if (!verifyDevice) {
+        if (jwtDTO == null) {
+            System.out.println("DEBUG: SessionAwareConverter - JWT validation failed");
             return;
         }
 
         UserMockEntity user = UserMockEntity.builder()
-                .id(new ObjectId(userId))
-                .username(username)
+                .id(new ObjectId(jwtDTO.userId()))
+                .username(jwtDTO.username())
                 .build();
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 user, null, user.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        System.out.println("DEBUG: SessionAwareConverter - Authentication restored for user: " + username);
+        System.out.println("DEBUG: SessionAwareConverter - JWT authentication restored for user: " + jwtDTO.username());
     }
 }

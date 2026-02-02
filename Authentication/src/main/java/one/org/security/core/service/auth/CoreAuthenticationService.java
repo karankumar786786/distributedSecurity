@@ -25,6 +25,8 @@ import one.org.security.api.dto.response.CheckUserExistResponseDTO;
 import one.org.security.api.dto.response.LoginSuccessResponseDTO;
 import one.org.security.common.Hmac.HmacDTO;
 import one.org.security.common.Hmac.HmacService;
+import one.org.security.common.Jwt.JwtDTO;
+import one.org.security.common.Jwt.JwtService;
 import one.org.security.common.PasswordEncoding.EncodingService;
 import one.org.security.common.enums.Event;
 import one.org.security.core.domain.entity.SecurityEvent;
@@ -44,6 +46,8 @@ public class CoreAuthenticationService {
     private SecurityEventService securityEventService;
     @Autowired
     private HmacService hmacService;
+    @Autowired
+    private JwtService jwtService;
     @Autowired
     private SecurityIntegrityService securityIntegrityService;
 
@@ -188,13 +192,13 @@ public class CoreAuthenticationService {
             throw new IllegalArgumentException("password is incorrect");
         }
         ;
-        HmacDTO session = hmacService.encode(rawDeviceBind + user.getId().toHexString() + username);
+        // Generate JWT token for stateless authentication
+        JwtDTO jwtToken = jwtService.generateToken(user.getId().toHexString(), username, rawDeviceBind);
         user.setNumberOfInitaiatedOperations(0);
         user.setLockingTime(null);
         userService.saveUser(user);
         logSecurityEvent(user, Event.LOGIN_SUCCESS, null, ipAddress, hash.signature(), hash.keyId());
-        return new LoginSuccessResponseDTO(user.getId().toHexString(), user.getUsername(), session.signature(),
-                session.keyId());
+        return new LoginSuccessResponseDTO(user.getId().toHexString(), user.getUsername(), jwtToken.token());
     }
 
     private void logSecurityEvent(User user, Event event, String message, String ipAddress, String deviceHash,

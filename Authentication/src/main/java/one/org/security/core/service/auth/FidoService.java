@@ -10,6 +10,8 @@ import one.org.security.api.dto.request.FidoCompleteLoginRequestDTO;
 import one.org.security.api.dto.response.LoginSuccessResponseDTO;
 import one.org.security.common.Hmac.HmacDTO;
 import one.org.security.common.Hmac.HmacService;
+import one.org.security.common.Jwt.JwtDTO;
+import one.org.security.common.Jwt.JwtService;
 import one.org.security.common.enums.Event;
 import one.org.security.core.domain.entity.SecurityEvent;
 
@@ -45,6 +47,7 @@ public class FidoService {
     private final RedisService redisService;
     private final SecurityEventService securityEventService;
     private final HmacService hmacService;
+    private final JwtService jwtService;
     @org.springframework.beans.factory.annotation.Autowired
     private one.org.security.core.service.Security.SecurityIntegrityService securityIntegrityService;
 
@@ -58,6 +61,7 @@ public class FidoService {
 
     public FidoService(UserService userService,
             HmacService hmacService,
+            JwtService jwtService,
             RedisService redisService,
             SecurityEventService securityEventService,
             @Value("${fido.rp.id:localhost}") String rpId,
@@ -74,6 +78,7 @@ public class FidoService {
         this.maxLoginAttempts = maxLoginAttempts;
         this.lockoutDurationHours = lockoutDurationHours;
         this.hmacService = hmacService;
+        this.jwtService = jwtService;
     }
 
     @PostConstruct
@@ -161,10 +166,10 @@ public class FidoService {
                         hash.keyId());
 
                 redisService.deleteValue("fido_login:" + username);
-                HmacDTO session = hmacService.encode(rawDeviceBind + user.getId().toHexString() + username);
+                // Generate JWT token for stateless authentication
+                JwtDTO jwtToken = jwtService.generateToken(user.getId().toHexString(), username, rawDeviceBind);
 
-                return new LoginSuccessResponseDTO(user.getId().toHexString(), user.getUsername(), session.signature(),
-                        session.keyId());
+                return new LoginSuccessResponseDTO(user.getId().toHexString(), user.getUsername(), jwtToken.token());
             } else {
                 User user = userService.getUserByUsername(username);
                 HmacDTO hash = hmacService.encode(rawDeviceBind);

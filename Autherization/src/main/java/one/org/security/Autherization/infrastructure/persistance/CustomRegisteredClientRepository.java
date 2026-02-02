@@ -64,6 +64,7 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .redirectUri(client.getRedirectUrl())
                 // Add all supported scopes
                 .scope("openid")
@@ -86,7 +87,9 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
                         .build())
                 .tokenSettings(TokenSettings.builder()
                         .authorizationCodeTimeToLive(Duration.ofMinutes(5))
-                        .accessTokenTimeToLive(Duration.ofMinutes(5))
+                        .accessTokenTimeToLive(Duration.ofMinutes(30))
+                        .refreshTokenTimeToLive(Duration.ofDays(7))
+                        .reuseRefreshTokens(false) // Issue new refresh token on each use (more secure)
                         .idTokenSignatureAlgorithm(SignatureAlgorithm.RS256)
                         .build())
                 .build();

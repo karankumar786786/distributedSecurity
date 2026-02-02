@@ -12,6 +12,10 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+/**
+ * Custom success handler for OAuth2 authentication.
+ * No cookies are used - stateless operation.
+ */
 @Component
 public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
@@ -41,12 +45,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             System.out.println("WARNING: Principal is not OAuth2User: " + authentication.getPrincipal().getClass());
         }
 
-        // Clean up authorization request cookies
-        System.out.println("=== CLEANING UP COOKIES ===");
-        CookieUtils.deleteCookie(request, response,
-                HttpCookieOAuth2AuthorizationRequestRepository.OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
-        CookieUtils.deleteCookie(request, response,
-                HttpCookieOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME);
+        // No cookies to clean up - stateless authorization request storage
 
         // Set default target URL
         setDefaultTargetUrl("/");

@@ -8,10 +8,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
-import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Security configuration for OAuth2 client.
+ * Uses in-memory cache for authorization request storage - no cookies.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -22,10 +24,8 @@ public class SecurityConfig {
     @Autowired
     private CustomAuthenticationFailureHandler failureHandler;
 
-    @Bean
-    public AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository() {
-        return new HttpCookieOAuth2AuthorizationRequestRepository();
-    }
+    @Autowired
+    private HttpCookieOAuth2AuthorizationRequestRepository authorizationRequestRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,8 +41,9 @@ public class SecurityConfig {
                     System.out.println("=== CONFIGURING OAUTH2 LOGIN ===");
                     oauth2
                             .authorizationEndpoint(authorization -> {
-                                System.out.println("=== SETTING AUTHORIZATION REQUEST REPOSITORY ===");
-                                authorization.authorizationRequestRepository(authorizationRequestRepository());
+                                System.out
+                                        .println("=== SETTING AUTHORIZATION REQUEST REPOSITORY (In-Memory Cache) ===");
+                                authorization.authorizationRequestRepository(authorizationRequestRepository);
                             })
                             .successHandler(successHandler)
                             .failureHandler(failureHandler)

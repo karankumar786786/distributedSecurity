@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -33,7 +32,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 
-
 @RestController
 @RequestMapping("/account")
 public class AccountController {
@@ -55,8 +53,7 @@ public class AccountController {
             @Validated @RequestBody ChangePasswordRequestDTO request,
             @AuthenticationPrincipal User user,
             @RequestAttribute("IP-ADDRESS") String ipAddress,
-            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind
-        ) {
+            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
         User userFromDb = userService.getUserById(user.getId());
         HmacDTO hash = hmacService.encode(rawDeviceBind);
         userAccountService.changePassword(request, userFromDb, ipAddress, hash.signature(), hash.keyId());
@@ -68,8 +65,7 @@ public class AccountController {
             @Validated @RequestBody ChangeBackupEmailRequestDTO request,
             @AuthenticationPrincipal User user,
             @RequestAttribute("IP-ADDRESS") String ipAddress,
-            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind
-        ) {
+            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
         User userFromDb = userService.getUserById(user.getId());
         HmacDTO hash = hmacService.encode(rawDeviceBind);
         userAccountService.changeBackupEmail(request, userFromDb, hash.signature(), hash.keyId(), ipAddress);
@@ -81,8 +77,7 @@ public class AccountController {
             @Validated @RequestBody ChangePhoneNumberRequestDTO request,
             @AuthenticationPrincipal User user,
             @RequestAttribute("IP-ADDRESS") String ipAddress,
-            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind
-        ) {
+            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
         User userFromDb = userService.getUserById(user.getId());
         HmacDTO hash = hmacService.encode(rawDeviceBind);
         userAccountService.changePhoneNumber(request, userFromDb, hash.signature(), hash.keyId(), ipAddress);
@@ -94,8 +89,7 @@ public class AccountController {
             @Validated @RequestBody VerifyOtpRequestDTO request,
             @AuthenticationPrincipal User user,
             @RequestAttribute("IP-ADDRESS") String ipAddress,
-            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind
-        ) {
+            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
         User userFromDb = userService.getUserById(user.getId());
         HmacDTO hash = hmacService.encode(rawDeviceBind);
         userAccountService.verifyBackupEmail(request, userFromDb, hash.signature(), hash.keyId(), ipAddress);
@@ -107,8 +101,7 @@ public class AccountController {
             @Validated @RequestBody VerifyOtpRequestDTO request,
             @AuthenticationPrincipal User user,
             @RequestAttribute("IP-ADDRESS") String ipAddress,
-            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind
-        ) {
+            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
         User userFromDb = userService.getUserById(user.getId());
         HmacDTO hash = hmacService.encode(rawDeviceBind);
         userAccountService.verifyPhoneNumber(request, userFromDb, hash.signature(), hash.keyId(), ipAddress);
@@ -119,8 +112,7 @@ public class AccountController {
     public ResponseEntity<Void> resendOtpVerifyBackupEmail(
             @AuthenticationPrincipal User user,
             @RequestAttribute("IP-ADDRESS") String ipAddress,
-            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind
-        ) {
+            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
         User userFromDb = userService.getUserById(user.getId());
         HmacDTO hash = hmacService.encode(rawDeviceBind);
         userAccountService.resendOtpForBackupEmail(userFromDb, hash.signature(), hash.keyId(), ipAddress);
@@ -131,8 +123,7 @@ public class AccountController {
     public ResponseEntity<Void> resendOtpVerifyPhoneNumber(
             @AuthenticationPrincipal User user,
             @RequestAttribute("IP-ADDRESS") String ipAddress,
-            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind
-        ) {
+            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
         User userFromDb = userService.getUserById(user.getId());
         HmacDTO hash = hmacService.encode(rawDeviceBind);
         userAccountService.resendOtpForPhoneNumber(userFromDb, hash.signature(), hash.keyId(), ipAddress);
@@ -143,8 +134,7 @@ public class AccountController {
     public ResponseEntity<FidoInitResponseDTO> initFidoRegister(
             @AuthenticationPrincipal User user,
             @RequestAttribute("IP-ADDRESS") String ipAddress,
-            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind
-        )
+            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind)
             throws JsonProcessingException {
         User userFromDb = userService.getUserById(user.getId());
         String response = fidoRegistrationService.initiateRegistration(userFromDb);
@@ -156,8 +146,7 @@ public class AccountController {
             @Validated @RequestBody FidoCompleteRegisterRequestDTO request,
             @AuthenticationPrincipal User user,
             @RequestAttribute("IP-ADDRESS") String ipAddress,
-            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind
-        ) {
+            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
         fidoRegistrationService.finishRegistration(user.getId().toHexString(), request.getResponse());
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -166,30 +155,25 @@ public class AccountController {
     public ResponseEntity<Void> deleteAccount(
             @AuthenticationPrincipal User user,
             @RequestAttribute("IP-ADDRESS") String ipAddress,
-            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind
-        ) {
-        ResponseCookie sessionCookie = ResponseCookie.from("SESSION", "").httpOnly(true).maxAge(0).path("/").build();
+            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
         HmacDTO hash = hmacService.encode(rawDeviceBind);
         userAccountService.deleteAccount(user, ipAddress, hash.signature(), hash.keyId());
-        return ResponseEntity.accepted()
-                .header(org.springframework.http.HttpHeaders.SET_COOKIE, sessionCookie.toString())
-                .build();
+        // No cookie to clear - JWT is client-side only
+        return ResponseEntity.accepted().build();
     }
 
     @PatchMapping("/logout")
     public ResponseEntity<Void> logout(
             @AuthenticationPrincipal User user,
             @RequestAttribute("IP-ADDRESS") String ipAddress,
-            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind
-        ) {
-        ResponseCookie sessionCookie = ResponseCookie.from("SESSION", "").httpOnly(true).maxAge(0).path("/").build();
+            @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
         HmacDTO hash = hmacService.encode(rawDeviceBind);
         if (user != null) {
-            userAccountService.logout(user, ipAddress, hash.signature(),hash.keyId());
+            userAccountService.logout(user, ipAddress, hash.signature(), hash.keyId());
         }
-        return ResponseEntity.ok()
-                .header(org.springframework.http.HttpHeaders.SET_COOKIE, sessionCookie.toString())
-                .build();
+        // No cookie to clear - JWT is client-side only
+        // Client should discard the token from storage
+        return ResponseEntity.ok().build();
     }
-    
+
 }

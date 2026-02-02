@@ -34,6 +34,9 @@ server:
   port: 10000
 
 jwt:
+  secret: "new-access-secret-key-new-access-secret-key"
+  expiration-ms: 86400000
+  issuer: "my-auth-service"
   access:
     oldkeyId: "access-key-2025-12"
     newkeyId: "access-key-2026-01"
@@ -49,7 +52,6 @@ jwt:
     newkeyId: "temp-key-2026-01"
     oldkey: "old-temp-secret-key-old-temp-secret-key"
     newkey: "new-temp-secret-key-new-temp-secret-key"
-  issuer: "my-auth-service"
   accessExpiration: 60
   refreshExpiration: 60
   tempExpiration: 5

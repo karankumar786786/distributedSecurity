@@ -15,6 +15,10 @@ import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.io.StringWriter;
 
+/**
+ * Custom failure handler for OAuth2 authentication.
+ * No cookies are used - stateless operation.
+ */
 @Component
 public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
@@ -41,12 +45,7 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
                 exception.printStackTrace();
                 logger.error("OAuth2 authentication failed: {}", exception.getMessage(), exception);
 
-                // Clean up cookies
-                System.out.println("=== CLEANING UP COOKIES AFTER FAILURE ===");
-                CookieUtils.deleteCookie(request, response,
-                                HttpCookieOAuth2AuthorizationRequestRepository.OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
-                CookieUtils.deleteCookie(request, response,
-                                HttpCookieOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME);
+                // No cookies to clean up - stateless authorization request storage
 
                 // Redirect to login page with error
                 setDefaultFailureUrl("/login?error=true");
