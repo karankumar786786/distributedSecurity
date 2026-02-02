@@ -30,3 +30,5 @@ server:
 
 encryption:
   master-key: "1234567890123456"
+jwt:
+  secret: "jwt-secret-key-for-mail-processor-jwt-secret-key"

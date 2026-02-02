@@ -46,6 +46,7 @@ server:
   port: 10014
 
 jwt:
+  secret: "jwt-secret-key-for-mail-processor-jwt-secret-key"
   issuer: "one.org.security"
   access:
     oldkeyId: "access-key-2025-12"

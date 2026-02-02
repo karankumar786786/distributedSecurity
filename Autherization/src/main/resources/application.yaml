@@ -103,8 +103,8 @@ jwt:
   expiration-ms: 86400000
   issuer: "my-auth-service"
 clienthmac:
-  oldkeyId: "697ece4ca0c82f1bf121b403"
-  newkeyId: "697ece65a0c82f1bf121b404"
+  oldkeyId: "6980a4f35a96cb5f69cac61a"
+  newkeyId: "6980a4da5a96cb5f69cac619"
   oldkey: "old-hmac-secret-key-old-hmac-secret-key"
   newkey: "new-hmac-secret-key-new-hmac-secret-key"
 grpc:

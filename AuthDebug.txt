@@ -65,3 +65,6 @@
 2026-02-02T15:10:26.692193 - === TOKEN ENDPOINT RESPONSE ===
 2026-02-02T15:10:26.692386 - Status: 200
 2026-02-02T15:10:26.692445 - ===============================
+2026-02-02T18:44:07.134349 - FILTER: Entering - GET /.well-known/openid-configuration (State: null)
+2026-02-02T18:51:30.544608 - FILTER: Entering - POST /key/client/create (State: null)
+2026-02-02T18:51:55.328360 - FILTER: Entering - POST /key/client/create (State: null)

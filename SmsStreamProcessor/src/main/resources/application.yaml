@@ -23,6 +23,7 @@ spring:
       security-event: security-event-topic
       processed-security-event: processed-security-event-topic
 jwt:
+  secret: "jwt-secret-key-for-mail-processor-jwt-secret-key"
   access:
     oldkeyId: "access-key-2025-12"
     newkeyId: "access-key-2026-01"
