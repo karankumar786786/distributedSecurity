@@ -1853,3 +1853,902 @@
 2026-02-03T23:20:40.826374 - ===============================
 2026-02-03T23:20:40.895839 - FILTER: Entering - GET /oauth2/jwks (State: null)
 2026-02-03T23:20:40.927949 - FILTER: Entering - GET /oauth2/jwks (State: null)
+2026-02-04T00:20:24.945623 - FILTER: Entering - GET /oauth2/authorize (State: 6f8vdqbJ5gkSULAIJYlvRWucKFEX9twAXKVyChBYYgw=)
+2026-02-04T00:20:24.970874 - FILTER: Redirecting to: http://localhost:5173/login?return_to=http://localhost:12000/oauth2/authorize?response_type=code&client_id=testclient2&scope=openid%20read&state=6f8vdqbJ5gkSULAIJYlvRWucKFEX9twAXKVyChBYYgw%3D&redirect_uri=http://localhost:13000/login/oauth2/code/testclient2&nonce=t7V3jHeROw0Abd3LOhWRCvd3pxsZejGeffFCcBmMflg&code_challenge=9cVmq_hQcEfIfWCkcmsBXUjyYvEW3sSSFGP1S8bLxoY&code_challenge_method=S256
+2026-02-04T00:20:26.061586 - FILTER: Entering - GET /oauth2/authorize (State: 6f8vdqbJ5gkSULAIJYlvRWucKFEX9twAXKVyChBYYgw=)
+2026-02-04T00:20:26.064925 - save called for ID: 5a426a93-a266-483e-b642-e97aabd30546
+2026-02-04T00:20:26.065168 - toEntity called for ID: 5a426a93-a266-483e-b642-e97aabd30546
+2026-02-04T00:20:26.065254 - toEntity: Promoted code_challenge: 9cVmq_hQcEfIfWCkcmsBXUjyYvEW3sSSFGP1S8bLxoY
+2026-02-04T00:20:26.065314 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T00:20:26.065388 - toEntity: Promoted nonce: t7V3jHeROw0Abd3LOhWRCvd3pxsZejGeffFCcBmMflg
+2026-02-04T00:20:26.065455 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T00:20:26.065519 -   Attributes keys: []
+2026-02-04T00:20:26.065579 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:20:26.065637 -     Param: code_challenge_method = S256
+2026-02-04T00:20:26.065713 -     Param: nonce = t7V3jHeROw0Abd3LOhWRCvd3pxsZejGeffFCcBmMflg
+2026-02-04T00:20:26.065825 -     Param: code_challenge = 9cVmq_hQcEfIfWCkcmsBXUjyYvEW3sSSFGP1S8bLxoY
+2026-02-04T00:20:26.065895 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T00:20:26.066226 -   Redirect URI: http://localhost:13000/login/oauth2/code/testclient2
+2026-02-04T00:20:26.066300 - toEntity: Tracking State: 6nOlnBoBkBSKMsw4IiICepaB3qzumLAIX5aWteEW2eY=
+2026-02-04T00:20:26.066355 - toEntity: Client State: 6f8vdqbJ5gkSULAIJYlvRWucKFEX9twAXKVyChBYYgw=
+2026-02-04T00:20:26.066429 - Saving entity with code: NULL
+2026-02-04T00:20:26.073214 - FILTER: Redirecting to: http://localhost:5173/oauth2/consent?scope=read%20openid&client_id=testclient2&state=6nOlnBoBkBSKMsw4IiICepaB3qzumLAIX5aWteEW2eY%3D
+2026-02-04T00:20:27.535238 - FILTER: Entering - POST /oauth2/authorize/process (State: 6nOlnBoBkBSKMsw4IiICepaB3qzumLAIX5aWteEW2eY=)
+2026-02-04T00:20:27.548913 - toObject called for ID: 5a426a93-a266-483e-b642-e97aabd30546
+2026-02-04T00:20:27.553631 - Found RegisteredClient: testclient2
+2026-02-04T00:20:27.554156 - toObject: Loaded attributes keys: [java.security.Principal, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T00:20:27.554276 - toObject: Forcing code_challenge from flat field: 9cVmq_hQcEfIfWCkcmsBXUjyYvEW3sSSFGP1S8bLxoY
+2026-02-04T00:20:27.554365 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T00:20:27.554437 - toObject: Forcing nonce from flat field: t7V3jHeROw0Abd3LOhWRCvd3pxsZejGeffFCcBmMflg
+2026-02-04T00:20:27.554509 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:20:27.554574 - toObject: Tracking State restored: 6nOlnBoBkBSKMsw4IiICepaB3qzumLAIX5aWteEW2eY=
+2026-02-04T00:20:27.554634 - toObject: Client State available: 6f8vdqbJ5gkSULAIJYlvRWucKFEX9twAXKVyChBYYgw=
+2026-02-04T00:20:27.554874 - save called for ID: 5a426a93-a266-483e-b642-e97aabd30546
+2026-02-04T00:20:27.554971 - toEntity called for ID: 5a426a93-a266-483e-b642-e97aabd30546
+2026-02-04T00:20:27.555100 - toEntity: Promoted code_challenge: 9cVmq_hQcEfIfWCkcmsBXUjyYvEW3sSSFGP1S8bLxoY
+2026-02-04T00:20:27.555271 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T00:20:27.555336 - toEntity: Promoted nonce: t7V3jHeROw0Abd3LOhWRCvd3pxsZejGeffFCcBmMflg
+2026-02-04T00:20:27.555388 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T00:20:27.555439 -   Attributes keys: []
+2026-02-04T00:20:27.555496 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:20:27.555548 -     Param: code_challenge_method = S256
+2026-02-04T00:20:27.555594 -     Param: nonce = t7V3jHeROw0Abd3LOhWRCvd3pxsZejGeffFCcBmMflg
+2026-02-04T00:20:27.555645 -     Param: code_challenge = 9cVmq_hQcEfIfWCkcmsBXUjyYvEW3sSSFGP1S8bLxoY
+2026-02-04T00:20:27.555689 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T00:20:27.555738 -   Redirect URI: http://localhost:13000/login/oauth2/code/testclient2
+2026-02-04T00:20:27.555791 - toEntity: Tracking State: 6nOlnBoBkBSKMsw4IiICepaB3qzumLAIX5aWteEW2eY=
+2026-02-04T00:20:27.555836 - toEntity: Client State: 6f8vdqbJ5gkSULAIJYlvRWucKFEX9twAXKVyChBYYgw=
+2026-02-04T00:20:27.555894 - Saving entity with code: 3c46970f-f82b-4a45-a961-6cb7676d03fc
+2026-02-04T00:20:27.562625 - FILTER: Redirecting to: http://localhost:13000/login/oauth2/code/testclient2?code=3c46970f-f82b-4a45-a961-6cb7676d03fc&state=6f8vdqbJ5gkSULAIJYlvRWucKFEX9twAXKVyChBYYgw=
+2026-02-04T00:20:27.575121 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-04T00:20:27.581343 - toObject called for ID: 5a426a93-a266-483e-b642-e97aabd30546
+2026-02-04T00:20:27.583660 - Found RegisteredClient: testclient2
+2026-02-04T00:20:27.583791 - toObject: Loaded attributes keys: [java.security.Principal, client_state, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T00:20:27.583852 - toObject: Forcing code_challenge from flat field: 9cVmq_hQcEfIfWCkcmsBXUjyYvEW3sSSFGP1S8bLxoY
+2026-02-04T00:20:27.583896 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T00:20:27.583947 - toObject: Forcing nonce from flat field: t7V3jHeROw0Abd3LOhWRCvd3pxsZejGeffFCcBmMflg
+2026-02-04T00:20:27.583999 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:20:27.584043 - toObject: Tracking State restored: 6nOlnBoBkBSKMsw4IiICepaB3qzumLAIX5aWteEW2eY=
+2026-02-04T00:20:27.584081 - toObject: Client State available: 6f8vdqbJ5gkSULAIJYlvRWucKFEX9twAXKVyChBYYgw=
+2026-02-04T00:20:27.589126 - toObject called for ID: 5a426a93-a266-483e-b642-e97aabd30546
+2026-02-04T00:20:27.591379 - Found RegisteredClient: testclient2
+2026-02-04T00:20:27.591543 - toObject: Loaded attributes keys: [java.security.Principal, client_state, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T00:20:27.591783 - toObject: Forcing code_challenge from flat field: 9cVmq_hQcEfIfWCkcmsBXUjyYvEW3sSSFGP1S8bLxoY
+2026-02-04T00:20:27.591961 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T00:20:27.592181 - toObject: Forcing nonce from flat field: t7V3jHeROw0Abd3LOhWRCvd3pxsZejGeffFCcBmMflg
+2026-02-04T00:20:27.592235 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:20:27.592407 - toObject: Tracking State restored: 6nOlnBoBkBSKMsw4IiICepaB3qzumLAIX5aWteEW2eY=
+2026-02-04T00:20:27.592556 - toObject: Client State available: 6f8vdqbJ5gkSULAIJYlvRWucKFEX9twAXKVyChBYYgw=
+2026-02-04T00:20:27.615543 - save called for ID: 5a426a93-a266-483e-b642-e97aabd30546
+2026-02-04T00:20:27.615669 - toEntity called for ID: 5a426a93-a266-483e-b642-e97aabd30546
+2026-02-04T00:20:27.615720 - toEntity: Promoted code_challenge: 9cVmq_hQcEfIfWCkcmsBXUjyYvEW3sSSFGP1S8bLxoY
+2026-02-04T00:20:27.615761 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T00:20:27.615796 - toEntity: Promoted nonce: t7V3jHeROw0Abd3LOhWRCvd3pxsZejGeffFCcBmMflg
+2026-02-04T00:20:27.615834 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T00:20:27.615869 -   Attributes keys: []
+2026-02-04T00:20:27.615908 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:20:27.615944 -     Param: code_challenge_method = S256
+2026-02-04T00:20:27.615977 -     Param: nonce = t7V3jHeROw0Abd3LOhWRCvd3pxsZejGeffFCcBmMflg
+2026-02-04T00:20:27.616012 -     Param: code_challenge = 9cVmq_hQcEfIfWCkcmsBXUjyYvEW3sSSFGP1S8bLxoY
+2026-02-04T00:20:27.616048 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T00:20:27.616080 -   Redirect URI: http://localhost:13000/login/oauth2/code/testclient2
+2026-02-04T00:20:27.616118 - toEntity: Tracking State: 6nOlnBoBkBSKMsw4IiICepaB3qzumLAIX5aWteEW2eY=
+2026-02-04T00:20:27.616155 - toEntity: Client State: 6f8vdqbJ5gkSULAIJYlvRWucKFEX9twAXKVyChBYYgw=
+2026-02-04T00:20:27.616224 - Saving entity with code: 3c46970f-f82b-4a45-a961-6cb7676d03fc
+2026-02-04T00:20:27.629567 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-04T00:20:27.629745 - Status: 200
+2026-02-04T00:20:27.629815 - ===============================
+2026-02-04T00:20:27.636581 - FILTER: Entering - GET /oauth2/jwks (State: null)
+2026-02-04T00:20:27.658374 - FILTER: Entering - GET /oauth2/jwks (State: null)
+2026-02-04T00:20:38.633224 - FILTER: Entering - GET /oauth2/authorize (State: a3MXDdZFc6xTYfOOhTyU1lmV9-sg88w9PDyW-y9p-YA=)
+2026-02-04T00:20:38.636802 - FILTER: Redirecting to: http://localhost:5173/login?return_to=http://localhost:12000/oauth2/authorize?response_type=code&client_id=testclient2&scope=openid%20read&state=a3MXDdZFc6xTYfOOhTyU1lmV9-sg88w9PDyW-y9p-YA%3D&redirect_uri=http://localhost:13000/login/oauth2/code/testclient2&nonce=64Gi44atoEpJqUQ_hHuwTycFq7u9-j4Xb97OyJ3pMo4&code_challenge=D5Qa-6Seb2_khMmj8aAOzmNR5wpKndorCR7QSGZGs6I&code_challenge_method=S256
+2026-02-04T00:20:39.711027 - FILTER: Entering - GET /oauth2/authorize (State: a3MXDdZFc6xTYfOOhTyU1lmV9-sg88w9PDyW-y9p-YA=)
+2026-02-04T00:20:39.712789 - save called for ID: 3df24970-6d2a-45b8-9646-2be1f8e7c50c
+2026-02-04T00:20:39.712990 - toEntity called for ID: 3df24970-6d2a-45b8-9646-2be1f8e7c50c
+2026-02-04T00:20:39.713040 - toEntity: Promoted code_challenge: D5Qa-6Seb2_khMmj8aAOzmNR5wpKndorCR7QSGZGs6I
+2026-02-04T00:20:39.713083 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T00:20:39.713128 - toEntity: Promoted nonce: 64Gi44atoEpJqUQ_hHuwTycFq7u9-j4Xb97OyJ3pMo4
+2026-02-04T00:20:39.713165 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T00:20:39.713204 -   Attributes keys: []
+2026-02-04T00:20:39.713245 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:20:39.713282 -     Param: code_challenge_method = S256
+2026-02-04T00:20:39.713320 -     Param: nonce = 64Gi44atoEpJqUQ_hHuwTycFq7u9-j4Xb97OyJ3pMo4
+2026-02-04T00:20:39.713354 -     Param: code_challenge = D5Qa-6Seb2_khMmj8aAOzmNR5wpKndorCR7QSGZGs6I
+2026-02-04T00:20:39.713391 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T00:20:39.713427 -   Redirect URI: http://localhost:13000/login/oauth2/code/testclient2
+2026-02-04T00:20:39.713464 - toEntity: Tracking State: _dspup5mGHbXpGOWnYscvpvUIWcEMM1ijzHwwW5BksI=
+2026-02-04T00:20:39.713500 - toEntity: Client State: a3MXDdZFc6xTYfOOhTyU1lmV9-sg88w9PDyW-y9p-YA=
+2026-02-04T00:20:39.713537 - Saving entity with code: NULL
+2026-02-04T00:20:39.716780 - FILTER: Redirecting to: http://localhost:5173/oauth2/consent?scope=read%20openid&client_id=testclient2&state=_dspup5mGHbXpGOWnYscvpvUIWcEMM1ijzHwwW5BksI%3D
+2026-02-04T00:20:41.687223 - FILTER: Entering - POST /oauth2/authorize/process (State: _dspup5mGHbXpGOWnYscvpvUIWcEMM1ijzHwwW5BksI=)
+2026-02-04T00:20:41.694057 - toObject called for ID: 3df24970-6d2a-45b8-9646-2be1f8e7c50c
+2026-02-04T00:20:41.697823 - Found RegisteredClient: testclient2
+2026-02-04T00:20:41.698212 - toObject: Loaded attributes keys: [java.security.Principal, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T00:20:41.698424 - toObject: Forcing code_challenge from flat field: D5Qa-6Seb2_khMmj8aAOzmNR5wpKndorCR7QSGZGs6I
+2026-02-04T00:20:41.698538 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T00:20:41.698629 - toObject: Forcing nonce from flat field: 64Gi44atoEpJqUQ_hHuwTycFq7u9-j4Xb97OyJ3pMo4
+2026-02-04T00:20:41.698719 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:20:41.698803 - toObject: Tracking State restored: _dspup5mGHbXpGOWnYscvpvUIWcEMM1ijzHwwW5BksI=
+2026-02-04T00:20:41.698885 - toObject: Client State available: a3MXDdZFc6xTYfOOhTyU1lmV9-sg88w9PDyW-y9p-YA=
+2026-02-04T00:20:41.699171 - save called for ID: 3df24970-6d2a-45b8-9646-2be1f8e7c50c
+2026-02-04T00:20:41.699289 - toEntity called for ID: 3df24970-6d2a-45b8-9646-2be1f8e7c50c
+2026-02-04T00:20:41.699389 - toEntity: Promoted code_challenge: D5Qa-6Seb2_khMmj8aAOzmNR5wpKndorCR7QSGZGs6I
+2026-02-04T00:20:41.699468 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T00:20:41.699551 - toEntity: Promoted nonce: 64Gi44atoEpJqUQ_hHuwTycFq7u9-j4Xb97OyJ3pMo4
+2026-02-04T00:20:41.699628 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T00:20:41.699711 -   Attributes keys: []
+2026-02-04T00:20:41.699790 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:20:41.699868 -     Param: code_challenge_method = S256
+2026-02-04T00:20:41.699943 -     Param: nonce = 64Gi44atoEpJqUQ_hHuwTycFq7u9-j4Xb97OyJ3pMo4
+2026-02-04T00:20:41.700013 -     Param: code_challenge = D5Qa-6Seb2_khMmj8aAOzmNR5wpKndorCR7QSGZGs6I
+2026-02-04T00:20:41.700077 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T00:20:41.700146 -   Redirect URI: http://localhost:13000/login/oauth2/code/testclient2
+2026-02-04T00:20:41.700218 - toEntity: Tracking State: _dspup5mGHbXpGOWnYscvpvUIWcEMM1ijzHwwW5BksI=
+2026-02-04T00:20:41.700280 - toEntity: Client State: a3MXDdZFc6xTYfOOhTyU1lmV9-sg88w9PDyW-y9p-YA=
+2026-02-04T00:20:41.700357 - Saving entity with code: efd2d30e-0e2a-4052-bf8d-b59287185495
+2026-02-04T00:20:41.708727 - FILTER: Redirecting to: http://localhost:13000/login/oauth2/code/testclient2?code=efd2d30e-0e2a-4052-bf8d-b59287185495&state=a3MXDdZFc6xTYfOOhTyU1lmV9-sg88w9PDyW-y9p-YA=
+2026-02-04T00:20:41.716528 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-04T00:20:41.722916 - toObject called for ID: 3df24970-6d2a-45b8-9646-2be1f8e7c50c
+2026-02-04T00:20:41.725307 - Found RegisteredClient: testclient2
+2026-02-04T00:20:41.725446 - toObject: Loaded attributes keys: [java.security.Principal, client_state, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T00:20:41.725500 - toObject: Forcing code_challenge from flat field: D5Qa-6Seb2_khMmj8aAOzmNR5wpKndorCR7QSGZGs6I
+2026-02-04T00:20:41.725551 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T00:20:41.725597 - toObject: Forcing nonce from flat field: 64Gi44atoEpJqUQ_hHuwTycFq7u9-j4Xb97OyJ3pMo4
+2026-02-04T00:20:41.725650 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:20:41.725697 - toObject: Tracking State restored: _dspup5mGHbXpGOWnYscvpvUIWcEMM1ijzHwwW5BksI=
+2026-02-04T00:20:41.725741 - toObject: Client State available: a3MXDdZFc6xTYfOOhTyU1lmV9-sg88w9PDyW-y9p-YA=
+2026-02-04T00:20:41.729626 - toObject called for ID: 3df24970-6d2a-45b8-9646-2be1f8e7c50c
+2026-02-04T00:20:41.732042 - Found RegisteredClient: testclient2
+2026-02-04T00:20:41.732226 - toObject: Loaded attributes keys: [java.security.Principal, client_state, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T00:20:41.732289 - toObject: Forcing code_challenge from flat field: D5Qa-6Seb2_khMmj8aAOzmNR5wpKndorCR7QSGZGs6I
+2026-02-04T00:20:41.732341 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T00:20:41.732410 - toObject: Forcing nonce from flat field: 64Gi44atoEpJqUQ_hHuwTycFq7u9-j4Xb97OyJ3pMo4
+2026-02-04T00:20:41.732462 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:20:41.732512 - toObject: Tracking State restored: _dspup5mGHbXpGOWnYscvpvUIWcEMM1ijzHwwW5BksI=
+2026-02-04T00:20:41.732581 - toObject: Client State available: a3MXDdZFc6xTYfOOhTyU1lmV9-sg88w9PDyW-y9p-YA=
+2026-02-04T00:20:41.740997 - save called for ID: 3df24970-6d2a-45b8-9646-2be1f8e7c50c
+2026-02-04T00:20:41.741124 - toEntity called for ID: 3df24970-6d2a-45b8-9646-2be1f8e7c50c
+2026-02-04T00:20:41.741220 - toEntity: Promoted code_challenge: D5Qa-6Seb2_khMmj8aAOzmNR5wpKndorCR7QSGZGs6I
+2026-02-04T00:20:41.741264 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T00:20:41.741350 - toEntity: Promoted nonce: 64Gi44atoEpJqUQ_hHuwTycFq7u9-j4Xb97OyJ3pMo4
+2026-02-04T00:20:41.741395 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T00:20:41.741438 -   Attributes keys: []
+2026-02-04T00:20:41.741504 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:20:41.741555 -     Param: code_challenge_method = S256
+2026-02-04T00:20:41.741631 -     Param: nonce = 64Gi44atoEpJqUQ_hHuwTycFq7u9-j4Xb97OyJ3pMo4
+2026-02-04T00:20:41.741887 -     Param: code_challenge = D5Qa-6Seb2_khMmj8aAOzmNR5wpKndorCR7QSGZGs6I
+2026-02-04T00:20:41.742008 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T00:20:41.742066 -   Redirect URI: http://localhost:13000/login/oauth2/code/testclient2
+2026-02-04T00:20:41.742167 - toEntity: Tracking State: _dspup5mGHbXpGOWnYscvpvUIWcEMM1ijzHwwW5BksI=
+2026-02-04T00:20:41.742213 - toEntity: Client State: a3MXDdZFc6xTYfOOhTyU1lmV9-sg88w9PDyW-y9p-YA=
+2026-02-04T00:20:41.742270 - Saving entity with code: efd2d30e-0e2a-4052-bf8d-b59287185495
+2026-02-04T00:20:41.748109 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-04T00:20:41.748276 - Status: 200
+2026-02-04T00:20:41.748364 - ===============================
+2026-02-04T00:20:41.752582 - FILTER: Entering - GET /oauth2/jwks (State: null)
+2026-02-04T00:34:22.982076 - FILTER: Entering - POST /client/create-client (State: null)
+2026-02-04T00:39:11.092071 - FILTER: Entering - GET /.well-known/openid-configuration (State: null)
+2026-02-04T00:39:53.953994 - FILTER: Entering - GET /.well-known/openid-configuration (State: null)
+2026-02-04T00:40:29.790598 - FILTER: Entering - GET /.well-known/openid-configuration (State: null)
+2026-02-04T00:41:17.673320 - FILTER: Entering - GET /.well-known/openid-configuration (State: null)
+2026-02-04T00:41:22.232530 - FILTER: Entering - GET /oauth2/authorize (State: ltuOH20GbfhtF1EdCdQhnf5Cbwa_WrH0iCLlSobTDKA)
+2026-02-04T00:42:43.772262 - FILTER: Entering - PATCH /client/update-client-redirect-url (State: null)
+2026-02-04T00:43:09.229658 - FILTER: Entering - GET /.well-known/openid-configuration (State: null)
+2026-02-04T00:43:13.279178 - FILTER: Entering - GET /oauth2/authorize (State: WI_oR2NmFBtPlFQnctvtkssISW7GqRs57jbRCUE8jao)
+2026-02-04T00:43:13.306617 - FILTER: Redirecting to: http://localhost:3000/code/callback?error=invalid_request&error_description=OAuth%202.0%20Parameter%3A%20code_challenge&error_uri=https%3A%2F%2Fdatatracker.ietf.org%2Fdoc%2Fhtml%2Frfc7636%23section-4.4.1&state=WI_oR2NmFBtPlFQnctvtkssISW7GqRs57jbRCUE8jao
+2026-02-04T00:44:32.850951 - FILTER: Entering - GET /.well-known/openid-configuration (State: null)
+2026-02-04T00:44:36.812490 - FILTER: Entering - GET /oauth2/authorize (State: VnR8DHk9ZV9HYSCNHM2GM3ip9SEmX9Ww73ELRTLQpuY)
+2026-02-04T00:44:36.821132 - FILTER: Redirecting to: http://localhost:5173/login?return_to=http://localhost:12000/oauth2/authorize?client_id=testclient3&scope=openid%20profile%20read&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fcode%2Fcallback&state=VnR8DHk9ZV9HYSCNHM2GM3ip9SEmX9Ww73ELRTLQpuY&nonce=3Djc3DZRzNGvc_x7S0eWCUOdn5MvlJaRk7DJP5WLNF8&code_challenge=3NK3uvGXEarMtu0h__I9miextg-uEzoMMKh3HFDm-Q4&code_challenge_method=S256
+2026-02-04T00:44:37.952132 - FILTER: Entering - GET /oauth2/authorize (State: VnR8DHk9ZV9HYSCNHM2GM3ip9SEmX9Ww73ELRTLQpuY)
+2026-02-04T00:44:37.956011 - save called for ID: 85bcbc3c-9f40-45af-b41d-f9a84d4fcbc9
+2026-02-04T00:44:37.956258 - toEntity called for ID: 85bcbc3c-9f40-45af-b41d-f9a84d4fcbc9
+2026-02-04T00:44:37.956380 - toEntity: Promoted code_challenge: 3NK3uvGXEarMtu0h__I9miextg-uEzoMMKh3HFDm-Q4
+2026-02-04T00:44:37.956723 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T00:44:37.956859 - toEntity: Promoted nonce: 3Djc3DZRzNGvc_x7S0eWCUOdn5MvlJaRk7DJP5WLNF8
+2026-02-04T00:44:37.956945 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T00:44:37.957030 -   Attributes keys: []
+2026-02-04T00:44:37.957131 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:44:37.957213 -     Param: code_challenge_method = S256
+2026-02-04T00:44:37.957284 -     Param: nonce = 3Djc3DZRzNGvc_x7S0eWCUOdn5MvlJaRk7DJP5WLNF8
+2026-02-04T00:44:37.957349 -     Param: code_challenge = 3NK3uvGXEarMtu0h__I9miextg-uEzoMMKh3HFDm-Q4
+2026-02-04T00:44:37.957419 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T00:44:37.957488 -   Redirect URI: http://localhost:3000/code/callback
+2026-02-04T00:44:37.957580 - toEntity: Tracking State: rON7tOJFeCwcyUECY7kljYkAl0u1wxECcP47UGK4XGs=
+2026-02-04T00:44:37.957657 - toEntity: Client State: VnR8DHk9ZV9HYSCNHM2GM3ip9SEmX9Ww73ELRTLQpuY
+2026-02-04T00:44:37.957748 - Saving entity with code: NULL
+2026-02-04T00:44:37.967402 - FILTER: Redirecting to: http://localhost:5173/oauth2/consent?scope=read%20openid%20profile&client_id=testclient3&state=rON7tOJFeCwcyUECY7kljYkAl0u1wxECcP47UGK4XGs%3D
+2026-02-04T00:44:39.241407 - FILTER: Entering - POST /oauth2/authorize/process (State: rON7tOJFeCwcyUECY7kljYkAl0u1wxECcP47UGK4XGs=)
+2026-02-04T00:44:39.262496 - toObject called for ID: 85bcbc3c-9f40-45af-b41d-f9a84d4fcbc9
+2026-02-04T00:44:39.269242 - Found RegisteredClient: testclient3
+2026-02-04T00:44:39.269452 - toObject: Loaded attributes keys: [java.security.Principal, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T00:44:39.269530 - toObject: Forcing code_challenge from flat field: 3NK3uvGXEarMtu0h__I9miextg-uEzoMMKh3HFDm-Q4
+2026-02-04T00:44:39.269636 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T00:44:39.269717 - toObject: Forcing nonce from flat field: 3Djc3DZRzNGvc_x7S0eWCUOdn5MvlJaRk7DJP5WLNF8
+2026-02-04T00:44:39.269774 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:44:39.269846 - toObject: Tracking State restored: rON7tOJFeCwcyUECY7kljYkAl0u1wxECcP47UGK4XGs=
+2026-02-04T00:44:39.269905 - toObject: Client State available: VnR8DHk9ZV9HYSCNHM2GM3ip9SEmX9Ww73ELRTLQpuY
+2026-02-04T00:44:39.270096 - save called for ID: 85bcbc3c-9f40-45af-b41d-f9a84d4fcbc9
+2026-02-04T00:44:39.270165 - toEntity called for ID: 85bcbc3c-9f40-45af-b41d-f9a84d4fcbc9
+2026-02-04T00:44:39.270245 - toEntity: Promoted code_challenge: 3NK3uvGXEarMtu0h__I9miextg-uEzoMMKh3HFDm-Q4
+2026-02-04T00:44:39.270301 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T00:44:39.270373 - toEntity: Promoted nonce: 3Djc3DZRzNGvc_x7S0eWCUOdn5MvlJaRk7DJP5WLNF8
+2026-02-04T00:44:39.270415 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T00:44:39.270462 -   Attributes keys: []
+2026-02-04T00:44:39.270516 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:44:39.270579 -     Param: code_challenge_method = S256
+2026-02-04T00:44:39.270629 -     Param: nonce = 3Djc3DZRzNGvc_x7S0eWCUOdn5MvlJaRk7DJP5WLNF8
+2026-02-04T00:44:39.270669 -     Param: code_challenge = 3NK3uvGXEarMtu0h__I9miextg-uEzoMMKh3HFDm-Q4
+2026-02-04T00:44:39.270717 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T00:44:39.270768 -   Redirect URI: http://localhost:3000/code/callback
+2026-02-04T00:44:39.270816 - toEntity: Tracking State: rON7tOJFeCwcyUECY7kljYkAl0u1wxECcP47UGK4XGs=
+2026-02-04T00:44:39.270859 - toEntity: Client State: VnR8DHk9ZV9HYSCNHM2GM3ip9SEmX9Ww73ELRTLQpuY
+2026-02-04T00:44:39.270910 - Saving entity with code: eab578f1-36f3-4cc7-9c80-d64e08bdf5d0
+2026-02-04T00:44:39.278470 - FILTER: Redirecting to: http://localhost:3000/code/callback?code=eab578f1-36f3-4cc7-9c80-d64e08bdf5d0&state=VnR8DHk9ZV9HYSCNHM2GM3ip9SEmX9Ww73ELRTLQpuY
+2026-02-04T00:44:39.285700 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-04T00:44:39.290102 - toObject called for ID: 85bcbc3c-9f40-45af-b41d-f9a84d4fcbc9
+2026-02-04T00:44:39.294506 - Found RegisteredClient: testclient3
+2026-02-04T00:44:39.294629 - toObject: Loaded attributes keys: [java.security.Principal, client_state, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T00:44:39.294691 - toObject: Forcing code_challenge from flat field: 3NK3uvGXEarMtu0h__I9miextg-uEzoMMKh3HFDm-Q4
+2026-02-04T00:44:39.294731 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T00:44:39.294783 - toObject: Forcing nonce from flat field: 3Djc3DZRzNGvc_x7S0eWCUOdn5MvlJaRk7DJP5WLNF8
+2026-02-04T00:44:39.294831 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:44:39.294901 - toObject: Tracking State restored: rON7tOJFeCwcyUECY7kljYkAl0u1wxECcP47UGK4XGs=
+2026-02-04T00:44:39.294962 - toObject: Client State available: VnR8DHk9ZV9HYSCNHM2GM3ip9SEmX9Ww73ELRTLQpuY
+2026-02-04T00:44:39.300816 - toObject called for ID: 85bcbc3c-9f40-45af-b41d-f9a84d4fcbc9
+2026-02-04T00:44:39.303591 - Found RegisteredClient: testclient3
+2026-02-04T00:44:39.303718 - toObject: Loaded attributes keys: [java.security.Principal, client_state, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T00:44:39.303784 - toObject: Forcing code_challenge from flat field: 3NK3uvGXEarMtu0h__I9miextg-uEzoMMKh3HFDm-Q4
+2026-02-04T00:44:39.303958 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T00:44:39.303999 - toObject: Forcing nonce from flat field: 3Djc3DZRzNGvc_x7S0eWCUOdn5MvlJaRk7DJP5WLNF8
+2026-02-04T00:44:39.304045 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:44:39.304081 - toObject: Tracking State restored: rON7tOJFeCwcyUECY7kljYkAl0u1wxECcP47UGK4XGs=
+2026-02-04T00:44:39.304155 - toObject: Client State available: VnR8DHk9ZV9HYSCNHM2GM3ip9SEmX9Ww73ELRTLQpuY
+2026-02-04T00:44:39.312558 - save called for ID: 85bcbc3c-9f40-45af-b41d-f9a84d4fcbc9
+2026-02-04T00:44:39.312703 - toEntity called for ID: 85bcbc3c-9f40-45af-b41d-f9a84d4fcbc9
+2026-02-04T00:44:39.312797 - toEntity: Promoted code_challenge: 3NK3uvGXEarMtu0h__I9miextg-uEzoMMKh3HFDm-Q4
+2026-02-04T00:44:39.313456 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T00:44:39.313516 - toEntity: Promoted nonce: 3Djc3DZRzNGvc_x7S0eWCUOdn5MvlJaRk7DJP5WLNF8
+2026-02-04T00:44:39.313555 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T00:44:39.313611 -   Attributes keys: []
+2026-02-04T00:44:39.313718 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:44:39.313810 -     Param: code_challenge_method = S256
+2026-02-04T00:44:39.313887 -     Param: nonce = 3Djc3DZRzNGvc_x7S0eWCUOdn5MvlJaRk7DJP5WLNF8
+2026-02-04T00:44:39.313927 -     Param: code_challenge = 3NK3uvGXEarMtu0h__I9miextg-uEzoMMKh3HFDm-Q4
+2026-02-04T00:44:39.313958 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T00:44:39.314005 -   Redirect URI: http://localhost:3000/code/callback
+2026-02-04T00:44:39.314053 - toEntity: Tracking State: rON7tOJFeCwcyUECY7kljYkAl0u1wxECcP47UGK4XGs=
+2026-02-04T00:44:39.314089 - toEntity: Client State: VnR8DHk9ZV9HYSCNHM2GM3ip9SEmX9Ww73ELRTLQpuY
+2026-02-04T00:44:39.314515 - Saving entity with code: eab578f1-36f3-4cc7-9c80-d64e08bdf5d0
+2026-02-04T00:44:39.321016 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-04T00:44:39.321107 - Status: 200
+2026-02-04T00:44:39.321144 - ===============================
+2026-02-04T00:44:39.324496 - FILTER: Entering - GET /oauth2/jwks (State: null)
+2026-02-04T00:45:08.175390 - FILTER: Entering - GET /oauth2/authorize (State: 4nRVdEdDyByO0elYqnLrOVfOdlE9zttzZ4Y8yJwTJvE)
+2026-02-04T00:45:08.181198 - FILTER: Redirecting to: http://localhost:5173/login?return_to=http://localhost:12000/oauth2/authorize?client_id=testclient3&scope=openid%20profile%20read&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fcode%2Fcallback&state=4nRVdEdDyByO0elYqnLrOVfOdlE9zttzZ4Y8yJwTJvE&nonce=OH9tLUd4Xb2JavP39VLoE525rp8HIuerj5TlRCpolYk&code_challenge=lXnqrGamT7v62JkefPeL3TgEcbxIOvjZmmK9uXB9WE8&code_challenge_method=S256
+2026-02-04T00:45:09.243490 - FILTER: Entering - GET /oauth2/authorize (State: 4nRVdEdDyByO0elYqnLrOVfOdlE9zttzZ4Y8yJwTJvE)
+2026-02-04T00:45:09.245401 - save called for ID: ea3eb62e-1dee-4ea1-bfb8-e727f2cee4d5
+2026-02-04T00:45:09.245484 - toEntity called for ID: ea3eb62e-1dee-4ea1-bfb8-e727f2cee4d5
+2026-02-04T00:45:09.245547 - toEntity: Promoted code_challenge: lXnqrGamT7v62JkefPeL3TgEcbxIOvjZmmK9uXB9WE8
+2026-02-04T00:45:09.245676 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T00:45:09.245777 - toEntity: Promoted nonce: OH9tLUd4Xb2JavP39VLoE525rp8HIuerj5TlRCpolYk
+2026-02-04T00:45:09.245973 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T00:45:09.246039 -   Attributes keys: []
+2026-02-04T00:45:09.246094 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:45:09.246142 -     Param: code_challenge_method = S256
+2026-02-04T00:45:09.246177 -     Param: nonce = OH9tLUd4Xb2JavP39VLoE525rp8HIuerj5TlRCpolYk
+2026-02-04T00:45:09.246214 -     Param: code_challenge = lXnqrGamT7v62JkefPeL3TgEcbxIOvjZmmK9uXB9WE8
+2026-02-04T00:45:09.246248 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T00:45:09.246333 -   Redirect URI: http://localhost:3000/code/callback
+2026-02-04T00:45:09.246374 - toEntity: Tracking State: JrIMzwI8tKT6KxV4AE9aQqzzVgeHjeMYnLsihnWBGYI=
+2026-02-04T00:45:09.246406 - toEntity: Client State: 4nRVdEdDyByO0elYqnLrOVfOdlE9zttzZ4Y8yJwTJvE
+2026-02-04T00:45:09.246451 - Saving entity with code: NULL
+2026-02-04T00:45:09.250784 - FILTER: Redirecting to: http://localhost:5173/oauth2/consent?scope=read%20openid%20profile&client_id=testclient3&state=JrIMzwI8tKT6KxV4AE9aQqzzVgeHjeMYnLsihnWBGYI%3D
+2026-02-04T00:45:10.447844 - FILTER: Entering - POST /oauth2/authorize/process (State: JrIMzwI8tKT6KxV4AE9aQqzzVgeHjeMYnLsihnWBGYI=)
+2026-02-04T00:45:10.460250 - toObject called for ID: ea3eb62e-1dee-4ea1-bfb8-e727f2cee4d5
+2026-02-04T00:45:10.467353 - Found RegisteredClient: testclient3
+2026-02-04T00:45:10.467574 - toObject: Loaded attributes keys: [java.security.Principal, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T00:45:10.467675 - toObject: Forcing code_challenge from flat field: lXnqrGamT7v62JkefPeL3TgEcbxIOvjZmmK9uXB9WE8
+2026-02-04T00:45:10.467761 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T00:45:10.467846 - toObject: Forcing nonce from flat field: OH9tLUd4Xb2JavP39VLoE525rp8HIuerj5TlRCpolYk
+2026-02-04T00:45:10.467943 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:45:10.468022 - toObject: Tracking State restored: JrIMzwI8tKT6KxV4AE9aQqzzVgeHjeMYnLsihnWBGYI=
+2026-02-04T00:45:10.468090 - toObject: Client State available: 4nRVdEdDyByO0elYqnLrOVfOdlE9zttzZ4Y8yJwTJvE
+2026-02-04T00:45:10.468279 - save called for ID: ea3eb62e-1dee-4ea1-bfb8-e727f2cee4d5
+2026-02-04T00:45:10.468353 - toEntity called for ID: ea3eb62e-1dee-4ea1-bfb8-e727f2cee4d5
+2026-02-04T00:45:10.468440 - toEntity: Promoted code_challenge: lXnqrGamT7v62JkefPeL3TgEcbxIOvjZmmK9uXB9WE8
+2026-02-04T00:45:10.468519 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T00:45:10.468581 - toEntity: Promoted nonce: OH9tLUd4Xb2JavP39VLoE525rp8HIuerj5TlRCpolYk
+2026-02-04T00:45:10.468642 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T00:45:10.468703 -   Attributes keys: []
+2026-02-04T00:45:10.468770 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:45:10.468838 -     Param: code_challenge_method = S256
+2026-02-04T00:45:10.468897 -     Param: nonce = OH9tLUd4Xb2JavP39VLoE525rp8HIuerj5TlRCpolYk
+2026-02-04T00:45:10.468981 -     Param: code_challenge = lXnqrGamT7v62JkefPeL3TgEcbxIOvjZmmK9uXB9WE8
+2026-02-04T00:45:10.469062 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T00:45:10.469135 -   Redirect URI: http://localhost:3000/code/callback
+2026-02-04T00:45:10.469219 - toEntity: Tracking State: JrIMzwI8tKT6KxV4AE9aQqzzVgeHjeMYnLsihnWBGYI=
+2026-02-04T00:45:10.469295 - toEntity: Client State: 4nRVdEdDyByO0elYqnLrOVfOdlE9zttzZ4Y8yJwTJvE
+2026-02-04T00:45:10.469382 - Saving entity with code: cda70b12-309e-4f02-8f2a-86e2320eb693
+2026-02-04T00:45:10.479821 - FILTER: Redirecting to: http://localhost:3000/code/callback?code=cda70b12-309e-4f02-8f2a-86e2320eb693&state=4nRVdEdDyByO0elYqnLrOVfOdlE9zttzZ4Y8yJwTJvE
+2026-02-04T00:45:10.487276 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-04T00:45:10.491699 - toObject called for ID: ea3eb62e-1dee-4ea1-bfb8-e727f2cee4d5
+2026-02-04T00:45:10.494123 - Found RegisteredClient: testclient3
+2026-02-04T00:45:10.494271 - toObject: Loaded attributes keys: [java.security.Principal, client_state, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T00:45:10.494326 - toObject: Forcing code_challenge from flat field: lXnqrGamT7v62JkefPeL3TgEcbxIOvjZmmK9uXB9WE8
+2026-02-04T00:45:10.494382 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T00:45:10.494469 - toObject: Forcing nonce from flat field: OH9tLUd4Xb2JavP39VLoE525rp8HIuerj5TlRCpolYk
+2026-02-04T00:45:10.494525 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:45:10.494600 - toObject: Tracking State restored: JrIMzwI8tKT6KxV4AE9aQqzzVgeHjeMYnLsihnWBGYI=
+2026-02-04T00:45:10.494646 - toObject: Client State available: 4nRVdEdDyByO0elYqnLrOVfOdlE9zttzZ4Y8yJwTJvE
+2026-02-04T00:45:10.499134 - toObject called for ID: ea3eb62e-1dee-4ea1-bfb8-e727f2cee4d5
+2026-02-04T00:45:10.501484 - Found RegisteredClient: testclient3
+2026-02-04T00:45:10.501639 - toObject: Loaded attributes keys: [java.security.Principal, client_state, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T00:45:10.501753 - toObject: Forcing code_challenge from flat field: lXnqrGamT7v62JkefPeL3TgEcbxIOvjZmmK9uXB9WE8
+2026-02-04T00:45:10.501908 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T00:45:10.501970 - toObject: Forcing nonce from flat field: OH9tLUd4Xb2JavP39VLoE525rp8HIuerj5TlRCpolYk
+2026-02-04T00:45:10.502034 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:45:10.502080 - toObject: Tracking State restored: JrIMzwI8tKT6KxV4AE9aQqzzVgeHjeMYnLsihnWBGYI=
+2026-02-04T00:45:10.502128 - toObject: Client State available: 4nRVdEdDyByO0elYqnLrOVfOdlE9zttzZ4Y8yJwTJvE
+2026-02-04T00:45:10.509854 - save called for ID: ea3eb62e-1dee-4ea1-bfb8-e727f2cee4d5
+2026-02-04T00:45:10.509995 - toEntity called for ID: ea3eb62e-1dee-4ea1-bfb8-e727f2cee4d5
+2026-02-04T00:45:10.510062 - toEntity: Promoted code_challenge: lXnqrGamT7v62JkefPeL3TgEcbxIOvjZmmK9uXB9WE8
+2026-02-04T00:45:10.510127 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T00:45:10.510174 - toEntity: Promoted nonce: OH9tLUd4Xb2JavP39VLoE525rp8HIuerj5TlRCpolYk
+2026-02-04T00:45:10.510214 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T00:45:10.510260 -   Attributes keys: []
+2026-02-04T00:45:10.510306 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:45:10.510358 -     Param: code_challenge_method = S256
+2026-02-04T00:45:10.510408 -     Param: nonce = OH9tLUd4Xb2JavP39VLoE525rp8HIuerj5TlRCpolYk
+2026-02-04T00:45:10.510449 -     Param: code_challenge = lXnqrGamT7v62JkefPeL3TgEcbxIOvjZmmK9uXB9WE8
+2026-02-04T00:45:10.510491 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T00:45:10.510534 -   Redirect URI: http://localhost:3000/code/callback
+2026-02-04T00:45:10.510575 - toEntity: Tracking State: JrIMzwI8tKT6KxV4AE9aQqzzVgeHjeMYnLsihnWBGYI=
+2026-02-04T00:45:10.510616 - toEntity: Client State: 4nRVdEdDyByO0elYqnLrOVfOdlE9zttzZ4Y8yJwTJvE
+2026-02-04T00:45:10.510673 - Saving entity with code: cda70b12-309e-4f02-8f2a-86e2320eb693
+2026-02-04T00:45:10.518584 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-04T00:45:10.518686 - Status: 200
+2026-02-04T00:45:10.518729 - ===============================
+2026-02-04T00:47:29.595543 - FILTER: Entering - POST /client/create-client (State: null)
+2026-02-04T00:47:58.219772 - FILTER: Entering - PATCH /client/update-client-redirect-url (State: null)
+2026-02-04T00:49:16.726131 - FILTER: Entering - POST /client/create-client (State: null)
+2026-02-04T00:49:21.257716 - FILTER: Entering - PATCH /client/update-client-redirect-url (State: null)
+2026-02-04T00:49:51.197743 - FILTER: Entering - GET /.well-known/openid-configuration (State: null)
+2026-02-04T00:50:39.331213 - FILTER: Entering - GET /oauth2/authorize (State: lDqlOBSF7MsfiiKt_1t4Wjq8BXx0CfjIxHyT-VStKQo)
+2026-02-04T00:50:39.352115 - FILTER: Redirecting to: http://localhost:5173/login?return_to=http://localhost:12000/oauth2/authorize?client_id=testclient3&scope=openid%20profile%20read&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fcode%2Fcallback&state=lDqlOBSF7MsfiiKt_1t4Wjq8BXx0CfjIxHyT-VStKQo&nonce=2DJnXdTLbse-JJs6A4CmBXnyIMItfkTDIuA8bfH1Pm8&code_challenge=aZXMoVJ8a5fEiHrvSYleUjSZcjWFWXj_46gwEwgWobM&code_challenge_method=S256
+2026-02-04T00:50:40.461307 - FILTER: Entering - GET /oauth2/authorize (State: lDqlOBSF7MsfiiKt_1t4Wjq8BXx0CfjIxHyT-VStKQo)
+2026-02-04T00:50:40.463514 - save called for ID: 91965c37-2955-4dc6-8d34-cefbd86c8304
+2026-02-04T00:50:40.463594 - toEntity called for ID: 91965c37-2955-4dc6-8d34-cefbd86c8304
+2026-02-04T00:50:40.463642 - toEntity: Promoted code_challenge: aZXMoVJ8a5fEiHrvSYleUjSZcjWFWXj_46gwEwgWobM
+2026-02-04T00:50:40.463678 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T00:50:40.463714 - toEntity: Promoted nonce: 2DJnXdTLbse-JJs6A4CmBXnyIMItfkTDIuA8bfH1Pm8
+2026-02-04T00:50:40.463745 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T00:50:40.463792 -   Attributes keys: []
+2026-02-04T00:50:40.463833 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:50:40.463871 -     Param: code_challenge_method = S256
+2026-02-04T00:50:40.463905 -     Param: nonce = 2DJnXdTLbse-JJs6A4CmBXnyIMItfkTDIuA8bfH1Pm8
+2026-02-04T00:50:40.463935 -     Param: code_challenge = aZXMoVJ8a5fEiHrvSYleUjSZcjWFWXj_46gwEwgWobM
+2026-02-04T00:50:40.463968 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T00:50:40.463997 -   Redirect URI: http://localhost:3000/code/callback
+2026-02-04T00:50:40.464032 - toEntity: Tracking State: 8x5TTjEu6baGSqIpQZ29rnwZ0FMzbc8U4tR9af4wlpY=
+2026-02-04T00:50:40.464062 - toEntity: Client State: lDqlOBSF7MsfiiKt_1t4Wjq8BXx0CfjIxHyT-VStKQo
+2026-02-04T00:50:40.464108 - Saving entity with code: NULL
+2026-02-04T00:50:40.468268 - FILTER: Redirecting to: http://localhost:5173/oauth2/consent?scope=read%20openid%20profile&client_id=testclient3&state=8x5TTjEu6baGSqIpQZ29rnwZ0FMzbc8U4tR9af4wlpY%3D
+2026-02-04T00:50:42.863137 - FILTER: Entering - POST /oauth2/authorize/process (State: 8x5TTjEu6baGSqIpQZ29rnwZ0FMzbc8U4tR9af4wlpY=)
+2026-02-04T00:50:42.873921 - toObject called for ID: 91965c37-2955-4dc6-8d34-cefbd86c8304
+2026-02-04T00:50:42.877634 - Found RegisteredClient: testclient3
+2026-02-04T00:50:42.877806 - toObject: Loaded attributes keys: [java.security.Principal, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T00:50:42.877878 - toObject: Forcing code_challenge from flat field: aZXMoVJ8a5fEiHrvSYleUjSZcjWFWXj_46gwEwgWobM
+2026-02-04T00:50:42.877943 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T00:50:42.878019 - toObject: Forcing nonce from flat field: 2DJnXdTLbse-JJs6A4CmBXnyIMItfkTDIuA8bfH1Pm8
+2026-02-04T00:50:42.878085 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:50:42.878144 - toObject: Tracking State restored: 8x5TTjEu6baGSqIpQZ29rnwZ0FMzbc8U4tR9af4wlpY=
+2026-02-04T00:50:42.878199 - toObject: Client State available: lDqlOBSF7MsfiiKt_1t4Wjq8BXx0CfjIxHyT-VStKQo
+2026-02-04T00:50:42.878429 - save called for ID: 91965c37-2955-4dc6-8d34-cefbd86c8304
+2026-02-04T00:50:42.878532 - toEntity called for ID: 91965c37-2955-4dc6-8d34-cefbd86c8304
+2026-02-04T00:50:42.878609 - toEntity: Promoted code_challenge: aZXMoVJ8a5fEiHrvSYleUjSZcjWFWXj_46gwEwgWobM
+2026-02-04T00:50:42.878769 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T00:50:42.878836 - toEntity: Promoted nonce: 2DJnXdTLbse-JJs6A4CmBXnyIMItfkTDIuA8bfH1Pm8
+2026-02-04T00:50:42.878887 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T00:50:42.878966 -   Attributes keys: []
+2026-02-04T00:50:42.879023 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:50:42.879097 -     Param: code_challenge_method = S256
+2026-02-04T00:50:42.879152 -     Param: nonce = 2DJnXdTLbse-JJs6A4CmBXnyIMItfkTDIuA8bfH1Pm8
+2026-02-04T00:50:42.879202 -     Param: code_challenge = aZXMoVJ8a5fEiHrvSYleUjSZcjWFWXj_46gwEwgWobM
+2026-02-04T00:50:42.879257 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T00:50:42.879312 -   Redirect URI: http://localhost:3000/code/callback
+2026-02-04T00:50:42.879366 - toEntity: Tracking State: 8x5TTjEu6baGSqIpQZ29rnwZ0FMzbc8U4tR9af4wlpY=
+2026-02-04T00:50:42.879421 - toEntity: Client State: lDqlOBSF7MsfiiKt_1t4Wjq8BXx0CfjIxHyT-VStKQo
+2026-02-04T00:50:42.879479 - Saving entity with code: 83b74899-acaf-4226-a555-b2585676eb46
+2026-02-04T00:50:42.887128 - FILTER: Redirecting to: http://localhost:3000/code/callback?code=83b74899-acaf-4226-a555-b2585676eb46&state=lDqlOBSF7MsfiiKt_1t4Wjq8BXx0CfjIxHyT-VStKQo
+2026-02-04T00:50:42.896645 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-04T00:50:42.903303 - toObject called for ID: 91965c37-2955-4dc6-8d34-cefbd86c8304
+2026-02-04T00:50:42.905497 - Found RegisteredClient: testclient3
+2026-02-04T00:50:42.905628 - toObject: Loaded attributes keys: [java.security.Principal, client_state, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T00:50:42.905697 - toObject: Forcing code_challenge from flat field: aZXMoVJ8a5fEiHrvSYleUjSZcjWFWXj_46gwEwgWobM
+2026-02-04T00:50:42.905750 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T00:50:42.905804 - toObject: Forcing nonce from flat field: 2DJnXdTLbse-JJs6A4CmBXnyIMItfkTDIuA8bfH1Pm8
+2026-02-04T00:50:42.905862 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:50:42.905912 - toObject: Tracking State restored: 8x5TTjEu6baGSqIpQZ29rnwZ0FMzbc8U4tR9af4wlpY=
+2026-02-04T00:50:42.905964 - toObject: Client State available: lDqlOBSF7MsfiiKt_1t4Wjq8BXx0CfjIxHyT-VStKQo
+2026-02-04T00:50:42.909472 - toObject called for ID: 91965c37-2955-4dc6-8d34-cefbd86c8304
+2026-02-04T00:50:42.912291 - Found RegisteredClient: testclient3
+2026-02-04T00:50:42.912378 - toObject: Loaded attributes keys: [java.security.Principal, client_state, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T00:50:42.912429 - toObject: Forcing code_challenge from flat field: aZXMoVJ8a5fEiHrvSYleUjSZcjWFWXj_46gwEwgWobM
+2026-02-04T00:50:42.912488 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T00:50:42.912533 - toObject: Forcing nonce from flat field: 2DJnXdTLbse-JJs6A4CmBXnyIMItfkTDIuA8bfH1Pm8
+2026-02-04T00:50:42.912584 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:50:42.912632 - toObject: Tracking State restored: 8x5TTjEu6baGSqIpQZ29rnwZ0FMzbc8U4tR9af4wlpY=
+2026-02-04T00:50:42.912675 - toObject: Client State available: lDqlOBSF7MsfiiKt_1t4Wjq8BXx0CfjIxHyT-VStKQo
+2026-02-04T00:50:42.922649 - save called for ID: 91965c37-2955-4dc6-8d34-cefbd86c8304
+2026-02-04T00:50:42.922735 - toEntity called for ID: 91965c37-2955-4dc6-8d34-cefbd86c8304
+2026-02-04T00:50:42.922797 - toEntity: Promoted code_challenge: aZXMoVJ8a5fEiHrvSYleUjSZcjWFWXj_46gwEwgWobM
+2026-02-04T00:50:42.922848 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T00:50:42.922893 - toEntity: Promoted nonce: 2DJnXdTLbse-JJs6A4CmBXnyIMItfkTDIuA8bfH1Pm8
+2026-02-04T00:50:42.922934 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T00:50:42.922985 -   Attributes keys: []
+2026-02-04T00:50:42.923030 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:50:42.923083 -     Param: code_challenge_method = S256
+2026-02-04T00:50:42.923133 -     Param: nonce = 2DJnXdTLbse-JJs6A4CmBXnyIMItfkTDIuA8bfH1Pm8
+2026-02-04T00:50:42.923176 -     Param: code_challenge = aZXMoVJ8a5fEiHrvSYleUjSZcjWFWXj_46gwEwgWobM
+2026-02-04T00:50:42.923220 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T00:50:42.923265 -   Redirect URI: http://localhost:3000/code/callback
+2026-02-04T00:50:42.923303 - toEntity: Tracking State: 8x5TTjEu6baGSqIpQZ29rnwZ0FMzbc8U4tR9af4wlpY=
+2026-02-04T00:50:42.923343 - toEntity: Client State: lDqlOBSF7MsfiiKt_1t4Wjq8BXx0CfjIxHyT-VStKQo
+2026-02-04T00:50:42.923389 - Saving entity with code: 83b74899-acaf-4226-a555-b2585676eb46
+2026-02-04T00:50:42.931613 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-04T00:50:42.931791 - Status: 200
+2026-02-04T00:50:42.931873 - ===============================
+2026-02-04T00:50:42.935634 - FILTER: Entering - GET /oauth2/jwks (State: null)
+2026-02-04T00:50:58.263044 - FILTER: Entering - POST /client/create-client (State: null)
+2026-02-04T00:55:50.378170 - FILTER: Entering - GET /.well-known/openid-configuration (State: null)
+2026-02-04T00:55:50.414370 - FILTER: Entering - GET /oauth2/authorize (State: LNVRRyVDwHTUfojxJLOwbtS2o4o1iZ)
+2026-02-04T00:55:50.419614 - FILTER: Redirecting to: http://localhost:5173/login?return_to=http://localhost:12000/oauth2/authorize?response_type=code&client_id=testclient4&redirect_uri=http%3A%2F%2Flocalhost%3A7700%2Fcode%2Fcallback&scope=openid+profile+read&state=LNVRRyVDwHTUfojxJLOwbtS2o4o1iZ&nonce=nrnQqmdP2iScrDQ6i4dr&code_challenge=nXTxJDbW_-H832E_ZqPE9MdZDUV7V3p5kRXsiuSqcoE&code_challenge_method=S256
+2026-02-04T00:55:51.578502 - FILTER: Entering - GET /oauth2/authorize (State: LNVRRyVDwHTUfojxJLOwbtS2o4o1iZ)
+2026-02-04T00:55:51.581014 - save called for ID: a454b12b-0269-4b33-a7e4-092388a01284
+2026-02-04T00:55:51.581151 - toEntity called for ID: a454b12b-0269-4b33-a7e4-092388a01284
+2026-02-04T00:55:51.581221 - toEntity: Promoted code_challenge: nXTxJDbW_-H832E_ZqPE9MdZDUV7V3p5kRXsiuSqcoE
+2026-02-04T00:55:51.581286 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T00:55:51.581395 - toEntity: Promoted nonce: nrnQqmdP2iScrDQ6i4dr
+2026-02-04T00:55:51.581439 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T00:55:51.581486 -   Attributes keys: []
+2026-02-04T00:55:51.581524 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:55:51.581603 -     Param: code_challenge_method = S256
+2026-02-04T00:55:51.581665 -     Param: nonce = nrnQqmdP2iScrDQ6i4dr
+2026-02-04T00:55:51.581704 -     Param: code_challenge = nXTxJDbW_-H832E_ZqPE9MdZDUV7V3p5kRXsiuSqcoE
+2026-02-04T00:55:51.581744 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T00:55:51.581780 -   Redirect URI: http://localhost:7700/code/callback
+2026-02-04T00:55:51.581832 - toEntity: Tracking State: 3jEsOEf02EA0ppmdR4bE4gyhlupwMu8_Z6JPpUskDjk=
+2026-02-04T00:55:51.581872 - toEntity: Client State: LNVRRyVDwHTUfojxJLOwbtS2o4o1iZ
+2026-02-04T00:55:51.581921 - Saving entity with code: NULL
+2026-02-04T00:55:51.587342 - FILTER: Redirecting to: http://localhost:5173/oauth2/consent?scope=read%20openid%20profile&client_id=testclient4&state=3jEsOEf02EA0ppmdR4bE4gyhlupwMu8_Z6JPpUskDjk%3D
+2026-02-04T00:55:53.566549 - FILTER: Entering - POST /oauth2/authorize/process (State: 3jEsOEf02EA0ppmdR4bE4gyhlupwMu8_Z6JPpUskDjk=)
+2026-02-04T00:55:53.577089 - toObject called for ID: a454b12b-0269-4b33-a7e4-092388a01284
+2026-02-04T00:55:53.584061 - Found RegisteredClient: testclient4
+2026-02-04T00:55:53.584230 - toObject: Loaded attributes keys: [java.security.Principal, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T00:55:53.584308 - toObject: Forcing code_challenge from flat field: nXTxJDbW_-H832E_ZqPE9MdZDUV7V3p5kRXsiuSqcoE
+2026-02-04T00:55:53.584370 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T00:55:53.584435 - toObject: Forcing nonce from flat field: nrnQqmdP2iScrDQ6i4dr
+2026-02-04T00:55:53.584501 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:55:53.584558 - toObject: Tracking State restored: 3jEsOEf02EA0ppmdR4bE4gyhlupwMu8_Z6JPpUskDjk=
+2026-02-04T00:55:53.584620 - toObject: Client State available: LNVRRyVDwHTUfojxJLOwbtS2o4o1iZ
+2026-02-04T00:55:53.584857 - save called for ID: a454b12b-0269-4b33-a7e4-092388a01284
+2026-02-04T00:55:53.584922 - toEntity called for ID: a454b12b-0269-4b33-a7e4-092388a01284
+2026-02-04T00:55:53.584989 - toEntity: Promoted code_challenge: nXTxJDbW_-H832E_ZqPE9MdZDUV7V3p5kRXsiuSqcoE
+2026-02-04T00:55:53.585046 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T00:55:53.585133 - toEntity: Promoted nonce: nrnQqmdP2iScrDQ6i4dr
+2026-02-04T00:55:53.585244 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T00:55:53.585316 -   Attributes keys: []
+2026-02-04T00:55:53.585394 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:55:53.585462 -     Param: code_challenge_method = S256
+2026-02-04T00:55:53.585519 -     Param: nonce = nrnQqmdP2iScrDQ6i4dr
+2026-02-04T00:55:53.585577 -     Param: code_challenge = nXTxJDbW_-H832E_ZqPE9MdZDUV7V3p5kRXsiuSqcoE
+2026-02-04T00:55:53.585633 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T00:55:53.585684 -   Redirect URI: http://localhost:7700/code/callback
+2026-02-04T00:55:53.585748 - toEntity: Tracking State: 3jEsOEf02EA0ppmdR4bE4gyhlupwMu8_Z6JPpUskDjk=
+2026-02-04T00:55:53.585799 - toEntity: Client State: LNVRRyVDwHTUfojxJLOwbtS2o4o1iZ
+2026-02-04T00:55:53.585868 - Saving entity with code: 24977b82-e6db-4ebf-ac9b-4dfce9565147
+2026-02-04T00:55:53.592872 - FILTER: Redirecting to: http://localhost:7700/code/callback?code=24977b82-e6db-4ebf-ac9b-4dfce9565147&state=LNVRRyVDwHTUfojxJLOwbtS2o4o1iZ
+2026-02-04T00:57:14.610628 - FILTER: Entering - GET /.well-known/openid-configuration (State: null)
+2026-02-04T00:57:14.636552 - FILTER: Entering - GET /oauth2/authorize (State: 5GkpZ4wVjq1TKtm0GVdOGUSfchmTIX)
+2026-02-04T00:57:46.107860 - FILTER: Entering - PATCH /client/update-client-redirect-url (State: null)
+2026-02-04T00:58:41.523452 - FILTER: Entering - GET /oauth2/authorize (State: iskeWKM6SjRG3XE4dm6JKiUN1Zy6gr)
+2026-02-04T00:58:41.538503 - FILTER: Redirecting to: http://localhost:5173/login?return_to=http://localhost:12000/oauth2/authorize?response_type=code&client_id=testclient4&redirect_uri=http%3A%2F%2F127.0.0.1%3A7700%2Fcode%2Fcallback&scope=openid+profile+read&state=iskeWKM6SjRG3XE4dm6JKiUN1Zy6gr&nonce=YEtUCkKKqYbjYVLzKUFQ&code_challenge=gR3gPShzu0e3cKd_ilN8ZfP2y7cVquTDZAo7IyKXY6E&code_challenge_method=S256
+2026-02-04T00:58:42.706687 - FILTER: Entering - GET /oauth2/authorize (State: iskeWKM6SjRG3XE4dm6JKiUN1Zy6gr)
+2026-02-04T00:58:42.712006 - save called for ID: ef0f5a6b-533a-4598-a9d3-94f8dbf02871
+2026-02-04T00:58:42.712109 - toEntity called for ID: ef0f5a6b-533a-4598-a9d3-94f8dbf02871
+2026-02-04T00:58:42.712147 - toEntity: Promoted code_challenge: gR3gPShzu0e3cKd_ilN8ZfP2y7cVquTDZAo7IyKXY6E
+2026-02-04T00:58:42.712187 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T00:58:42.712218 - toEntity: Promoted nonce: YEtUCkKKqYbjYVLzKUFQ
+2026-02-04T00:58:42.712245 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T00:58:42.712281 -   Attributes keys: []
+2026-02-04T00:58:42.712311 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:58:42.712346 -     Param: code_challenge_method = S256
+2026-02-04T00:58:42.712378 -     Param: nonce = YEtUCkKKqYbjYVLzKUFQ
+2026-02-04T00:58:42.712405 -     Param: code_challenge = gR3gPShzu0e3cKd_ilN8ZfP2y7cVquTDZAo7IyKXY6E
+2026-02-04T00:58:42.712442 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T00:58:42.712474 -   Redirect URI: http://127.0.0.1:7700/code/callback
+2026-02-04T00:58:42.712509 - toEntity: Tracking State: Ez_jgH9jXp8Hr4h78XvyrNAjDs3XOE-QvzREvn0qoKY=
+2026-02-04T00:58:42.712539 - toEntity: Client State: iskeWKM6SjRG3XE4dm6JKiUN1Zy6gr
+2026-02-04T00:58:42.712575 - Saving entity with code: NULL
+2026-02-04T00:58:42.715735 - FILTER: Redirecting to: http://localhost:5173/oauth2/consent?scope=read%20openid%20profile&client_id=testclient4&state=Ez_jgH9jXp8Hr4h78XvyrNAjDs3XOE-QvzREvn0qoKY%3D
+2026-02-04T00:58:44.266292 - FILTER: Entering - POST /oauth2/authorize/process (State: Ez_jgH9jXp8Hr4h78XvyrNAjDs3XOE-QvzREvn0qoKY=)
+2026-02-04T00:58:44.276232 - toObject called for ID: ef0f5a6b-533a-4598-a9d3-94f8dbf02871
+2026-02-04T00:58:44.280337 - Found RegisteredClient: testclient4
+2026-02-04T00:58:44.280610 - toObject: Loaded attributes keys: [java.security.Principal, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T00:58:44.280785 - toObject: Forcing code_challenge from flat field: gR3gPShzu0e3cKd_ilN8ZfP2y7cVquTDZAo7IyKXY6E
+2026-02-04T00:58:44.280880 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T00:58:44.280955 - toObject: Forcing nonce from flat field: YEtUCkKKqYbjYVLzKUFQ
+2026-02-04T00:58:44.281023 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:58:44.281133 - toObject: Tracking State restored: Ez_jgH9jXp8Hr4h78XvyrNAjDs3XOE-QvzREvn0qoKY=
+2026-02-04T00:58:44.281192 - toObject: Client State available: iskeWKM6SjRG3XE4dm6JKiUN1Zy6gr
+2026-02-04T00:58:44.281708 - save called for ID: ef0f5a6b-533a-4598-a9d3-94f8dbf02871
+2026-02-04T00:58:44.281816 - toEntity called for ID: ef0f5a6b-533a-4598-a9d3-94f8dbf02871
+2026-02-04T00:58:44.282075 - toEntity: Promoted code_challenge: gR3gPShzu0e3cKd_ilN8ZfP2y7cVquTDZAo7IyKXY6E
+2026-02-04T00:58:44.282215 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T00:58:44.282327 - toEntity: Promoted nonce: YEtUCkKKqYbjYVLzKUFQ
+2026-02-04T00:58:44.282468 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T00:58:44.282601 -   Attributes keys: []
+2026-02-04T00:58:44.282694 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:58:44.282803 -     Param: code_challenge_method = S256
+2026-02-04T00:58:44.282907 -     Param: nonce = YEtUCkKKqYbjYVLzKUFQ
+2026-02-04T00:58:44.283029 -     Param: code_challenge = gR3gPShzu0e3cKd_ilN8ZfP2y7cVquTDZAo7IyKXY6E
+2026-02-04T00:58:44.283249 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T00:58:44.283327 -   Redirect URI: http://127.0.0.1:7700/code/callback
+2026-02-04T00:58:44.283398 - toEntity: Tracking State: Ez_jgH9jXp8Hr4h78XvyrNAjDs3XOE-QvzREvn0qoKY=
+2026-02-04T00:58:44.283455 - toEntity: Client State: iskeWKM6SjRG3XE4dm6JKiUN1Zy6gr
+2026-02-04T00:58:44.283531 - Saving entity with code: bf51f4fa-069b-440a-921b-9b1b9a35d5fb
+2026-02-04T00:58:44.289579 - FILTER: Redirecting to: http://127.0.0.1:7700/code/callback?code=bf51f4fa-069b-440a-921b-9b1b9a35d5fb&state=iskeWKM6SjRG3XE4dm6JKiUN1Zy6gr
+2026-02-04T00:58:44.328447 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-04T00:58:44.332609 - toObject called for ID: ef0f5a6b-533a-4598-a9d3-94f8dbf02871
+2026-02-04T00:58:44.335142 - Found RegisteredClient: testclient4
+2026-02-04T00:58:44.335296 - toObject: Loaded attributes keys: [java.security.Principal, client_state, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T00:58:44.335395 - toObject: Forcing code_challenge from flat field: gR3gPShzu0e3cKd_ilN8ZfP2y7cVquTDZAo7IyKXY6E
+2026-02-04T00:58:44.335458 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T00:58:44.335516 - toObject: Forcing nonce from flat field: YEtUCkKKqYbjYVLzKUFQ
+2026-02-04T00:58:44.335572 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:58:44.335613 - toObject: Tracking State restored: Ez_jgH9jXp8Hr4h78XvyrNAjDs3XOE-QvzREvn0qoKY=
+2026-02-04T00:58:44.335654 - toObject: Client State available: iskeWKM6SjRG3XE4dm6JKiUN1Zy6gr
+2026-02-04T00:58:44.338228 - toObject called for ID: ef0f5a6b-533a-4598-a9d3-94f8dbf02871
+2026-02-04T00:58:44.340014 - Found RegisteredClient: testclient4
+2026-02-04T00:58:44.340090 - toObject: Loaded attributes keys: [java.security.Principal, client_state, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T00:58:44.340134 - toObject: Forcing code_challenge from flat field: gR3gPShzu0e3cKd_ilN8ZfP2y7cVquTDZAo7IyKXY6E
+2026-02-04T00:58:44.340176 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T00:58:44.340211 - toObject: Forcing nonce from flat field: YEtUCkKKqYbjYVLzKUFQ
+2026-02-04T00:58:44.340253 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:58:44.340291 - toObject: Tracking State restored: Ez_jgH9jXp8Hr4h78XvyrNAjDs3XOE-QvzREvn0qoKY=
+2026-02-04T00:58:44.340334 - toObject: Client State available: iskeWKM6SjRG3XE4dm6JKiUN1Zy6gr
+2026-02-04T00:58:44.346920 - save called for ID: ef0f5a6b-533a-4598-a9d3-94f8dbf02871
+2026-02-04T00:58:44.347020 - toEntity called for ID: ef0f5a6b-533a-4598-a9d3-94f8dbf02871
+2026-02-04T00:58:44.347061 - toEntity: Promoted code_challenge: gR3gPShzu0e3cKd_ilN8ZfP2y7cVquTDZAo7IyKXY6E
+2026-02-04T00:58:44.347105 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T00:58:44.347168 - toEntity: Promoted nonce: YEtUCkKKqYbjYVLzKUFQ
+2026-02-04T00:58:44.347200 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T00:58:44.347237 -   Attributes keys: []
+2026-02-04T00:58:44.347271 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T00:58:44.347314 -     Param: code_challenge_method = S256
+2026-02-04T00:58:44.347348 -     Param: nonce = YEtUCkKKqYbjYVLzKUFQ
+2026-02-04T00:58:44.347377 -     Param: code_challenge = gR3gPShzu0e3cKd_ilN8ZfP2y7cVquTDZAo7IyKXY6E
+2026-02-04T00:58:44.347409 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T00:58:44.347441 -   Redirect URI: http://127.0.0.1:7700/code/callback
+2026-02-04T00:58:44.347472 - toEntity: Tracking State: Ez_jgH9jXp8Hr4h78XvyrNAjDs3XOE-QvzREvn0qoKY=
+2026-02-04T00:58:44.347504 - toEntity: Client State: iskeWKM6SjRG3XE4dm6JKiUN1Zy6gr
+2026-02-04T00:58:44.347539 - Saving entity with code: bf51f4fa-069b-440a-921b-9b1b9a35d5fb
+2026-02-04T00:58:44.353755 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-04T00:58:44.353865 - Status: 200
+2026-02-04T00:58:44.353915 - ===============================
+2026-02-04T00:58:44.386313 - FILTER: Entering - GET /oauth2/jwks (State: null)
+2026-02-04T00:59:40.740906 - FILTER: Entering - POST /client/create-client (State: null)
+2026-02-04T01:02:14.391615 - FILTER: Entering - PATCH /client/update-client-redirect-url (State: null)
+2026-02-04T01:04:07.541658 - FILTER: Entering - GET /.well-known/openid-configuration (State: null)
+2026-02-04T01:04:12.689159 - FILTER: Entering - GET /oauth2/authorize (State: j04Nol0IgCNTI2SzlGlNYAtvTor2STrZfLNg85B61fY)
+2026-02-04T01:04:12.709637 - FILTER: Redirecting to: http://localhost:5173/login?return_to=http://localhost:12000/oauth2/authorize?client_id=testclient3&scope=openid%20profile%20read&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fcode%2Fcallback&state=j04Nol0IgCNTI2SzlGlNYAtvTor2STrZfLNg85B61fY&nonce=AtIpi2gaOnjvjrz-j_OrO-X_H0MXDr_1E2NQyP6Dakc&code_challenge=6rVxmKa_MHSP360oZmPfjLqxmsfpiLKjNsJWIuKtF9w&code_challenge_method=S256
+2026-02-04T01:04:13.814608 - FILTER: Entering - GET /oauth2/authorize (State: j04Nol0IgCNTI2SzlGlNYAtvTor2STrZfLNg85B61fY)
+2026-02-04T01:04:13.817861 - save called for ID: 18004af5-5cfa-45d2-a66e-cc069a2fcf23
+2026-02-04T01:04:13.817981 - toEntity called for ID: 18004af5-5cfa-45d2-a66e-cc069a2fcf23
+2026-02-04T01:04:13.818041 - toEntity: Promoted code_challenge: 6rVxmKa_MHSP360oZmPfjLqxmsfpiLKjNsJWIuKtF9w
+2026-02-04T01:04:13.818086 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T01:04:13.818201 - toEntity: Promoted nonce: AtIpi2gaOnjvjrz-j_OrO-X_H0MXDr_1E2NQyP6Dakc
+2026-02-04T01:04:13.818243 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T01:04:13.818298 -   Attributes keys: []
+2026-02-04T01:04:13.818349 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T01:04:13.818399 -     Param: code_challenge_method = S256
+2026-02-04T01:04:13.818440 -     Param: nonce = AtIpi2gaOnjvjrz-j_OrO-X_H0MXDr_1E2NQyP6Dakc
+2026-02-04T01:04:13.818481 -     Param: code_challenge = 6rVxmKa_MHSP360oZmPfjLqxmsfpiLKjNsJWIuKtF9w
+2026-02-04T01:04:13.818519 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T01:04:13.818561 -   Redirect URI: http://localhost:3000/code/callback
+2026-02-04T01:04:13.818616 - toEntity: Tracking State: Ohj-2TY62ohMQKtEMUz4jK56sbwVA8UjXqYWBgU-QZY=
+2026-02-04T01:04:13.818656 - toEntity: Client State: j04Nol0IgCNTI2SzlGlNYAtvTor2STrZfLNg85B61fY
+2026-02-04T01:04:13.818706 - Saving entity with code: NULL
+2026-02-04T01:04:13.822774 - FILTER: Redirecting to: http://localhost:5173/oauth2/consent?scope=read%20openid%20profile&client_id=testclient3&state=Ohj-2TY62ohMQKtEMUz4jK56sbwVA8UjXqYWBgU-QZY%3D
+2026-02-04T01:04:14.580829 - FILTER: Entering - POST /oauth2/authorize/process (State: Ohj-2TY62ohMQKtEMUz4jK56sbwVA8UjXqYWBgU-QZY=)
+2026-02-04T01:04:14.589478 - toObject called for ID: 18004af5-5cfa-45d2-a66e-cc069a2fcf23
+2026-02-04T01:04:14.592949 - Found RegisteredClient: testclient3
+2026-02-04T01:04:14.593212 - toObject: Loaded attributes keys: [java.security.Principal, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T01:04:14.593323 - toObject: Forcing code_challenge from flat field: 6rVxmKa_MHSP360oZmPfjLqxmsfpiLKjNsJWIuKtF9w
+2026-02-04T01:04:14.593396 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T01:04:14.593469 - toObject: Forcing nonce from flat field: AtIpi2gaOnjvjrz-j_OrO-X_H0MXDr_1E2NQyP6Dakc
+2026-02-04T01:04:14.593543 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T01:04:14.593608 - toObject: Tracking State restored: Ohj-2TY62ohMQKtEMUz4jK56sbwVA8UjXqYWBgU-QZY=
+2026-02-04T01:04:14.593673 - toObject: Client State available: j04Nol0IgCNTI2SzlGlNYAtvTor2STrZfLNg85B61fY
+2026-02-04T01:04:14.594230 - save called for ID: 18004af5-5cfa-45d2-a66e-cc069a2fcf23
+2026-02-04T01:04:14.594372 - toEntity called for ID: 18004af5-5cfa-45d2-a66e-cc069a2fcf23
+2026-02-04T01:04:14.594468 - toEntity: Promoted code_challenge: 6rVxmKa_MHSP360oZmPfjLqxmsfpiLKjNsJWIuKtF9w
+2026-02-04T01:04:14.594531 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T01:04:14.594615 - toEntity: Promoted nonce: AtIpi2gaOnjvjrz-j_OrO-X_H0MXDr_1E2NQyP6Dakc
+2026-02-04T01:04:14.594678 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T01:04:14.594752 -   Attributes keys: []
+2026-02-04T01:04:14.594820 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T01:04:14.594919 -     Param: code_challenge_method = S256
+2026-02-04T01:04:14.595010 -     Param: nonce = AtIpi2gaOnjvjrz-j_OrO-X_H0MXDr_1E2NQyP6Dakc
+2026-02-04T01:04:14.595102 -     Param: code_challenge = 6rVxmKa_MHSP360oZmPfjLqxmsfpiLKjNsJWIuKtF9w
+2026-02-04T01:04:14.595169 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T01:04:14.595237 -   Redirect URI: http://localhost:3000/code/callback
+2026-02-04T01:04:14.595305 - toEntity: Tracking State: Ohj-2TY62ohMQKtEMUz4jK56sbwVA8UjXqYWBgU-QZY=
+2026-02-04T01:04:14.595363 - toEntity: Client State: j04Nol0IgCNTI2SzlGlNYAtvTor2STrZfLNg85B61fY
+2026-02-04T01:04:14.595436 - Saving entity with code: ab192bf0-0640-4b51-994a-f19051cc9200
+2026-02-04T01:04:14.604528 - FILTER: Redirecting to: http://localhost:3000/code/callback?code=ab192bf0-0640-4b51-994a-f19051cc9200&state=j04Nol0IgCNTI2SzlGlNYAtvTor2STrZfLNg85B61fY
+2026-02-04T01:04:14.613353 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-04T01:04:14.631766 - toObject called for ID: 18004af5-5cfa-45d2-a66e-cc069a2fcf23
+2026-02-04T01:04:14.635414 - Found RegisteredClient: testclient3
+2026-02-04T01:04:14.635860 - toObject: Loaded attributes keys: [java.security.Principal, client_state, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T01:04:14.636001 - toObject: Forcing code_challenge from flat field: 6rVxmKa_MHSP360oZmPfjLqxmsfpiLKjNsJWIuKtF9w
+2026-02-04T01:04:14.636064 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T01:04:14.636110 - toObject: Forcing nonce from flat field: AtIpi2gaOnjvjrz-j_OrO-X_H0MXDr_1E2NQyP6Dakc
+2026-02-04T01:04:14.636169 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T01:04:14.636220 - toObject: Tracking State restored: Ohj-2TY62ohMQKtEMUz4jK56sbwVA8UjXqYWBgU-QZY=
+2026-02-04T01:04:14.636261 - toObject: Client State available: j04Nol0IgCNTI2SzlGlNYAtvTor2STrZfLNg85B61fY
+2026-02-04T01:04:14.639442 - toObject called for ID: 18004af5-5cfa-45d2-a66e-cc069a2fcf23
+2026-02-04T01:04:14.641364 - Found RegisteredClient: testclient3
+2026-02-04T01:04:14.641506 - toObject: Loaded attributes keys: [java.security.Principal, client_state, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T01:04:14.641652 - toObject: Forcing code_challenge from flat field: 6rVxmKa_MHSP360oZmPfjLqxmsfpiLKjNsJWIuKtF9w
+2026-02-04T01:04:14.641733 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T01:04:14.641814 - toObject: Forcing nonce from flat field: AtIpi2gaOnjvjrz-j_OrO-X_H0MXDr_1E2NQyP6Dakc
+2026-02-04T01:04:14.641902 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T01:04:14.641950 - toObject: Tracking State restored: Ohj-2TY62ohMQKtEMUz4jK56sbwVA8UjXqYWBgU-QZY=
+2026-02-04T01:04:14.641997 - toObject: Client State available: j04Nol0IgCNTI2SzlGlNYAtvTor2STrZfLNg85B61fY
+2026-02-04T01:04:14.648993 - save called for ID: 18004af5-5cfa-45d2-a66e-cc069a2fcf23
+2026-02-04T01:04:14.649126 - toEntity called for ID: 18004af5-5cfa-45d2-a66e-cc069a2fcf23
+2026-02-04T01:04:14.649248 - toEntity: Promoted code_challenge: 6rVxmKa_MHSP360oZmPfjLqxmsfpiLKjNsJWIuKtF9w
+2026-02-04T01:04:14.649320 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T01:04:14.649365 - toEntity: Promoted nonce: AtIpi2gaOnjvjrz-j_OrO-X_H0MXDr_1E2NQyP6Dakc
+2026-02-04T01:04:14.649433 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T01:04:14.649570 -   Attributes keys: []
+2026-02-04T01:04:14.649780 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T01:04:14.649994 -     Param: code_challenge_method = S256
+2026-02-04T01:04:14.650052 -     Param: nonce = AtIpi2gaOnjvjrz-j_OrO-X_H0MXDr_1E2NQyP6Dakc
+2026-02-04T01:04:14.650129 -     Param: code_challenge = 6rVxmKa_MHSP360oZmPfjLqxmsfpiLKjNsJWIuKtF9w
+2026-02-04T01:04:14.650180 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T01:04:14.650221 -   Redirect URI: http://localhost:3000/code/callback
+2026-02-04T01:04:14.650276 - toEntity: Tracking State: Ohj-2TY62ohMQKtEMUz4jK56sbwVA8UjXqYWBgU-QZY=
+2026-02-04T01:04:14.650327 - toEntity: Client State: j04Nol0IgCNTI2SzlGlNYAtvTor2STrZfLNg85B61fY
+2026-02-04T01:04:14.650392 - Saving entity with code: ab192bf0-0640-4b51-994a-f19051cc9200
+2026-02-04T01:04:14.658397 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-04T01:04:14.658511 - Status: 200
+2026-02-04T01:04:14.658557 - ===============================
+2026-02-04T01:04:14.662287 - FILTER: Entering - GET /oauth2/jwks (State: null)
+2026-02-04T01:04:24.821482 - FILTER: Entering - GET /.well-known/openid-configuration (State: null)
+2026-02-04T01:04:24.843914 - FILTER: Entering - GET /oauth2/authorize (State: baxqIdkx7EhVUiM5fy2Ery9h6p23pX)
+2026-02-04T01:04:24.845816 - FILTER: Redirecting to: http://localhost:5173/login?return_to=http://localhost:12000/oauth2/authorize?response_type=code&client_id=testclient4&redirect_uri=http%3A%2F%2F127.0.0.1%3A7700%2Fcode%2Fcallback&scope=openid+profile+read&state=baxqIdkx7EhVUiM5fy2Ery9h6p23pX&nonce=CgLabziSTPupJSADDuTz&code_challenge=5XaF77Lmk8svYhEArTIUEq2hv2LilGkzeX0nIDH3vNY&code_challenge_method=S256
+2026-02-04T01:04:25.978282 - FILTER: Entering - GET /oauth2/authorize (State: baxqIdkx7EhVUiM5fy2Ery9h6p23pX)
+2026-02-04T01:04:25.980096 - save called for ID: d4ebf74d-3fbb-4f44-93b8-1fb7d03a200e
+2026-02-04T01:04:25.980185 - toEntity called for ID: d4ebf74d-3fbb-4f44-93b8-1fb7d03a200e
+2026-02-04T01:04:25.980233 - toEntity: Promoted code_challenge: 5XaF77Lmk8svYhEArTIUEq2hv2LilGkzeX0nIDH3vNY
+2026-02-04T01:04:25.980277 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T01:04:25.980317 - toEntity: Promoted nonce: CgLabziSTPupJSADDuTz
+2026-02-04T01:04:25.980353 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T01:04:25.980395 -   Attributes keys: []
+2026-02-04T01:04:25.980436 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T01:04:25.980478 -     Param: code_challenge_method = S256
+2026-02-04T01:04:25.980515 -     Param: nonce = CgLabziSTPupJSADDuTz
+2026-02-04T01:04:25.980550 -     Param: code_challenge = 5XaF77Lmk8svYhEArTIUEq2hv2LilGkzeX0nIDH3vNY
+2026-02-04T01:04:25.980589 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T01:04:25.980627 -   Redirect URI: http://127.0.0.1:7700/code/callback
+2026-02-04T01:04:25.980667 - toEntity: Tracking State: m-3CsSHZ0ipmOy3n4y7M59w2Cp7y0Mm_EpAfjNV9l50=
+2026-02-04T01:04:25.980704 - toEntity: Client State: baxqIdkx7EhVUiM5fy2Ery9h6p23pX
+2026-02-04T01:04:25.980743 - Saving entity with code: NULL
+2026-02-04T01:04:25.984594 - FILTER: Redirecting to: http://localhost:5173/oauth2/consent?scope=read%20openid%20profile&client_id=testclient4&state=m-3CsSHZ0ipmOy3n4y7M59w2Cp7y0Mm_EpAfjNV9l50%3D
+2026-02-04T01:04:26.946032 - FILTER: Entering - POST /oauth2/authorize/process (State: m-3CsSHZ0ipmOy3n4y7M59w2Cp7y0Mm_EpAfjNV9l50=)
+2026-02-04T01:04:26.953340 - toObject called for ID: d4ebf74d-3fbb-4f44-93b8-1fb7d03a200e
+2026-02-04T01:04:26.956475 - Found RegisteredClient: testclient4
+2026-02-04T01:04:26.956712 - toObject: Loaded attributes keys: [java.security.Principal, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T01:04:26.956813 - toObject: Forcing code_challenge from flat field: 5XaF77Lmk8svYhEArTIUEq2hv2LilGkzeX0nIDH3vNY
+2026-02-04T01:04:26.956888 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T01:04:26.956965 - toObject: Forcing nonce from flat field: CgLabziSTPupJSADDuTz
+2026-02-04T01:04:26.957047 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T01:04:26.957115 - toObject: Tracking State restored: m-3CsSHZ0ipmOy3n4y7M59w2Cp7y0Mm_EpAfjNV9l50=
+2026-02-04T01:04:26.957192 - toObject: Client State available: baxqIdkx7EhVUiM5fy2Ery9h6p23pX
+2026-02-04T01:04:26.957377 - save called for ID: d4ebf74d-3fbb-4f44-93b8-1fb7d03a200e
+2026-02-04T01:04:26.957445 - toEntity called for ID: d4ebf74d-3fbb-4f44-93b8-1fb7d03a200e
+2026-02-04T01:04:26.957615 - toEntity: Promoted code_challenge: 5XaF77Lmk8svYhEArTIUEq2hv2LilGkzeX0nIDH3vNY
+2026-02-04T01:04:26.957693 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T01:04:26.957753 - toEntity: Promoted nonce: CgLabziSTPupJSADDuTz
+2026-02-04T01:04:26.957815 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T01:04:26.957899 -   Attributes keys: []
+2026-02-04T01:04:26.958050 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T01:04:26.958151 -     Param: code_challenge_method = S256
+2026-02-04T01:04:26.958226 -     Param: nonce = CgLabziSTPupJSADDuTz
+2026-02-04T01:04:26.958300 -     Param: code_challenge = 5XaF77Lmk8svYhEArTIUEq2hv2LilGkzeX0nIDH3vNY
+2026-02-04T01:04:26.958371 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T01:04:26.958434 -   Redirect URI: http://127.0.0.1:7700/code/callback
+2026-02-04T01:04:26.958509 - toEntity: Tracking State: m-3CsSHZ0ipmOy3n4y7M59w2Cp7y0Mm_EpAfjNV9l50=
+2026-02-04T01:04:26.958571 - toEntity: Client State: baxqIdkx7EhVUiM5fy2Ery9h6p23pX
+2026-02-04T01:04:26.958647 - Saving entity with code: 6a73949b-6338-412e-9c31-6cbcb3dabdb6
+2026-02-04T01:04:26.963723 - FILTER: Redirecting to: http://127.0.0.1:7700/code/callback?code=6a73949b-6338-412e-9c31-6cbcb3dabdb6&state=baxqIdkx7EhVUiM5fy2Ery9h6p23pX
+2026-02-04T01:04:27.002807 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-04T01:04:27.006307 - toObject called for ID: d4ebf74d-3fbb-4f44-93b8-1fb7d03a200e
+2026-02-04T01:04:27.008362 - Found RegisteredClient: testclient4
+2026-02-04T01:04:27.008480 - toObject: Loaded attributes keys: [java.security.Principal, client_state, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T01:04:27.008536 - toObject: Forcing code_challenge from flat field: 5XaF77Lmk8svYhEArTIUEq2hv2LilGkzeX0nIDH3vNY
+2026-02-04T01:04:27.008582 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T01:04:27.008628 - toObject: Forcing nonce from flat field: CgLabziSTPupJSADDuTz
+2026-02-04T01:04:27.008674 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T01:04:27.008719 - toObject: Tracking State restored: m-3CsSHZ0ipmOy3n4y7M59w2Cp7y0Mm_EpAfjNV9l50=
+2026-02-04T01:04:27.008763 - toObject: Client State available: baxqIdkx7EhVUiM5fy2Ery9h6p23pX
+2026-02-04T01:04:27.011570 - toObject called for ID: d4ebf74d-3fbb-4f44-93b8-1fb7d03a200e
+2026-02-04T01:04:27.013841 - Found RegisteredClient: testclient4
+2026-02-04T01:04:27.013940 - toObject: Loaded attributes keys: [java.security.Principal, client_state, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T01:04:27.014014 - toObject: Forcing code_challenge from flat field: 5XaF77Lmk8svYhEArTIUEq2hv2LilGkzeX0nIDH3vNY
+2026-02-04T01:04:27.014080 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T01:04:27.014134 - toObject: Forcing nonce from flat field: CgLabziSTPupJSADDuTz
+2026-02-04T01:04:27.014189 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T01:04:27.014233 - toObject: Tracking State restored: m-3CsSHZ0ipmOy3n4y7M59w2Cp7y0Mm_EpAfjNV9l50=
+2026-02-04T01:04:27.014279 - toObject: Client State available: baxqIdkx7EhVUiM5fy2Ery9h6p23pX
+2026-02-04T01:04:27.021860 - save called for ID: d4ebf74d-3fbb-4f44-93b8-1fb7d03a200e
+2026-02-04T01:04:27.021970 - toEntity called for ID: d4ebf74d-3fbb-4f44-93b8-1fb7d03a200e
+2026-02-04T01:04:27.022020 - toEntity: Promoted code_challenge: 5XaF77Lmk8svYhEArTIUEq2hv2LilGkzeX0nIDH3vNY
+2026-02-04T01:04:27.022063 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T01:04:27.022101 - toEntity: Promoted nonce: CgLabziSTPupJSADDuTz
+2026-02-04T01:04:27.022140 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T01:04:27.022183 -   Attributes keys: []
+2026-02-04T01:04:27.022222 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T01:04:27.022273 -     Param: code_challenge_method = S256
+2026-02-04T01:04:27.022309 -     Param: nonce = CgLabziSTPupJSADDuTz
+2026-02-04T01:04:27.022348 -     Param: code_challenge = 5XaF77Lmk8svYhEArTIUEq2hv2LilGkzeX0nIDH3vNY
+2026-02-04T01:04:27.022386 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T01:04:27.022421 -   Redirect URI: http://127.0.0.1:7700/code/callback
+2026-02-04T01:04:27.022461 - toEntity: Tracking State: m-3CsSHZ0ipmOy3n4y7M59w2Cp7y0Mm_EpAfjNV9l50=
+2026-02-04T01:04:27.022498 - toEntity: Client State: baxqIdkx7EhVUiM5fy2Ery9h6p23pX
+2026-02-04T01:04:27.022540 - Saving entity with code: 6a73949b-6338-412e-9c31-6cbcb3dabdb6
+2026-02-04T01:04:27.028111 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-04T01:04:27.028235 - Status: 200
+2026-02-04T01:04:27.028283 - ===============================
+2026-02-04T01:04:27.051738 - FILTER: Entering - GET /oauth2/jwks (State: null)
+2026-02-04T01:04:39.693041 - FILTER: Entering - GET /oauth2/authorize (State: state-token)
+2026-02-04T01:04:39.708522 - FILTER: Redirecting to: http://localhost:5173/login?return_to=http://localhost:12000/oauth2/authorize?access_type=offline&client_id=testclient5&code_challenge=7otsvHwW8Q2ms1Wky3JrnlsTP1dznMzlwGqK6UFrqOM&code_challenge_method=S256&redirect_uri=http%3A%2F%2F127.0.0.1%3A7800%2Fcode%2Fcallback&response_type=code&scope=openid+profile+read&state=state-token
+2026-02-04T01:04:40.875633 - FILTER: Entering - GET /oauth2/authorize (State: state-token)
+2026-02-04T01:04:40.880147 - save called for ID: 1fab1562-a98c-4135-83a3-dbfb962cd292
+2026-02-04T01:04:40.880309 - toEntity called for ID: 1fab1562-a98c-4135-83a3-dbfb962cd292
+2026-02-04T01:04:40.880373 - toEntity: Promoted code_challenge: 7otsvHwW8Q2ms1Wky3JrnlsTP1dznMzlwGqK6UFrqOM
+2026-02-04T01:04:40.880424 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T01:04:40.880467 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T01:04:40.880517 -   Attributes keys: []
+2026-02-04T01:04:40.880562 -   Params keys: [code_challenge_method, code_challenge, token]
+2026-02-04T01:04:40.880608 -     Param: code_challenge_method = S256
+2026-02-04T01:04:40.880648 -     Param: code_challenge = 7otsvHwW8Q2ms1Wky3JrnlsTP1dznMzlwGqK6UFrqOM
+2026-02-04T01:04:40.880684 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T01:04:40.880717 -   Redirect URI: http://127.0.0.1:7800/code/callback
+2026-02-04T01:04:40.880813 - toEntity: Tracking State: mYXf37y-74B-SCqXKTNesFeGX4V6gA-H2z32IDMmRPs=
+2026-02-04T01:04:40.880851 - toEntity: Client State: state-token
+2026-02-04T01:04:40.880905 - Saving entity with code: NULL
+2026-02-04T01:04:40.888280 - FILTER: Redirecting to: http://localhost:5173/oauth2/consent?scope=read%20openid%20profile&client_id=testclient5&state=mYXf37y-74B-SCqXKTNesFeGX4V6gA-H2z32IDMmRPs%3D
+2026-02-04T01:04:42.209356 - FILTER: Entering - POST /oauth2/authorize/process (State: mYXf37y-74B-SCqXKTNesFeGX4V6gA-H2z32IDMmRPs=)
+2026-02-04T01:04:42.217767 - toObject called for ID: 1fab1562-a98c-4135-83a3-dbfb962cd292
+2026-02-04T01:04:42.223520 - Found RegisteredClient: testclient5
+2026-02-04T01:04:42.223693 - toObject: Loaded attributes keys: [org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, java.security.Principal, state, code_challenge_method, code_challenge]
+2026-02-04T01:04:42.223758 - toObject: Forcing code_challenge from flat field: 7otsvHwW8Q2ms1Wky3JrnlsTP1dznMzlwGqK6UFrqOM
+2026-02-04T01:04:42.223811 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T01:04:42.223870 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, code_challenge, token]
+2026-02-04T01:04:42.223922 - toObject: Tracking State restored: mYXf37y-74B-SCqXKTNesFeGX4V6gA-H2z32IDMmRPs=
+2026-02-04T01:04:42.223968 - toObject: Client State available: state-token
+2026-02-04T01:04:42.224128 - save called for ID: 1fab1562-a98c-4135-83a3-dbfb962cd292
+2026-02-04T01:04:42.224182 - toEntity called for ID: 1fab1562-a98c-4135-83a3-dbfb962cd292
+2026-02-04T01:04:42.224234 - toEntity: Promoted code_challenge: 7otsvHwW8Q2ms1Wky3JrnlsTP1dznMzlwGqK6UFrqOM
+2026-02-04T01:04:42.224284 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T01:04:42.224329 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T01:04:42.224378 -   Attributes keys: []
+2026-02-04T01:04:42.224429 -   Params keys: [code_challenge_method, code_challenge, token]
+2026-02-04T01:04:42.224486 -     Param: code_challenge_method = S256
+2026-02-04T01:04:42.224531 -     Param: code_challenge = 7otsvHwW8Q2ms1Wky3JrnlsTP1dznMzlwGqK6UFrqOM
+2026-02-04T01:04:42.224580 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T01:04:42.224623 -   Redirect URI: http://127.0.0.1:7800/code/callback
+2026-02-04T01:04:42.224674 - toEntity: Tracking State: mYXf37y-74B-SCqXKTNesFeGX4V6gA-H2z32IDMmRPs=
+2026-02-04T01:04:42.224721 - toEntity: Client State: state-token
+2026-02-04T01:04:42.224769 - Saving entity with code: 3491e936-593d-40b2-ac7d-d7e2bd6b90a3
+2026-02-04T01:04:42.230429 - FILTER: Redirecting to: http://127.0.0.1:7800/code/callback?code=3491e936-593d-40b2-ac7d-d7e2bd6b90a3&state=state-token
+2026-02-04T01:04:42.238329 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-04T01:04:42.244520 - toObject called for ID: 1fab1562-a98c-4135-83a3-dbfb962cd292
+2026-02-04T01:04:42.247094 - Found RegisteredClient: testclient5
+2026-02-04T01:04:42.247222 - toObject: Loaded attributes keys: [java.security.Principal, client_state, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, code_challenge]
+2026-02-04T01:04:42.247283 - toObject: Forcing code_challenge from flat field: 7otsvHwW8Q2ms1Wky3JrnlsTP1dznMzlwGqK6UFrqOM
+2026-02-04T01:04:42.247357 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T01:04:42.248313 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, code_challenge, token]
+2026-02-04T01:04:42.248879 - toObject: Tracking State restored: mYXf37y-74B-SCqXKTNesFeGX4V6gA-H2z32IDMmRPs=
+2026-02-04T01:04:42.249082 - toObject: Client State available: state-token
+2026-02-04T01:04:42.256985 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-04T01:04:42.257105 - Status: 400
+2026-02-04T01:04:42.257159 - ===============================
+2026-02-04T01:04:42.259777 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-04T01:04:42.264626 - toObject called for ID: 1fab1562-a98c-4135-83a3-dbfb962cd292
+2026-02-04T01:04:42.267834 - Found RegisteredClient: testclient5
+2026-02-04T01:04:42.268144 - toObject: Loaded attributes keys: [java.security.Principal, client_state, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, code_challenge]
+2026-02-04T01:04:42.268253 - toObject: Forcing code_challenge from flat field: 7otsvHwW8Q2ms1Wky3JrnlsTP1dznMzlwGqK6UFrqOM
+2026-02-04T01:04:42.268323 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T01:04:42.268415 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, code_challenge, token]
+2026-02-04T01:04:42.268631 - toObject: Tracking State restored: mYXf37y-74B-SCqXKTNesFeGX4V6gA-H2z32IDMmRPs=
+2026-02-04T01:04:42.268684 - toObject: Client State available: state-token
+2026-02-04T01:04:42.270824 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-04T01:04:42.270964 - Status: 400
+2026-02-04T01:04:42.271009 - ===============================
+2026-02-04T01:06:01.196233 - FILTER: Entering - GET /oauth2/authorize (State: Akv9IEwxCdOVKthCHUQyvvk-gFMxAfbz_J3VlMR9BSc)
+2026-02-04T01:06:01.204329 - FILTER: Redirecting to: http://localhost:5173/login?return_to=http://127.0.0.1:12000/oauth2/authorize?access_type=offline&client_id=testclient5&code_challenge=buFqWG4pHegtIqVNK3UnsaYRVk7ERn_Ehihmn2f9o_g&code_challenge_method=S256&nonce=IFQjnuj0DYo7TTHVCA57kTlLW83kONH8Yj6fIKBxHio&redirect_uri=http%3A%2F%2F127.0.0.1%3A7800%2Fcode%2Fcallback&response_type=code&scope=openid+profile+read&state=Akv9IEwxCdOVKthCHUQyvvk-gFMxAfbz_J3VlMR9BSc
+2026-02-04T01:06:02.365503 - FILTER: Entering - GET /oauth2/authorize (State: Akv9IEwxCdOVKthCHUQyvvk-gFMxAfbz_J3VlMR9BSc)
+2026-02-04T01:06:02.369365 - save called for ID: 7533f28b-6f50-48d5-b5f6-e10991f81936
+2026-02-04T01:06:02.369609 - toEntity called for ID: 7533f28b-6f50-48d5-b5f6-e10991f81936
+2026-02-04T01:06:02.370704 - toEntity: Promoted code_challenge: buFqWG4pHegtIqVNK3UnsaYRVk7ERn_Ehihmn2f9o_g
+2026-02-04T01:06:02.370852 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T01:06:02.371007 - toEntity: Promoted nonce: IFQjnuj0DYo7TTHVCA57kTlLW83kONH8Yj6fIKBxHio
+2026-02-04T01:06:02.371129 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T01:06:02.371258 -   Attributes keys: []
+2026-02-04T01:06:02.371367 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T01:06:02.371413 -     Param: code_challenge_method = S256
+2026-02-04T01:06:02.371460 -     Param: nonce = IFQjnuj0DYo7TTHVCA57kTlLW83kONH8Yj6fIKBxHio
+2026-02-04T01:06:02.371505 -     Param: code_challenge = buFqWG4pHegtIqVNK3UnsaYRVk7ERn_Ehihmn2f9o_g
+2026-02-04T01:06:02.371545 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T01:06:02.371618 -   Redirect URI: http://127.0.0.1:7800/code/callback
+2026-02-04T01:06:02.371791 - toEntity: Tracking State: eev77k1ATf03lFnv-jqo72fi0I-cp01AX42SVmpJWF8=
+2026-02-04T01:06:02.371843 - toEntity: Client State: Akv9IEwxCdOVKthCHUQyvvk-gFMxAfbz_J3VlMR9BSc
+2026-02-04T01:06:02.374338 - Saving entity with code: NULL
+2026-02-04T01:06:02.381731 - FILTER: Redirecting to: http://localhost:5173/oauth2/consent?scope=read%20openid%20profile&client_id=testclient5&state=eev77k1ATf03lFnv-jqo72fi0I-cp01AX42SVmpJWF8%3D
+2026-02-04T01:06:03.349542 - FILTER: Entering - POST /oauth2/authorize/process (State: eev77k1ATf03lFnv-jqo72fi0I-cp01AX42SVmpJWF8=)
+2026-02-04T01:06:03.362030 - toObject called for ID: 7533f28b-6f50-48d5-b5f6-e10991f81936
+2026-02-04T01:06:03.369123 - Found RegisteredClient: testclient5
+2026-02-04T01:06:03.369339 - toObject: Loaded attributes keys: [java.security.Principal, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T01:06:03.369413 - toObject: Forcing code_challenge from flat field: buFqWG4pHegtIqVNK3UnsaYRVk7ERn_Ehihmn2f9o_g
+2026-02-04T01:06:03.369482 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T01:06:03.369550 - toObject: Forcing nonce from flat field: IFQjnuj0DYo7TTHVCA57kTlLW83kONH8Yj6fIKBxHio
+2026-02-04T01:06:03.369614 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T01:06:03.369674 - toObject: Tracking State restored: eev77k1ATf03lFnv-jqo72fi0I-cp01AX42SVmpJWF8=
+2026-02-04T01:06:03.369726 - toObject: Client State available: Akv9IEwxCdOVKthCHUQyvvk-gFMxAfbz_J3VlMR9BSc
+2026-02-04T01:06:03.369897 - save called for ID: 7533f28b-6f50-48d5-b5f6-e10991f81936
+2026-02-04T01:06:03.369954 - toEntity called for ID: 7533f28b-6f50-48d5-b5f6-e10991f81936
+2026-02-04T01:06:03.370011 - toEntity: Promoted code_challenge: buFqWG4pHegtIqVNK3UnsaYRVk7ERn_Ehihmn2f9o_g
+2026-02-04T01:06:03.370066 - toEntity: Promoted code_challenge_method: S256
+2026-02-04T01:06:03.370119 - toEntity: Promoted nonce: IFQjnuj0DYo7TTHVCA57kTlLW83kONH8Yj6fIKBxHio
+2026-02-04T01:06:03.370167 - toEntity: Exhaustive AuthRequest Log:
+2026-02-04T01:06:03.370225 -   Attributes keys: []
+2026-02-04T01:06:03.370284 -   Params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T01:06:03.370339 -     Param: code_challenge_method = S256
+2026-02-04T01:06:03.370394 -     Param: nonce = IFQjnuj0DYo7TTHVCA57kTlLW83kONH8Yj6fIKBxHio
+2026-02-04T01:06:03.370446 -     Param: code_challenge = buFqWG4pHegtIqVNK3UnsaYRVk7ERn_Ehihmn2f9o_g
+2026-02-04T01:06:03.370494 -     Param: token = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2OTgxNmQ3ZTk0Yzk0OTZkMGQxNmI1ZDMiLCJ1c2VybmFtZSI6ImZyb250ZW5kIiwiZGV2aWNlSGFzaCI6InVvcjZKNFRxVThaV3VCR0kzSGxfLUIwY3BaRTVTVmtTNmRDSDZMVjVNNTAiLCJkZXZpY2VLZXlJZCI6ImhtYWMta2V5LTIwMjYtMDEiLCJpc3MiOiJteS1hdXRoLXNlcnZpY2UiLCJpYXQiOjE3NzAxMzkwNjQsImV4cCI6MTc3MDIyNTQ2NH0.1EWF6nK8Xj-i36tPyyhpG29gnXJKJVloVOAFvuk18ys
+2026-02-04T01:06:03.370550 -   Redirect URI: http://127.0.0.1:7800/code/callback
+2026-02-04T01:06:03.370609 - toEntity: Tracking State: eev77k1ATf03lFnv-jqo72fi0I-cp01AX42SVmpJWF8=
+2026-02-04T01:06:03.370657 - toEntity: Client State: Akv9IEwxCdOVKthCHUQyvvk-gFMxAfbz_J3VlMR9BSc
+2026-02-04T01:06:03.370723 - Saving entity with code: 0da4223a-eb49-4487-a673-b169944d6756
+2026-02-04T01:06:03.376431 - FILTER: Redirecting to: http://127.0.0.1:7800/code/callback?code=0da4223a-eb49-4487-a673-b169944d6756&state=Akv9IEwxCdOVKthCHUQyvvk-gFMxAfbz_J3VlMR9BSc
+2026-02-04T01:06:03.386226 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-04T01:06:03.391213 - toObject called for ID: 7533f28b-6f50-48d5-b5f6-e10991f81936
+2026-02-04T01:06:03.393638 - Found RegisteredClient: testclient5
+2026-02-04T01:06:03.393766 - toObject: Loaded attributes keys: [java.security.Principal, client_state, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T01:06:03.393831 - toObject: Forcing code_challenge from flat field: buFqWG4pHegtIqVNK3UnsaYRVk7ERn_Ehihmn2f9o_g
+2026-02-04T01:06:03.393892 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T01:06:03.393953 - toObject: Forcing nonce from flat field: IFQjnuj0DYo7TTHVCA57kTlLW83kONH8Yj6fIKBxHio
+2026-02-04T01:06:03.394021 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T01:06:03.394078 - toObject: Tracking State restored: eev77k1ATf03lFnv-jqo72fi0I-cp01AX42SVmpJWF8=
+2026-02-04T01:06:03.394135 - toObject: Client State available: Akv9IEwxCdOVKthCHUQyvvk-gFMxAfbz_J3VlMR9BSc
+2026-02-04T01:06:03.397753 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-04T01:06:03.397850 - Status: 400
+2026-02-04T01:06:03.397905 - ===============================
+2026-02-04T01:06:03.402022 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-04T01:06:03.405215 - toObject called for ID: 7533f28b-6f50-48d5-b5f6-e10991f81936
+2026-02-04T01:06:03.408344 - Found RegisteredClient: testclient5
+2026-02-04T01:06:03.408479 - toObject: Loaded attributes keys: [java.security.Principal, client_state, org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest, state, code_challenge_method, nonce, code_challenge]
+2026-02-04T01:06:03.408707 - toObject: Forcing code_challenge from flat field: buFqWG4pHegtIqVNK3UnsaYRVk7ERn_Ehihmn2f9o_g
+2026-02-04T01:06:03.408757 - toObject: Forcing code_challenge_method from flat field: S256
+2026-02-04T01:06:03.408819 - toObject: Forcing nonce from flat field: IFQjnuj0DYo7TTHVCA57kTlLW83kONH8Yj6fIKBxHio
+2026-02-04T01:06:03.408886 - toObject: OAuth2AuthorizationRequest params keys: [code_challenge_method, nonce, code_challenge, token]
+2026-02-04T01:06:03.409092 - toObject: Tracking State restored: eev77k1ATf03lFnv-jqo72fi0I-cp01AX42SVmpJWF8=
+2026-02-04T01:06:03.409155 - toObject: Client State available: Akv9IEwxCdOVKthCHUQyvvk-gFMxAfbz_J3VlMR9BSc
+2026-02-04T01:06:03.411176 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-04T01:06:03.411290 - Status: 400
+2026-02-04T01:06:03.411353 - ===============================
