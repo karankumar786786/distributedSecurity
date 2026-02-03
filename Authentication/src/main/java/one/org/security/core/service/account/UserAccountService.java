@@ -37,7 +37,6 @@ public class UserAccountService {
         if (user == null)
             throw new IllegalArgumentException("User context not found");
         User dbUser = userService.getUserById(user.getId());
-
         if (!encodingService.verify(request.oldPassword(), dbUser.getPassword())) {
             throw new BadCredentialsException("Invalid old password");
         }

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { startFidoRegistration } from '../services/api';
+import { useNavigate } from 'react-router-dom';
+import { startFidoRegistration, logout } from '../services/api';
 
 const Home = () => {
+    const navigate = useNavigate();
     const [msg, setMsg] = useState({ text: '', type: '' });
 
     const log = (text, type = 'info') => setMsg({ text, type });
@@ -13,6 +15,17 @@ const Home = () => {
             log('Passkey registered successfully! You can now use it to login.', 'success');
         } catch (e) {
             log(e.message || 'FIDO setup failed', 'error');
+        }
+    };
+
+    const handleLogout = async (e) => {
+        e.preventDefault();
+        try {
+            await logout();
+        } catch (error) {
+            console.error('Logout error:', error);
+        } finally {
+            navigate('/login');
         }
     };
 
@@ -39,7 +52,7 @@ const Home = () => {
                  </div>
                  
                  <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-                     <a href="/login" style={{ color: '#ef4444', textDecoration: 'none', fontWeight: 'bold' }}>Logout</a>
+                     <a href="#" onClick={handleLogout} style={{ color: '#ef4444', textDecoration: 'none', fontWeight: 'bold' }}>Logout</a>
                  </div>
             </div>
 

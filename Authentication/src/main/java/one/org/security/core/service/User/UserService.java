@@ -84,7 +84,7 @@ public class UserService {
     public void updatePassword(ObjectId userId, String hashedPassword) {
 
         Query q = new Query(Criteria.where("_id").is(userId));
-        Update u = new Update().set("password", hashedPassword);
+        Update u = new Update().set("security.hashedPassword", hashedPassword);
 
         var result = mongoTemplate.updateFirst(q, u, User.class);
         if (result.getMatchedCount() == 0)
@@ -109,7 +109,7 @@ public class UserService {
             throw new RuntimeException("User not found");
     }
 
-    public void deleteByUsername(String username){
+    public void deleteByUsername(String username) {
         userRepository.deleteByUsername(username);
         return;
     }
