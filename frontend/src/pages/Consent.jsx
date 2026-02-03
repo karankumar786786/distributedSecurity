@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { getAuthToken } from '../services/api';
 
 const Consent = () => {
     const [searchParams] = useSearchParams();
@@ -48,6 +49,14 @@ const Consent = () => {
             input.value = value;
             form.appendChild(input);
         };
+
+        // Add JWT token for stateless authentication
+        const token = getAuthToken();
+        if (token) {
+            appendInput('token', token);
+        } else {
+            console.warn("DEBUG: No auth token found! Consent submission may fail.");
+        }
 
         // Always include these core parameters
         appendInput('client_id', allParams.client_id);

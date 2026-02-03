@@ -5,14 +5,14 @@ spring:
     oauth2:
       client:
         registration:
-          testclient1:
+          testclient2:
             provider: spring
-            client-id: testclient1
-            client-secret: b598562a633e48a6a016c680ebcee695
+            client-id: testclient2
+            client-secret: 2f3b847bcbd0439ea8051549dd753074
             authorization-grant-type: authorization_code
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             scope: openid,read
-            client-name: testclient1
+            client-name: testclient2
         provider:
           spring:
             issuer-uri: http://localhost:12000

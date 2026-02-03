@@ -67,13 +67,34 @@ public class SessionFilture extends OncePerRequestFilter {
      */
     private boolean tryJwtAuthentication(HttpServletRequest request, String rawDeviceBind) {
         String authHeader = request.getHeader(AUTHORIZATION_HEADER);
+        String token = null;
 
-        if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
-            log.debug("No JWT token found in Authorization header");
-            return false;
+        if (authHeader != null && authHeader.startsWith(BEARER_PREFIX)) {
+            token = authHeader.substring(BEARER_PREFIX.length());
+        } else {
+            // Fallback to query parameter for browser redirects
+            log.debug("Checking query parameters for token from URI: {}", request.getRequestURI());
+
+            // Helpful logging for debugging
+            java.util.Enumeration<String> params = request.getParameterNames();
+            while (params.hasMoreElements()) {
+                String paramName = params.nextElement();
+                log.debug("Parameter: {} = {}", paramName, request.getParameter(paramName));
+            }
+
+            token = request.getParameter("token");
+            if (token == null) {
+                token = request.getParameter("access_token");
+            }
+            if (token != null) {
+                log.debug("JWT token found in query parameter");
+            }
         }
 
-        String token = authHeader.substring(BEARER_PREFIX.length());
+        if (token == null || token.isBlank()) {
+            log.debug("No JWT token found in header or query parameter");
+            return false;
+        }
 
         JwtDTO jwtDTO;
         if (rawDeviceBind != null) {

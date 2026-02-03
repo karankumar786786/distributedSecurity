@@ -6,6 +6,7 @@ import Consent from './pages/Consent';
 import Callback from './pages/Callback';
 import Error from './pages/Error';
 import Home from './pages/Home';
+import OAuth2Authorize from './pages/OAuth2Authorize';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/oauth2/consent" element={<Consent />} />
             <Route path="/callback" element={<Callback />} />
             <Route path="/error" element={<Error />} />
+            <Route path="/oauth2/authorize" element={<OAuth2Authorize />} />
             <Route path="/" element={<Home />} />
         </Routes>
       </div>

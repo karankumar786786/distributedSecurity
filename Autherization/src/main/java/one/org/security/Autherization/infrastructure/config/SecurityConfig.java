@@ -54,8 +54,10 @@ public class SecurityConfig {
         @Order(1)
         public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
                 OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
+                // Redirect to Frontend Consent Page
                 authorizationServerConfigurer.authorizationEndpoint(
-                                authorizationEndpoint -> authorizationEndpoint.consentPage("/oauth2/consent"));
+                                authorizationEndpoint -> authorizationEndpoint
+                                                .consentPage("http://localhost:5173/oauth2/consent"));
 
                 http
                                 .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
@@ -63,7 +65,8 @@ public class SecurityConfig {
                                 .csrf(csrf -> csrf.ignoringRequestMatchers(
                                                 authorizationServerConfigurer.getEndpointsMatcher()))
                                 .with(authorizationServerConfigurer, (authorizationServer) -> authorizationServer
-                                                .authorizationEndpoint(auth -> auth.consentPage("/oauth2/consent"))
+                                                // .authorizationEndpoint(auth -> auth.consentPage("/oauth2/consent"))
+                                                // // REMOVED: configured above
                                                 .oidc(oidc -> oidc
                                                                 .providerConfigurationEndpoint(
                                                                                 providerConfiguration -> providerConfiguration
@@ -121,6 +124,7 @@ public class SecurityConfig {
                                                 .requestMatchers("/error").permitAll()
                                                 .requestMatchers("/oauth2/revoke").permitAll() // Token revocation
                                                                                                // endpoint
+                                                .requestMatchers("/oauth2/token").permitAll() // Token exchange endpoint
                                                 .anyRequest().authenticated())
                                 .addFilterBefore(rateLimitFilter(), UsernamePasswordAuthenticationFilter.class)
                                 .addFilterBefore(processDeviceFilter(), UsernamePasswordAuthenticationFilter.class)
