@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 /**
- * Custom success handler for OAuth2 authentication.
- * No cookies are used - stateless operation.
+ * Optional custom success handler.
+ * Only use if you need to perform actions after successful OAuth2 login.
  */
 @Component
 public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -25,34 +25,24 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
 
-        System.out.println("=== AUTHENTICATION SUCCESS ===");
-        System.out.println("Request URI: " + request.getRequestURI());
-        System.out.println("Authentication type: " + authentication.getClass().getName());
-
         logger.info("OAuth2 authentication successful");
 
-        if (authentication.getPrincipal() instanceof OAuth2User) {
-            OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-            System.out.println("=== OAUTH2 USER DETAILS ===");
-            System.out.println("Attributes: " + oAuth2User.getAttributes());
-            System.out.println("Authorities: " + oAuth2User.getAuthorities());
-            logger.info("User authenticated: {}", oAuth2User.getAttributes());
+        if (authentication.getPrincipal() instanceof OAuth2User oAuth2User) {
+            // Extract user info
+            String email = oAuth2User.getAttribute("email");
+            String name = oAuth2User.getAttribute("name");
 
-            // Store user information in session
-            request.getSession().setAttribute("user", oAuth2User.getAttributes());
-            System.out.println("User stored in session");
-        } else {
-            System.out.println("WARNING: Principal is not OAuth2User: " + authentication.getPrincipal().getClass());
+            logger.info("User authenticated: email={}, name={}", email, name);
+
+            // OPTIONAL: Store user info in your database, create account, etc.
+            // Example: userService.createOrUpdateUser(email, name);
+
+            // User info is already available in session via Spring Security
+            // No need to manually store in session
         }
 
-        // No cookies to clean up - stateless authorization request storage
-
-        // Set default target URL
+        // Redirect to home page
         setDefaultTargetUrl("/");
-        setAlwaysUseDefaultTargetUrl(false);
-
-        System.out.println("=== CALLING SUPER.onAuthenticationSuccess ===");
         super.onAuthenticationSuccess(request, response, authentication);
-        System.out.println("=== AUTHENTICATION SUCCESS COMPLETE ===");
     }
 }

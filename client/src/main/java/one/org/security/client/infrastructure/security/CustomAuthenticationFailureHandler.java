@@ -10,14 +10,10 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.time.LocalDateTime;
-import java.io.StringWriter;
 
 /**
- * Custom failure handler for OAuth2 authentication.
- * No cookies are used - stateless operation.
+ * Optional custom failure handler.
+ * Provides better logging and user-friendly error messages.
  */
 @Component
 public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
@@ -28,40 +24,23 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
         public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                         AuthenticationException exception) throws IOException, ServletException {
 
-                System.out.println("=== AUTHENTICATION FAILURE ===");
-                System.out.println("Request URI: " + request.getRequestURI());
-                System.out.println("Exception type: " + exception.getClass().getName());
-                System.out.println("!!! CRITICAL FAILURE !!!: " + exception.getMessage());
+                logger.error("OAuth2 authentication failed", exception);
 
-                logToFile("CLIENT AUTH FAILURE: " + exception.getMessage());
-                if (exception.getCause() != null) {
-                        logToFile("  Cause: " + exception.getCause().getMessage());
+                // Set user-friendly error message
+                String errorMessage = "Authentication failed. Please try again.";
+
+                if (exception.getMessage() != null) {
+                        if (exception.getMessage().contains("access_denied")) {
+                                errorMessage = "You denied access. Please authorize the application to continue.";
+                        } else if (exception.getMessage().contains("invalid_grant")) {
+                                errorMessage = "Invalid authorization code. Please try logging in again.";
+                        }
                 }
 
-                StringWriter sw = new StringWriter();
-                exception.printStackTrace(new PrintWriter(sw));
-                logToFile("  Stack Trace: " + sw.toString());
+                // Redirect to login with error parameter
+                setDefaultFailureUrl("/login?error=true&message=" +
+                                java.net.URLEncoder.encode(errorMessage, "UTF-8"));
 
-                exception.printStackTrace();
-                logger.error("OAuth2 authentication failed: {}", exception.getMessage(), exception);
-
-                // No cookies to clean up - stateless authorization request storage
-
-                // Redirect to login page with error
-                setDefaultFailureUrl("/login?error=true");
-
-                System.out.println("=== CALLING SUPER.onAuthenticationFailure ===");
                 super.onAuthenticationFailure(request, response, exception);
-                System.out.println("=== AUTHENTICATION FAILURE COMPLETE ===");
-        }
-
-        private void logToFile(String message) {
-                try (FileWriter fw = new FileWriter("/Users/rahulgupta/Desktop/distributedSecurity/AuthDebug.txt",
-                                true);
-                                PrintWriter pw = new PrintWriter(fw)) {
-                        pw.println(LocalDateTime.now() + " - [CLIENT] " + message);
-                } catch (Exception e) {
-                        // Ignore log errors
-                }
         }
 }
