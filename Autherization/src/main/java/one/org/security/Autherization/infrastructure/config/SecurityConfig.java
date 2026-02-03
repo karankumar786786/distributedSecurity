@@ -2,6 +2,7 @@ package one.org.security.Autherization.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,15 +16,25 @@ import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
 import org.springframework.http.MediaType;
 
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+
 import one.org.security.Autherization.infrastructure.security.filture.SessionFilture;
 import one.org.security.Autherization.infrastructure.security.filture.LoggingFilter;
 import one.org.security.Autherization.infrastructure.security.filture.TokenEndpointLoggingFilter;
 import one.org.security.Autherization.infrastructure.security.filture.RateLimitFilter;
 import one.org.security.common.Filtures.ProcessDeviceFilter;
+import one.org.security.Autherization.infrastructure.persistance.CustomRegisteredClientRepository;
+import one.org.security.Autherization.core.service.Client.ClientService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+        @Bean
+        @Primary
+        public RegisteredClientRepository registeredClientRepository(ClientService clientService) {
+                return new CustomRegisteredClientRepository(clientService);
+        }
 
         @Bean
         public SessionFilture sessionFilture() {
@@ -52,7 +63,11 @@ public class SecurityConfig {
 
         @Bean
         @Order(1)
-        public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+        public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http,
+                        RegisteredClientRepository registeredClientRepository) throws Exception {
+                System.out.println("DEBUG: SecurityConfig Injected Repo: "
+                                + (registeredClientRepository != null ? registeredClientRepository.getClass().getName()
+                                                : "NULL"));
                 OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
                 // Redirect to Frontend Consent Page
                 authorizationServerConfigurer.authorizationEndpoint(
@@ -62,31 +77,34 @@ public class SecurityConfig {
                 http
                                 .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
                                 .requestCache(cache -> cache.disable())
-                                .csrf(csrf -> csrf.ignoringRequestMatchers(
-                                                authorizationServerConfigurer.getEndpointsMatcher()))
-                                .with(authorizationServerConfigurer, (authorizationServer) -> authorizationServer
-                                                // .authorizationEndpoint(auth -> auth.consentPage("/oauth2/consent"))
-                                                // // REMOVED: configured above
-                                                .oidc(oidc -> oidc
-                                                                .providerConfigurationEndpoint(
-                                                                                providerConfiguration -> providerConfiguration
-                                                                                                .providerConfigurationCustomizer(
-                                                                                                                config -> config.idTokenSigningAlgorithms(
-                                                                                                                                a -> {
-                                                                                                                                        a.clear();
-                                                                                                                                        a.add(SignatureAlgorithm.RS256
-                                                                                                                                                        .toString());
-                                                                                                                                })
-                                                                                                                                .scopes(scopes -> {
-                                                                                                                                        scopes.add("read");
-                                                                                                                                        scopes.add("write");
-                                                                                                                                        scopes.add("username");
-                                                                                                                                        scopes.add("profile");
-                                                                                                                                        scopes.add("personaldata");
-                                                                                                                                })))))
+                                .csrf(csrf -> csrf.disable()) // COMPLETELY DISABLE CSRF FOR STATELESS
+                                .with(authorizationServerConfigurer, (authorizationServer) -> {
+                                        System.out.println("DEBUG: Configuring Authorization Server Customizer");
+                                        authorizationServer.registeredClientRepository(registeredClientRepository);
+                                        authorizationServer.oidc(oidc -> oidc
+                                                        .providerConfigurationEndpoint(
+                                                                        providerConfiguration -> providerConfiguration
+                                                                                        .providerConfigurationCustomizer(
+                                                                                                        config -> config.idTokenSigningAlgorithms(
+                                                                                                                        a -> {
+                                                                                                                                a.clear();
+                                                                                                                                a.add(SignatureAlgorithm.RS256
+                                                                                                                                                .toString());
+                                                                                                                        })
+                                                                                                                        .scopes(scopes -> {
+                                                                                                                                scopes.add("read");
+                                                                                                                                scopes.add("write");
+                                                                                                                                scopes.add("username");
+                                                                                                                                scopes.add("profile");
+                                                                                                                                scopes.add("personaldata");
+                                                                                                                        }))));
+                                })
                                 .authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
                                 .sessionManagement(session -> session
-                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // Changed to
+                                                                                                           // IF_REQUIRED
+                                                                                                           // for OAuth2
+                                                                                                           // flow
                                 .exceptionHandling(exceptions -> exceptions
                                                 .defaultAuthenticationEntryPointFor(
                                                                 new one.org.security.Autherization.infrastructure.security.LoggingAuthenticationEntryPoint(

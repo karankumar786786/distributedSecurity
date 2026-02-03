@@ -20,6 +20,14 @@ public class ProcessDeviceFilter extends OncePerRequestFilter {
 
         System.out.println("Processing Device Filter: " + request.getRequestURI());
 
+        // Skip device validation for OAuth2 endpoints (they use their own security)
+        String requestURI = request.getRequestURI();
+        if (requestURI.startsWith("/oauth2/")) {
+            System.out.println("DEBUG: ProcessDeviceFilter - Skipping OAuth2 endpoint: " + requestURI);
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String rawDeviceData = rawDeviceDataUtil.getRawDeviceHash(request);
         System.out.println("DEBUG: ProcessDeviceFilter - RawDeviceData: " + rawDeviceData);
 

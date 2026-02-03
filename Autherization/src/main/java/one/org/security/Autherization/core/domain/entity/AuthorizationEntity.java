@@ -28,6 +28,7 @@ public class AuthorizationEntity implements java.io.Serializable {
     private String codeChallenge;
     private String codeChallengeMethod;
     private String codeVerifier;
+    private String nonce;
 
     private TokenEntity authorizationCode;
     private TokenEntity accessToken;

@@ -3,8 +3,6 @@ package one.org.security.Autherization.infrastructure.persistance;
 import java.time.Duration;
 
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
@@ -16,18 +14,14 @@ import org.springframework.security.oauth2.server.authorization.settings.TokenSe
 import one.org.security.Autherization.core.domain.entity.ClientEntity;
 import one.org.security.Autherization.core.service.Client.ClientService;
 
-import org.springframework.context.annotation.Primary;
-
-@Component
-@Primary
 public class CustomRegisteredClientRepository implements RegisteredClientRepository {
 
-    public CustomRegisteredClientRepository() {
-        System.out.println("DEBUG: CustomRegisteredClientRepository INSTANTIATED");
+    public CustomRegisteredClientRepository(ClientService clientService) {
+        this.clientService = clientService;
+        System.out.println("DEBUG: CustomRegisteredClientRepository INSTANTIATED (Manual Bean)");
     }
 
-    @Autowired
-    private ClientService clientService;
+    private final ClientService clientService;
 
     @Override
     public void save(RegisteredClient registeredClient) {
@@ -42,15 +36,14 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
 
     @Override
     public RegisteredClient findByClientId(String clientId) {
+        System.out.println("DEBUG: CustomRegisteredClientRepository.findByClientId CALLED for " + clientId);
         try {
-            System.out.println("DEBUG: Looking up client: " + clientId);
             ClientEntity client = clientService.findByClientId(clientId);
             if (client == null) {
-                System.out.println("DEBUG: Client NOT FOUND: " + clientId);
                 return null;
             }
-            System.out.println("DEBUG: Found client: " + clientId + ", RedirectURL: " + client.getRedirectUrl());
             return toRegisteredClient(client);
+
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -93,10 +86,6 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
                         .idTokenSignatureAlgorithm(SignatureAlgorithm.RS256)
                         .build())
                 .build();
-
-        System.out.println("DEBUG: Returning RegisteredClient: " + registeredClient.getClientId());
-        System.out.println("DEBUG: ALLOWED SCOPES: " + registeredClient.getScopes());
-        System.out.println("DEBUG: Redirect URIs: " + registeredClient.getRedirectUris());
 
         return registeredClient;
     }

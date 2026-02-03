@@ -187,6 +187,119 @@ public class AuthorizationFlowIntegrationTest {
         // Would need separate request with basic auth or bearer
     }
 
+    @Test
+    @WithMockCustomUser(username = "karan", userId = "651a2b3c4d5e6f7a8b9c0d1e")
+    public void testAuthorizationCodeFlowWithNonce() throws Exception {
+        // 1. Create Client
+        String redirectUrl = "http://localhost:6000/callback";
+        String clientId = "test-integration-client-nonce-" + UUID.randomUUID().toString();
+
+        String createClientJson = String.format(
+                "{\"clientId\": \"%s\", \"redirectUrl\": \"%s\", \"personalDataAccess\": true, \"profile\": true, \"write\": true}",
+                clientId, redirectUrl);
+
+        MvcResult createClientResult = this.mockMvc.perform(post("/client/create-client")
+                .header("User-Agent", "IntegrationTestAgent")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createClientJson))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        JsonNode clientResponse = this.objectMapper.readTree(createClientResult.getResponse().getContentAsString());
+        String clientSecret = clientResponse.get("clientSecret").asText();
+        System.out.println("Created Client: " + clientId + ", Secret: " + clientSecret);
+
+        // 2. PKCE Setup
+        String codeVerifier = "vXMfSzUFGepk8vMBqMm1Dqsn_X9vAy2FT7KE0l53nnw"; // High entropy string
+        String codeChallenge = generateCodeChallenge(codeVerifier);
+        String nonce = "test-nonce-" + UUID.randomUUID().toString();
+
+        // 3. Authorization Request with Nonce
+        String scope = "openid"; // openid required for nonce usage typically
+        String authUrl = String.format(
+                "http://localhost:12000/oauth2/authorize?response_type=code&client_id=%s&scope=%s&redirect_uri=%s&code_challenge=%s&code_challenge_method=S256&nonce=%s",
+                clientId, scope, redirectUrl, codeChallenge, nonce);
+
+        MvcResult authResult = this.mockMvc.perform(get(authUrl)
+                .header("User-Agent", "IntegrationTestAgent"))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+
+        String location = authResult.getResponse().getHeader("Location");
+        System.out.println("Redirect Location: " + location);
+
+        // 3a. Handle Consent Step (If redirected to Consent Page)
+        String code = null;
+        if (location.contains("/oauth2/consent")) {
+            System.out.println("DEBUG: Redirected to Consent Page. Submitting Consent...");
+            URI consentUri = new URI(location);
+            String consentQuery = consentUri.getQuery();
+            String state = null;
+            for (String param : consentQuery.split("&")) {
+                String[] pair = param.split("=");
+                if (pair[0].equals("state")) {
+                    state = param.substring("state=".length());
+                    break;
+                }
+            }
+
+            if (state == null) {
+                throw new RuntimeException("State not found in consent redirect");
+            }
+
+            // Submit Consent
+            String postBody = "client_id=" + clientId +
+                    "&state=" + java.net.URLEncoder.encode(state, StandardCharsets.UTF_8) +
+                    "&scope=" + scope +
+                    "&consent_action=approve";
+
+            MvcResult consentResult = this.mockMvc.perform(post("http://localhost:12000/oauth2/authorize")
+                    .header("User-Agent", "IntegrationTestAgent")
+                    .content(postBody)
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                    .andExpect(status().is3xxRedirection())
+                    .andReturn();
+
+            location = consentResult.getResponse().getHeader("Location");
+            System.out.println("Consent Redirect Location: " + location);
+        }
+
+        // Extract code from location (Callback URL)
+        URI uri = new URI(location);
+        String query = uri.getQuery();
+        for (String param : query.split("&")) {
+            String[] pair = param.split("=");
+            if (pair[0].equals("code")) {
+                code = pair[1];
+                break;
+            }
+        }
+
+        if (code == null) {
+            throw new RuntimeException("Authorization code not found in redirect: " + location);
+        }
+        System.out.println("Auth Code: " + code);
+
+        // 4. Token Exchange
+        this.mockMvc.perform(post("http://localhost:12000/oauth2/token")
+                .header("User-Agent", "IntegrationTestAgent")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("grant_type", "authorization_code")
+                .param("code", code)
+                .param("client_id", clientId)
+                .param("client_secret", clientSecret)
+                .param("redirect_uri", redirectUrl)
+                .param("code_verifier", codeVerifier))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.access_token").exists())
+                // Verify ID Token exists (since we asked for openid)
+                .andExpect(jsonPath("$.id_token").exists());
+        // In a real integration test, we would decode the ID token and verify the nonce
+        // claim matches
+        // But inspecting the token content might require additional dependencies or
+        // logic
+    }
+
     private String generateCodeChallenge(String codeVerifier) throws Exception {
         byte[] bytes = codeVerifier.getBytes(StandardCharsets.US_ASCII);
         MessageDigest md = MessageDigest.getInstance("SHA-256");

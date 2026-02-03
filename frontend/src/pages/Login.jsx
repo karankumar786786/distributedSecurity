@@ -36,8 +36,17 @@ const Login = () => {
         if (isOAuthAuthorize) {
             // Build the full OAuth2 URL with all parameters
             const params = [];
+            
+            // Critical: The return_to base itself might already contain the FIRST parameter (e.g., response_type=code)
+            // if it wasn't properly encoded by the redirecting server.
+            const urlParts = base.split('?');
+            const baseWithoutQuery = urlParts[0];
+            const existingQuery = urlParts[1] || '';
+            const existingParams = new URLSearchParams(existingQuery);
+
             oauthParams.forEach(p => {
-                const val = searchParams.get(p);
+                // Try to get from searchParams (top level) or existingParams (embedded in return_to)
+                const val = searchParams.get(p) || existingParams.get(p);
                 console.log(`[Login] Param ${p}:`, val);
                 if (val) {
                     params.push(`${p}=${encodeURIComponent(val)}`);
@@ -45,8 +54,6 @@ const Login = () => {
             });
             
             if (params.length > 0) {
-                // Remove any existing query string from base and rebuild
-                const baseWithoutQuery = base.split('?')[0];
                 const result = baseWithoutQuery + '?' + params.join('&');
                 console.log('[Login] Reconstructed returnTo:', result);
                 return result;
@@ -61,15 +68,33 @@ const Login = () => {
         if (paramUsername) {
             setUsername(paramUsername);
         }
+        
+        // Auto-redirect if already authenticated
+        const checkAuth = async () => {
+            const token = localStorage.getItem("auth_token");
+            if (token) {
+                console.log('[Login] Already authenticated, redirecting...');
+                handleSuccess(token);
+            }
+        };
+        checkAuth();
     }, [paramUsername]);
 
     const log = (text, type = 'info') => setMsg({ text, type });
 
-    const handleSuccess = () => {
+    const handleSuccess = (token) => {
+        const currentToken = token || localStorage.getItem("auth_token");
         log('Redirecting...', 'success');
         setTimeout(() => {
             if (returnTo) {
-                window.location.href = returnTo;
+                // If redirecting back to OAuth2 authorize, append the token
+                if (returnTo.includes('/oauth2/authorize')) {
+                    const url = new URL(returnTo);
+                    url.searchParams.set('token', currentToken);
+                    window.location.href = url.toString();
+                } else {
+                    window.location.href = returnTo;
+                }
             } else {
                 navigate('/'); // Redirect to Home
             }

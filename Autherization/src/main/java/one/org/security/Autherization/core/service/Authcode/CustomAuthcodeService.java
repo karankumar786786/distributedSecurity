@@ -79,6 +79,7 @@ public class CustomAuthcodeService implements OAuth2AuthorizationService {
         String codeChallenge = null;
         String codeChallengeMethod = null;
         String codeVerifier = null;
+        String nonce = null;
         org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest req = null;
 
         Object authRequest = authorization
@@ -98,6 +99,10 @@ public class CustomAuthcodeService implements OAuth2AuthorizationService {
             if (codeVerifier == null)
                 codeVerifier = (String) req.getAttribute("code_verifier");
 
+            nonce = (String) req.getAdditionalParameters().get("nonce");
+            if (nonce == null)
+                nonce = (String) req.getAttribute("nonce");
+
             if (codeChallenge != null) {
                 attributes.put("code_challenge", codeChallenge);
                 logToFile("toEntity: Promoted code_challenge: " + codeChallenge);
@@ -105,6 +110,10 @@ public class CustomAuthcodeService implements OAuth2AuthorizationService {
             if (codeChallengeMethod != null) {
                 attributes.put("code_challenge_method", codeChallengeMethod);
                 logToFile("toEntity: Promoted code_challenge_method: " + codeChallengeMethod);
+            }
+            if (nonce != null) {
+                attributes.put("nonce", nonce);
+                logToFile("toEntity: Promoted nonce: " + nonce);
             }
 
             logToFile("toEntity: Exhaustive AuthRequest Log:");
@@ -128,7 +137,8 @@ public class CustomAuthcodeService implements OAuth2AuthorizationService {
                 .clientState(req != null ? req.getState() : null)
                 .codeChallenge(codeChallenge)
                 .codeChallengeMethod(codeChallengeMethod)
-                .codeVerifier(codeVerifier);
+                .codeVerifier(codeVerifier)
+                .nonce(nonce);
 
         logToFile("toEntity: Tracking State: " + builder.build().getState());
         logToFile("toEntity: Client State: " + builder.build().getClientState());
@@ -210,6 +220,10 @@ public class CustomAuthcodeService implements OAuth2AuthorizationService {
                         if (entity.getCodeVerifier() != null) {
                             attrs.put("code_verifier", entity.getCodeVerifier());
                             logToFile("toObject: Forcing code_verifier from flat field: " + entity.getCodeVerifier());
+                        }
+                        if (entity.getNonce() != null) {
+                            attrs.put("nonce", entity.getNonce());
+                            logToFile("toObject: Forcing nonce from flat field: " + entity.getNonce());
                         }
 
                         if (attrs.containsKey(
