@@ -1,6 +1,8 @@
 package one.org.security.Autherization.api.controller.oauth2;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,6 +21,7 @@ import java.util.Base64;
  * Token Revocation Endpoint per RFC 7009
  * https://datatracker.ietf.org/doc/html/rfc7009
  */
+@Slf4j
 @RestController
 public class TokenRevocationController {
 
@@ -40,18 +43,17 @@ public class TokenRevocationController {
             @RequestParam(value = "token_type_hint", required = false) String tokenTypeHint,
             HttpServletRequest request) {
 
-        System.out.println("=== TOKEN REVOCATION REQUEST ===");
-        System.out.println("Token (first 20 chars): " + (token.length() > 20 ? token.substring(0, 20) + "..." : token));
-        System.out.println("Token type hint: " + tokenTypeHint);
+        log.debug("=== TOKEN REVOCATION REQUEST ===");
+        log.debug("Token type hint: {}", tokenTypeHint);
 
         // Validate client authentication (Basic auth or client_id/client_secret in
         // body)
         String clientId = extractClientId(request);
         if (clientId == null) {
-            System.out.println("ERROR: No client authentication provided");
+            log.warn("ERROR: No client authentication provided");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        System.out.println("Client ID: " + clientId);
+        log.debug("Client ID: {}", clientId);
 
         // Try to find the authorization by token
         OAuth2Authorization authorization = null;
@@ -73,21 +75,35 @@ public class TokenRevocationController {
         if (authorization != null) {
             // Verify the token belongs to the requesting client (security check)
             String authClientId = authorization.getRegisteredClientId();
-            // In a full implementation, you would look up the client by authClientId
-            // and compare with the authenticated client. For now, we log and proceed.
-            System.out.println("Found authorization: " + authorization.getId() + " for client: " + authClientId);
-            System.out.println("Removing authorization...");
+
+            if (!authClientId.equals(clientId)) {
+                log.warn("Revocation attempt failed: Client ID mismatch. Requester: {}, Token Owner: {}", clientId,
+                        authClientId);
+                // Return 200 OK to avoid leaking information about token existence/ownership
+                // per RFC 7009?
+                // Or 403? RFC 7009 says: "The authorization server ... returns a 200 OK status
+                // code if the token was successfully revoked or if the token is invalid."
+                // However, if the client is not authorized to revoke the token (ownership
+                // mismatch),
+                // returning 200 OK without revoking might be misleading, but safer.
+                // But returning 403 is more explicit about the permission error.
+                // Let's stick to 403 for ownership mismatch to be safe internally.
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            log.debug("Found authorization: {} for client: {}", authorization.getId(), authClientId);
+            log.debug("Removing authorization...");
 
             // Remove the entire authorization (revokes all tokens)
             authorizationService.remove(authorization);
 
-            System.out.println("Token revoked successfully");
+            log.info("Token revoked successfully for client: {}", clientId);
         } else {
             // Per RFC 7009: Return 200 OK even if token was not found
-            System.out.println("Token not found (may already be revoked or invalid)");
+            log.debug("Token not found (may already be revoked or invalid)");
         }
 
-        System.out.println("=== TOKEN REVOCATION COMPLETE ===");
+        log.debug("=== TOKEN REVOCATION COMPLETE ===");
 
         // Always return 200 OK per RFC 7009
         return ResponseEntity.ok().build();
@@ -108,7 +124,7 @@ public class TokenRevocationController {
                     return parts[0];
                 }
             } catch (Exception e) {
-                System.out.println("Failed to parse Basic auth: " + e.getMessage());
+                log.error("Failed to parse Basic auth: {}", e.getMessage());
             }
         }
 

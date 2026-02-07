@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 public class FidoCompleteRegisterRequestDTO {
-    @NotBlank
+    @NotBlank(message = "FIDO response cannot be blank")
     private String response; // The JSON response from the authenticator
 }

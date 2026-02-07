@@ -1,7 +1,7 @@
 package one.org.security.Autherization.api.controller;
 
 import java.util.List;
-import java.util.UUID;
+
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,12 @@ public class ClientController {
     public ResponseEntity<CreateClientResponseDTO> createClient(
             @RequestBody @Validated CreateClientRequestDTO request,
             @AuthenticationPrincipal UserMockEntity user) {
-        String clientSecret = UUID.randomUUID().toString().replaceAll("\\-", "");
+
+        java.security.SecureRandom secureRandom = new java.security.SecureRandom();
+        byte[] randomBytes = new byte[32];
+        secureRandom.nextBytes(randomBytes);
+        String clientSecret = java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
+
         ClientEntity client = ClientEntity.builder()
                 .clientId(request.clientId())
                 .hashedClientSecretHmac(customEncodingService.encode(clientSecret))
@@ -50,7 +55,6 @@ public class ClientController {
                 .writeAllowed(request.write())
                 .allowPersonalData(request.personalDataAccess())
                 .allowProfile(request.profile())
-                .writeAllowed(request.write())
                 .showConsentForm(true)
                 .build();
         clientService.saveClient(client);

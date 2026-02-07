@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 public class FidoCompleteLoginRequestDTO {
 
-    @NotBlank
+    @NotBlank(message = "FIDO response cannot be blank")
     private String response;
 }

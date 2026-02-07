@@ -10,7 +10,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class LoggingFilter extends OncePerRequestFilter {
 
@@ -23,31 +25,31 @@ public class LoggingFilter extends OncePerRequestFilter {
             return;
         }
 
-        System.out.println("================= REQUEST START =================");
-        System.out.println("URI: " + request.getRequestURI());
-        System.out.println("Method: " + request.getMethod());
-        System.out.println("Query: " + request.getQueryString());
+        log.debug("================= REQUEST START =================");
+        log.debug("URI: {}", request.getRequestURI());
+        log.debug("Method: {}", request.getMethod());
+        log.debug("Query: {}", request.getQueryString());
 
-        System.out.println("--- Headers ---");
+        log.debug("--- Headers ---");
         Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
-            System.out.println(headerName + ": " + request.getHeader(headerName));
+            log.trace("{}: {}", headerName, request.getHeader(headerName));
         }
 
-        System.out.println("--- Parameters ---");
+        log.debug("--- Parameters ---");
         request.getParameterMap().forEach((k, v) -> {
-            System.out.println(k + ": " + String.join(",", v));
+            log.debug("{}: {}", k, String.join(",", v));
         });
-        System.out.println("=================================================");
+        log.debug("=================================================");
 
         try {
             filterChain.doFilter(request, response);
         } finally {
-            System.out.println("================= RESPONSE END =================");
-            System.out.println("Status: " + response.getStatus());
-            System.out.println("Location: " + response.getHeader("Location"));
-            System.out.println("=================================================");
+            log.debug("================= RESPONSE END =================");
+            log.debug("Status: {}", response.getStatus());
+            log.debug("Location: {}", response.getHeader("Location"));
+            log.debug("=================================================");
         }
     }
 }

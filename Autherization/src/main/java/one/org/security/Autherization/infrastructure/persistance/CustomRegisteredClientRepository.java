@@ -3,6 +3,7 @@ package one.org.security.Autherization.infrastructure.persistance;
 import java.time.Duration;
 
 import org.bson.types.ObjectId;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
@@ -14,11 +15,12 @@ import org.springframework.security.oauth2.server.authorization.settings.TokenSe
 import one.org.security.Autherization.core.domain.entity.ClientEntity;
 import one.org.security.Autherization.core.service.Client.ClientService;
 
+@Slf4j
 public class CustomRegisteredClientRepository implements RegisteredClientRepository {
 
     public CustomRegisteredClientRepository(ClientService clientService) {
         this.clientService = clientService;
-        System.out.println("DEBUG: CustomRegisteredClientRepository INSTANTIATED (Manual Bean)");
+        log.debug("DEBUG: CustomRegisteredClientRepository INSTANTIATED (Manual Bean)");
     }
 
     private final ClientService clientService;
@@ -36,7 +38,7 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
 
     @Override
     public RegisteredClient findByClientId(String clientId) {
-        System.out.println("DEBUG: CustomRegisteredClientRepository.findByClientId CALLED for " + clientId);
+        log.debug("DEBUG: CustomRegisteredClientRepository.findByClientId CALLED for {}", clientId);
         try {
             ClientEntity client = clientService.findByClientId(clientId);
             if (client == null) {

@@ -1,6 +1,7 @@
 package one.org.security.Autherization.infrastructure.security.converter;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import one.org.security.Autherization.core.domain.entity.UserMockEntity;
 import one.org.security.common.Jwt.JwtDTO;
 import one.org.security.common.Jwt.JwtService;
@@ -15,6 +16,7 @@ import org.springframework.security.web.authentication.AuthenticationConverter;
  * JWT-only authentication converter for OAuth2 authorization code requests.
  * Reads JWT from Authorization header - no cookies.
  */
+@Slf4j
 public class SessionAwareAuthorizationCodeRequestAuthenticationConverter implements AuthenticationConverter {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
@@ -47,7 +49,7 @@ public class SessionAwareAuthorizationCodeRequestAuthenticationConverter impleme
 
         String authHeader = request.getHeader(AUTHORIZATION_HEADER);
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
-            System.out.println("DEBUG: SessionAwareConverter - No JWT token in Authorization header");
+            log.debug("DEBUG: SessionAwareConverter - No JWT token in Authorization header");
             return;
         }
 
@@ -67,7 +69,7 @@ public class SessionAwareAuthorizationCodeRequestAuthenticationConverter impleme
         }
 
         if (jwtDTO == null) {
-            System.out.println("DEBUG: SessionAwareConverter - JWT validation failed");
+            log.debug("DEBUG: SessionAwareConverter - JWT validation failed");
             return;
         }
 
@@ -80,6 +82,6 @@ public class SessionAwareAuthorizationCodeRequestAuthenticationConverter impleme
                 user, null, user.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        System.out.println("DEBUG: SessionAwareConverter - JWT authentication restored for user: " + jwtDTO.username());
+        log.debug("DEBUG: SessionAwareConverter - JWT authentication restored for user: {}", jwtDTO.username());
     }
 }

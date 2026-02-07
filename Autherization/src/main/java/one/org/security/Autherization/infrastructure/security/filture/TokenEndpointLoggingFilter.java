@@ -1,8 +1,5 @@
 package one.org.security.Autherization.infrastructure.security.filture;
 
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.time.LocalDateTime;
 import java.io.IOException;
 
 import org.springframework.stereotype.Component;
@@ -13,7 +10,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class TokenEndpointLoggingFilter extends OncePerRequestFilter {
 
@@ -24,8 +23,7 @@ public class TokenEndpointLoggingFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
         String method = request.getMethod();
 
-        logToFileSync(
-                "FILTER: Entering - " + method + " " + requestURI + " (State: " + request.getParameter("state") + ")");
+        log.debug("FILTER: Entering - {} {} (State: {})", method, requestURI, request.getParameter("state"));
 
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
 
@@ -36,24 +34,16 @@ public class TokenEndpointLoggingFilter extends OncePerRequestFilter {
             String location = responseWrapper.getHeader("Location");
 
             if (status == 302 && location != null) {
-                logToFileSync("FILTER: Redirecting to: " + location);
+                log.debug("FILTER: Redirecting to: {}", location);
             }
 
             if (requestURI.equals("/oauth2/token")) {
-                logToFileSync("=== TOKEN ENDPOINT RESPONSE ===");
-                logToFileSync("Status: " + status);
-                logToFileSync("===============================");
+                log.info("=== TOKEN ENDPOINT RESPONSE ===");
+                log.info("Status: {}", status);
+                log.info("===============================");
             }
 
             responseWrapper.copyBodyToResponse();
-        }
-    }
-
-    private void logToFileSync(String message) {
-        try (FileWriter fw = new FileWriter("/Users/rahulgupta/Desktop/distributedSecurity/AuthDebug.txt", true);
-                PrintWriter pw = new PrintWriter(fw)) {
-            pw.println(LocalDateTime.now() + " - " + message);
-        } catch (Exception e) {
         }
     }
 }

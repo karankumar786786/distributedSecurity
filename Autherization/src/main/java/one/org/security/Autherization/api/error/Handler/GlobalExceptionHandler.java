@@ -16,24 +16,37 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import lombok.extern.slf4j.Slf4j;
+import one.org.security.Autherization.api.error.CustomError.AuthorizationNotFoundException;
 import one.org.security.Autherization.api.error.CustomError.ClientNotFoundException;
 import one.org.security.Autherization.api.error.StandardErrorApiResponse;
 
+@Slf4j
 @RestControllerAdvice(basePackages = "one.org.security.Autherization.api")
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ClientNotFoundException.class)
     public ResponseEntity<StandardErrorApiResponse> handleClientNotFoundException(ClientNotFoundException ex) {
+        log.warn("Client not found: {}", ex.getMessage());
+        return build(HttpStatus.NOT_FOUND, ex.getMessage(), null);
+    }
+
+    @ExceptionHandler(AuthorizationNotFoundException.class)
+    public ResponseEntity<StandardErrorApiResponse> handleAuthorizationNotFoundException(
+            AuthorizationNotFoundException ex) {
+        log.warn("Authorization not found: {}", ex.getMessage());
         return build(HttpStatus.NOT_FOUND, ex.getMessage(), null);
     }
 
     @ExceptionHandler(SecurityException.class)
     public ResponseEntity<StandardErrorApiResponse> handleSecurityException(SecurityException ex) {
+        log.warn("Security exception: {}", ex.getMessage());
         return build(HttpStatus.FORBIDDEN, ex.getMessage(), null);
     }
 
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<StandardErrorApiResponse> handleDuplicateKeyException(DuplicateKeyException ex) {
+        log.warn("Duplicate key: {}", ex.getMessage());
         return build(HttpStatus.CONFLICT, ex.getMessage(), null);
     }
 
@@ -45,6 +58,7 @@ public class GlobalExceptionHandler {
                 .stream()
                 .map(error -> error.getDefaultMessage())
                 .collect(java.util.stream.Collectors.toList());
+        log.debug("Validation error: {}", details);
         return build(HttpStatus.BAD_REQUEST, "Validation Error", details);
     }
 
@@ -63,6 +77,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<StandardErrorApiResponse> handleHttpMessageNotReadableException(
             HttpMessageNotReadableException ex) {
+        log.warn("Malformed JSON request: {}", ex.getMessage());
         return build(HttpStatus.BAD_REQUEST, "Malformed JSON request", List.of(ex.getMessage()));
     }
 
@@ -84,20 +99,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<StandardErrorApiResponse> handleAccessDeniedException(
             AccessDeniedException ex) {
-        return build(HttpStatus.FORBIDDEN, "Access Denied", List.of(ex.getMessage()));
+        log.warn("Access denied: {}", ex.getMessage());
+        return build(HttpStatus.FORBIDDEN, "Access Denied", List.of("Access denied"));
     }
 
     @ExceptionHandler(NoSuchMethodError.class)
     public ResponseEntity<StandardErrorApiResponse> handleNoSuchMethodError(NoSuchMethodError ex) {
-        ex.printStackTrace();
-        return build(HttpStatus.INTERNAL_SERVER_ERROR, "Method Not Found Error: " + ex.getMessage(),
-                List.of(ex.toString()));
+        log.error("Method Not Found Error: {}", ex.getMessage(), ex);
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", null);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<StandardErrorApiResponse> handleGenericException(Exception ex) {
-        // ex.printStackTrace(); // Log the error ideally
-        return build(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", List.of(ex.getMessage()));
+        log.error("Unexpected error: {}", ex.getMessage(), ex);
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", null);
     }
 
     private ResponseEntity<StandardErrorApiResponse> build(

@@ -1,6 +1,8 @@
 package one.org.security.Autherization.api.controller.oauth2;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,11 +18,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import one.org.security.Autherization.core.util.OAuth2Utils;
+import org.springframework.security.oauth2.core.endpoint.PkceParameterNames;
+
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+@Slf4j
 @Controller
 public class ConsentProcessController {
 
@@ -42,33 +49,31 @@ public class ConsentProcessController {
             @RequestParam(value = OAuth2ParameterNames.SCOPE, required = false) String[] scopes,
             HttpServletRequest request) {
 
-        System.out.println("==============================================");
-        System.out.println("DEBUG: ConsentProcessController - Processing consent");
-        System.out.println("DEBUG: client_id: " + clientId);
-        System.out.println("DEBUG: state: " + state);
-        System.out.println("DEBUG: user_oauth_approval: " + userApproval);
-        System.out.println("DEBUG: scopes: " + (scopes != null ? String.join(", ", scopes) : "null"));
-        System.out.println("==============================================");
+        log.debug("DEBUG: ConsentProcessController - Processing consent");
+        log.debug("DEBUG: client_id: {}", clientId);
+        log.debug("DEBUG: state: {}", state);
+        log.debug("DEBUG: user_oauth_approval: {}", userApproval);
+        log.debug("DEBUG: scopes: {}", (scopes != null ? String.join(", ", scopes) : "null"));
 
         // Check if user denied
         if (!"true".equals(userApproval)) {
-            System.out.println("DEBUG: User denied consent");
+            log.warn("DEBUG: User denied consent");
             return "redirect:" + redirectUri + "?error=access_denied&state=" + state;
         }
 
         // Get authenticated user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
-            System.out.println("DEBUG: User not authenticated");
+            log.warn("DEBUG: User not authenticated");
             return "redirect:" + redirectUri + "?error=access_denied&state=" + state;
         }
 
-        System.out.println("DEBUG: Authenticated user: " + authentication.getName());
+        log.debug("DEBUG: Authenticated user: {}", authentication.getName());
 
         // Get registered client
         RegisteredClient registeredClient = registeredClientRepository.findByClientId(clientId);
         if (registeredClient == null) {
-            System.out.println("DEBUG: Client not found: " + clientId);
+            log.error("DEBUG: Client not found: {}", clientId);
             return "redirect:" + redirectUri + "?error=invalid_client&state=" + state;
         }
 
@@ -80,17 +85,17 @@ public class ConsentProcessController {
             }
         }
 
-        System.out.println("DEBUG: Approved scopes: " + approvedScopes);
+        log.debug("DEBUG: Approved scopes: {}", approvedScopes);
 
         // Try to find existing authorization by state
         OAuth2Authorization existingAuth = authorizationService.findByToken(state, new OAuth2TokenType("state"));
 
         if (existingAuth == null) {
-            System.out.println("DEBUG: No existing authorization found for state: " + state);
+            log.warn("DEBUG: No existing authorization found for state: {}", state);
             return "redirect:" + redirectUri + "?error=invalid_request&state=" + state;
         }
 
-        System.out.println("DEBUG: Found existing authorization: " + existingAuth.getId());
+        log.debug("DEBUG: Found existing authorization: {}", existingAuth.getId());
 
         // Recover missing parameters from the saved authorization request if needed
         org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest authorizationRequest = existingAuth
@@ -105,21 +110,21 @@ public class ConsentProcessController {
             if (responseType == null)
                 responseType = authorizationRequest.getResponseType().getValue();
 
+            Map<String, String> pkceParams = OAuth2Utils.extractPkceParameters(existingAuth);
             if (codeChallenge == null) {
-                codeChallenge = (String) authorizationRequest.getAdditionalParameters().get("code_challenge");
+                codeChallenge = pkceParams.get(PkceParameterNames.CODE_CHALLENGE);
             }
             if (codeChallengeMethod == null) {
-                codeChallengeMethod = (String) authorizationRequest.getAdditionalParameters()
-                        .get("code_challenge_method");
+                codeChallengeMethod = pkceParams.get(PkceParameterNames.CODE_CHALLENGE_METHOD);
             }
 
-            System.out.println("DEBUG: Recovered parameters from Authorization:");
-            System.out.println("DEBUG: Recovered client_id: " + clientId);
-            System.out.println("DEBUG: Recovered redirect_uri: " + redirectUri);
+            log.debug("DEBUG: Recovered parameters from Authorization");
+            log.debug("DEBUG: Recovered client_id: {}", clientId);
+            log.debug("DEBUG: Recovered redirect_uri: {}", redirectUri);
         }
 
         if (redirectUri == null) {
-            System.out.println("DEBUG: ERROR - Missing redirect_uri and could not recover from Authorization");
+            log.error("DEBUG: ERROR - Missing redirect_uri and could not recover from Authorization");
             return "error"; // Should probably have a better error page
         }
 
@@ -130,7 +135,7 @@ public class ConsentProcessController {
                 Instant.now().plusSeconds(300) // 5 minutes
         );
 
-        System.out.println("DEBUG: Generated authorization code: " + authorizationCode.getTokenValue());
+        log.debug("DEBUG: Generated authorization code: {}", authorizationCode.getTokenValue());
 
         // Update authorization with the code and approved scopes
         OAuth2Authorization updatedAuth = OAuth2Authorization.from(existingAuth)
@@ -139,7 +144,7 @@ public class ConsentProcessController {
                 .build();
 
         authorizationService.save(updatedAuth);
-        System.out.println("DEBUG: Saved authorization with code");
+        log.info("DEBUG: Saved authorization with code");
 
         // Use the original client state for the redirect back to the client
         String finalState = (String) existingAuth.getAttribute("client_state");
@@ -154,8 +159,7 @@ public class ConsentProcessController {
                 .build()
                 .toUriString();
 
-        System.out.println("DEBUG: Redirecting to: " + redirectUrl);
-        System.out.println("==============================================");
+        log.info("DEBUG: Redirecting to: {}", redirectUrl);
 
         return "redirect:" + redirectUrl;
     }

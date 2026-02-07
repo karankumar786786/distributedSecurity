@@ -101,7 +101,7 @@ public class SecurityConfig {
                                 })
                                 .authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
                                 .sessionManagement(session -> session
-                                                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // Changed to
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Changed to
                                                                                                            // IF_REQUIRED
                                                                                                            // for OAuth2
                                                                                                            // flow

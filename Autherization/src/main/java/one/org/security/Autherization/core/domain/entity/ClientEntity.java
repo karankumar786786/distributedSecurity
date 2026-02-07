@@ -1,5 +1,6 @@
 package one.org.security.Autherization.core.domain.entity;
 
+import java.io.Serializable;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -9,12 +10,16 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Document(collection = "client")
 @Data
 @Builder
 @AllArgsConstructor
-public class ClientEntity {
+@NoArgsConstructor
+public class ClientEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @Id
     private ObjectId id;
     private ObjectId userId;

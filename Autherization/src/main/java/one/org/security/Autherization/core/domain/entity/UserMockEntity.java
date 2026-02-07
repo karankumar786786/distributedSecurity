@@ -9,12 +9,14 @@ import org.springframework.security.core.GrantedAuthority;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Builder
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class UserMockEntity implements UserDetails {
     private static final long serialVersionUID = 1L;
     private ObjectId id;
