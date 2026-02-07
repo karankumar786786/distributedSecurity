@@ -11,10 +11,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2AuthorizationCodeRequestAuthenticationConverter;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * JWT-only authentication converter for OAuth2 authorization code requests.
  * Reads JWT from Authorization header - no cookies.
  */
+@Slf4j
 public class SessionAwareAuthorizationCodeRequestAuthenticationConverter implements AuthenticationConverter {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
@@ -47,7 +50,7 @@ public class SessionAwareAuthorizationCodeRequestAuthenticationConverter impleme
 
         String authHeader = request.getHeader(AUTHORIZATION_HEADER);
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
-            System.out.println("DEBUG: SessionAwareConverter - No JWT token in Authorization header");
+            log.debug("SessionAwareConverter - No JWT token in Authorization header");
             return;
         }
 
@@ -67,7 +70,7 @@ public class SessionAwareAuthorizationCodeRequestAuthenticationConverter impleme
         }
 
         if (jwtDTO == null) {
-            System.out.println("DEBUG: SessionAwareConverter - JWT validation failed");
+            log.debug("SessionAwareConverter - JWT validation failed");
             return;
         }
 
@@ -80,6 +83,6 @@ public class SessionAwareAuthorizationCodeRequestAuthenticationConverter impleme
                 user, null, user.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        System.out.println("DEBUG: SessionAwareConverter - JWT authentication restored for user: " + jwtDTO.username());
+        log.debug("SessionAwareConverter - JWT authentication restored for user: {}", jwtDTO.username());
     }
 }

@@ -8,7 +8,9 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class LoggingAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private final String loginFormUrl;
@@ -20,8 +22,8 @@ public class LoggingAuthenticationEntryPoint implements AuthenticationEntryPoint
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException authException) throws IOException, ServletException {
-        System.out.println("DEBUG: LoggingAuthenticationEntryPoint - Commencing redirect due to exception: "
-                + authException.getMessage());
+        log.debug("LoggingAuthenticationEntryPoint - Commencing redirect due to exception: {}",
+                authException.getMessage());
 
         String queryString = request.getQueryString();
         String currentUrl = request.getRequestURL().toString() + (queryString == null ? "" : "?" + queryString);

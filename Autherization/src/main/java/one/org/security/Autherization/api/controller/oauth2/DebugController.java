@@ -1,6 +1,7 @@
 package one.org.security.Autherization.api.controller.oauth2;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
@@ -12,12 +13,16 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 @RestController
+@Profile("dev")
+@Slf4j
 public class DebugController {
 
     @Autowired
@@ -116,7 +121,7 @@ public class DebugController {
 
         } catch (Exception e) {
             results.put("error", e.getMessage());
-            e.printStackTrace();
+            log.error("Error in debug controller", e);
         }
         return results;
     }

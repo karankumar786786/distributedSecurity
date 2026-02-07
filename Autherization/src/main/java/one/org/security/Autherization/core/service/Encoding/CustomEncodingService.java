@@ -5,8 +5,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
 @Primary
+@Slf4j
 public class CustomEncodingService implements PasswordEncoder {
 
     @Autowired
@@ -14,7 +17,7 @@ public class CustomEncodingService implements PasswordEncoder {
 
     @Override
     public String encode(CharSequence rawPassword) {
-        System.out.println("CustomEncodingService: encode called for " + rawPassword);
+        log.trace("CustomEncodingService: encode called");
         if (rawPassword == null) {
             return null;
         }
@@ -23,13 +26,12 @@ public class CustomEncodingService implements PasswordEncoder {
 
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        System.out.println(
-                "CustomEncodingService: matches called. Raw: " + rawPassword + ", Encoded: " + encodedPassword);
+        log.trace("CustomEncodingService: matches called");
         if (rawPassword == null || encodedPassword == null) {
             return false;
         }
         boolean result = hmacEncodingService.verify(encodedPassword, rawPassword.toString());
-        System.out.println("CustomEncodingService: matches result: " + result);
+        log.trace("CustomEncodingService: matches result: {}", result);
         return result;
     }
 }

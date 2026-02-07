@@ -11,14 +11,16 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 
+import lombok.extern.slf4j.Slf4j;
 import one.org.security.Autherization.core.domain.entity.ClientEntity;
 import one.org.security.Autherization.core.service.Client.ClientService;
 
+@Slf4j
 public class CustomRegisteredClientRepository implements RegisteredClientRepository {
 
     public CustomRegisteredClientRepository(ClientService clientService) {
         this.clientService = clientService;
-        System.out.println("DEBUG: CustomRegisteredClientRepository INSTANTIATED (Manual Bean)");
+        log.debug("CustomRegisteredClientRepository INSTANTIATED (Manual Bean)");
     }
 
     private final ClientService clientService;
@@ -36,7 +38,7 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
 
     @Override
     public RegisteredClient findByClientId(String clientId) {
-        System.out.println("DEBUG: CustomRegisteredClientRepository.findByClientId CALLED for " + clientId);
+        log.debug("CustomRegisteredClientRepository.findByClientId CALLED for {}", clientId);
         try {
             ClientEntity client = clientService.findByClientId(clientId);
             if (client == null) {
@@ -45,7 +47,7 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
             return toRegisteredClient(client);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error finding client by clientId: {}", clientId, e);
             return null;
         }
     }

@@ -1,6 +1,8 @@
 package one.org.security.Autherization.api.controller.oauth2;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,6 +22,7 @@ import java.util.Base64;
  * https://datatracker.ietf.org/doc/html/rfc7009
  */
 @RestController
+@Slf4j
 public class TokenRevocationController {
 
     @Autowired
@@ -40,18 +43,15 @@ public class TokenRevocationController {
             @RequestParam(value = "token_type_hint", required = false) String tokenTypeHint,
             HttpServletRequest request) {
 
-        System.out.println("=== TOKEN REVOCATION REQUEST ===");
-        System.out.println("Token (first 20 chars): " + (token.length() > 20 ? token.substring(0, 20) + "..." : token));
-        System.out.println("Token type hint: " + tokenTypeHint);
+        log.debug("Token revocation request received. TokenTypeHint: {}", tokenTypeHint);
 
         // Validate client authentication (Basic auth or client_id/client_secret in
         // body)
         String clientId = extractClientId(request);
         if (clientId == null) {
-            System.out.println("ERROR: No client authentication provided");
+            log.warn("Revocation failed: No client authentication provided");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        System.out.println("Client ID: " + clientId);
 
         // Try to find the authorization by token
         OAuth2Authorization authorization = null;
@@ -73,21 +73,30 @@ public class TokenRevocationController {
         if (authorization != null) {
             // Verify the token belongs to the requesting client (security check)
             String authClientId = authorization.getRegisteredClientId();
-            // In a full implementation, you would look up the client by authClientId
-            // and compare with the authenticated client. For now, we log and proceed.
-            System.out.println("Found authorization: " + authorization.getId() + " for client: " + authClientId);
-            System.out.println("Removing authorization...");
+
+            if (!clientId.equals(authClientId)) {
+                log.warn("Revocation attempt failed: Client {} tried to revoke token belonging to {}", clientId,
+                        authClientId);
+                // RFC 7009 says we can return 200 if token is invalid, but if it's a permission
+                // issue, maybe 403?
+                // However, to prevent leakage, giving 200 or 401/403 is debated.
+                // RFC 7009 Section 2.2: "The authorization server responses ... 200 OK if the
+                // token was revoked successfully or if the client submitted an invalid token"
+                // Strict ownership check implies if I don't own it, it's "invalid" for me.
+                // So logging warn and returning 200 is compliant and safe (prevents probing).
+                return ResponseEntity.ok().build();
+            }
+
+            log.debug("Found authorization: {} for client: {}. Revoking...", authorization.getId(), authClientId);
 
             // Remove the entire authorization (revokes all tokens)
             authorizationService.remove(authorization);
 
-            System.out.println("Token revoked successfully");
+            log.info("Token revoked successfully by client {}", clientId);
         } else {
             // Per RFC 7009: Return 200 OK even if token was not found
-            System.out.println("Token not found (may already be revoked or invalid)");
+            log.debug("Token not found (may already be revoked or invalid)");
         }
-
-        System.out.println("=== TOKEN REVOCATION COMPLETE ===");
 
         // Always return 200 OK per RFC 7009
         return ResponseEntity.ok().build();
@@ -108,7 +117,7 @@ public class TokenRevocationController {
                     return parts[0];
                 }
             } catch (Exception e) {
-                System.out.println("Failed to parse Basic auth: " + e.getMessage());
+                log.error("Failed to parse Basic auth", e);
             }
         }
 

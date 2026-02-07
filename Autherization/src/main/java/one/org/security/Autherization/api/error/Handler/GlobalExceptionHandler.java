@@ -3,6 +3,7 @@ package one.org.security.Autherization.api.error.Handler;
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -16,25 +17,30 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import lombok.extern.slf4j.Slf4j;
 import one.org.security.Autherization.api.error.CustomError.ClientNotFoundException;
 import one.org.security.Autherization.api.error.StandardErrorApiResponse;
 
 @RestControllerAdvice(basePackages = "one.org.security.Autherization.api")
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ClientNotFoundException.class)
     public ResponseEntity<StandardErrorApiResponse> handleClientNotFoundException(ClientNotFoundException ex) {
-        return build(HttpStatus.NOT_FOUND, ex.getMessage(), null);
+        log.warn("Client not found: {}", ex.getMessage());
+        return build(HttpStatus.NOT_FOUND, "Client not found", null);
     }
 
     @ExceptionHandler(SecurityException.class)
     public ResponseEntity<StandardErrorApiResponse> handleSecurityException(SecurityException ex) {
-        return build(HttpStatus.FORBIDDEN, ex.getMessage(), null);
+        log.warn("Security exception: {}", ex.getMessage());
+        return build(HttpStatus.FORBIDDEN, "Access Denied", null);
     }
 
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<StandardErrorApiResponse> handleDuplicateKeyException(DuplicateKeyException ex) {
-        return build(HttpStatus.CONFLICT, ex.getMessage(), null);
+        log.warn("Duplicate key exception", ex);
+        return build(HttpStatus.CONFLICT, "Resource already exists", null);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -44,60 +50,58 @@ public class GlobalExceptionHandler {
                 .getAllErrors()
                 .stream()
                 .map(error -> error.getDefaultMessage())
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
         return build(HttpStatus.BAD_REQUEST, "Validation Error", details);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<StandardErrorApiResponse> handleHttpRequestMethodNotSupportedException(
             HttpRequestMethodNotSupportedException ex) {
-        return build(HttpStatus.METHOD_NOT_ALLOWED, ex.getMessage(), null);
+        return build(HttpStatus.METHOD_NOT_ALLOWED, "Request method '" + ex.getMethod() + "' not supported", null);
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<StandardErrorApiResponse> handleHttpMediaTypeNotSupportedException(
             HttpMediaTypeNotSupportedException ex) {
-        return build(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ex.getMessage(), null);
+        return build(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Content type not supported", null);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<StandardErrorApiResponse> handleHttpMessageNotReadableException(
             HttpMessageNotReadableException ex) {
-        return build(HttpStatus.BAD_REQUEST, "Malformed JSON request", List.of(ex.getMessage()));
+        log.warn("Malformed JSON request: {}", ex.getMessage());
+        return build(HttpStatus.BAD_REQUEST, "Malformed JSON request", null);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<StandardErrorApiResponse> handleMethodArgumentTypeMismatchException(
             MethodArgumentTypeMismatchException ex) {
-        return build(HttpStatus.BAD_REQUEST,
-                String.format("The parameter '%s' of value '%s' could not be converted to type '%s'", ex.getName(),
-                        ex.getValue(), ex.getRequiredType().getSimpleName()),
-                null);
+        return build(HttpStatus.BAD_REQUEST, "Invalid parameter type", null);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<StandardErrorApiResponse> handleMissingServletRequestParameterException(
             MissingServletRequestParameterException ex) {
-        return build(HttpStatus.BAD_REQUEST, ex.getMessage(), null);
+        return build(HttpStatus.BAD_REQUEST, "Missing required parameter: " + ex.getParameterName(), null);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<StandardErrorApiResponse> handleAccessDeniedException(
             AccessDeniedException ex) {
-        return build(HttpStatus.FORBIDDEN, "Access Denied", List.of(ex.getMessage()));
+        log.warn("Access denied: {}", ex.getMessage());
+        return build(HttpStatus.FORBIDDEN, "Access Denied", null);
     }
 
     @ExceptionHandler(NoSuchMethodError.class)
     public ResponseEntity<StandardErrorApiResponse> handleNoSuchMethodError(NoSuchMethodError ex) {
-        ex.printStackTrace();
-        return build(HttpStatus.INTERNAL_SERVER_ERROR, "Method Not Found Error: " + ex.getMessage(),
-                List.of(ex.toString()));
+        log.error("NoSuchMethodError occurred", ex);
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", null);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<StandardErrorApiResponse> handleGenericException(Exception ex) {
-        // ex.printStackTrace(); // Log the error ideally
-        return build(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", List.of(ex.getMessage()));
+        log.error("Unhandled exception occurred", ex);
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", null);
     }
 
     private ResponseEntity<StandardErrorApiResponse> build(

@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 @RequestMapping("/account")
 public class AccountController {
 
+
     @Autowired
     private UserAccountService userAccountService;
 
@@ -54,8 +55,14 @@ public class AccountController {
             @AuthenticationPrincipal User user,
             @RequestAttribute("IP-ADDRESS") String ipAddress,
             @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
+
+        /**
+         * This checks user exist from userId if user dont exist thows error
+         */
         User userFromDb = userService.getUserById(user.getId());
+        // creating hmac from raw device bind
         HmacDTO hash = hmacService.encode(rawDeviceBind);
+        // this service will change password if all is ok then
         userAccountService.changePassword(request, userFromDb, ipAddress, hash.signature(), hash.keyId());
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
@@ -66,8 +73,11 @@ public class AccountController {
             @AuthenticationPrincipal User user,
             @RequestAttribute("IP-ADDRESS") String ipAddress,
             @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
+                // similarly check in db with userid throws error if user not found then
         User userFromDb = userService.getUserById(user.getId());
+        // creating device hash from the raw device bind
         HmacDTO hash = hmacService.encode(rawDeviceBind);
+        // change backup email if everything is ok then
         userAccountService.changeBackupEmail(request, userFromDb, hash.signature(), hash.keyId(), ipAddress);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
@@ -78,8 +88,11 @@ public class AccountController {
             @AuthenticationPrincipal User user,
             @RequestAttribute("IP-ADDRESS") String ipAddress,
             @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
+                // similarly check in db with userid throws error if user not found then
         User userFromDb = userService.getUserById(user.getId());
+        // creating device hash from the raw device bind
         HmacDTO hash = hmacService.encode(rawDeviceBind);
+        // change the phone number if all ok then 
         userAccountService.changePhoneNumber(request, userFromDb, hash.signature(), hash.keyId(), ipAddress);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
@@ -90,8 +103,11 @@ public class AccountController {
             @AuthenticationPrincipal User user,
             @RequestAttribute("IP-ADDRESS") String ipAddress,
             @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
+                // similarly check in db with userid throws error if user not found then
         User userFromDb = userService.getUserById(user.getId());
+         // creating device hash from the raw device bind
         HmacDTO hash = hmacService.encode(rawDeviceBind);
+        // verify backup email if everything is ok
         userAccountService.verifyBackupEmail(request, userFromDb, hash.signature(), hash.keyId(), ipAddress);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
@@ -102,8 +118,11 @@ public class AccountController {
             @AuthenticationPrincipal User user,
             @RequestAttribute("IP-ADDRESS") String ipAddress,
             @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
+            // similarly check in db with userid throws error if user not found then
         User userFromDb = userService.getUserById(user.getId());
+         // creating device hash from the raw device bind
         HmacDTO hash = hmacService.encode(rawDeviceBind);
+        // verify phone number if everything is ok
         userAccountService.verifyPhoneNumber(request, userFromDb, hash.signature(), hash.keyId(), ipAddress);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
@@ -113,8 +132,11 @@ public class AccountController {
             @AuthenticationPrincipal User user,
             @RequestAttribute("IP-ADDRESS") String ipAddress,
             @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
+                // similarly check in db with userid throws error if user not found then
         User userFromDb = userService.getUserById(user.getId());
+         // creating device hash from the raw device bind
         HmacDTO hash = hmacService.encode(rawDeviceBind);
+        // resend otp if everything is ok
         userAccountService.resendOtpForBackupEmail(userFromDb, hash.signature(), hash.keyId(), ipAddress);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
@@ -124,8 +146,11 @@ public class AccountController {
             @AuthenticationPrincipal User user,
             @RequestAttribute("IP-ADDRESS") String ipAddress,
             @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
+                // similarly check in db with userid throws error if user not found then
         User userFromDb = userService.getUserById(user.getId());
+         // creating device hash from the raw device bind
         HmacDTO hash = hmacService.encode(rawDeviceBind);
+        // resend otp if everything is ok
         userAccountService.resendOtpForPhoneNumber(userFromDb, hash.signature(), hash.keyId(), ipAddress);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
@@ -136,7 +161,9 @@ public class AccountController {
             @RequestAttribute("IP-ADDRESS") String ipAddress,
             @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind)
             throws JsonProcessingException {
+                // similarly check in db with userid throws error if user not found then
         User userFromDb = userService.getUserById(user.getId());
+        // this will create option to fido registration
         String response = fidoRegistrationService.initiateRegistration(userFromDb);
         return new ResponseEntity<>(new FidoInitResponseDTO(response), HttpStatus.OK);
     }
@@ -147,6 +174,7 @@ public class AccountController {
             @AuthenticationPrincipal User user,
             @RequestAttribute("IP-ADDRESS") String ipAddress,
             @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
+                // complete the fido registration
         fidoRegistrationService.finishRegistration(user.getId().toHexString(), request.getResponse());
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -156,7 +184,10 @@ public class AccountController {
             @AuthenticationPrincipal User user,
             @RequestAttribute("IP-ADDRESS") String ipAddress,
             @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
+                //  creating device hash from raw device bind
         HmacDTO hash = hmacService.encode(rawDeviceBind);
+
+                // delet account if everything is ok
         userAccountService.deleteAccount(user, ipAddress, hash.signature(), hash.keyId());
         // No cookie to clear - JWT is client-side only
         return ResponseEntity.accepted().build();
@@ -167,6 +198,7 @@ public class AccountController {
             @AuthenticationPrincipal User user,
             @RequestAttribute("IP-ADDRESS") String ipAddress,
             @RequestAttribute("RAW-DEVICE-BIND") String rawDeviceBind) {
+                //  creating device hash from raw device bind
         HmacDTO hash = hmacService.encode(rawDeviceBind);
         if (user != null) {
             userAccountService.logout(user, ipAddress, hash.signature(), hash.keyId());

@@ -13,7 +13,10 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Configuration
+@Slf4j
 public class ServerConfig {
 
     @Value("${oauth2.server.issuer}")
@@ -31,38 +34,34 @@ public class ServerConfig {
     public OAuth2TokenCustomizer<JwtEncodingContext> tokenCustomizer() {
         return context -> {
             try {
-                System.out
-                        .println("DEBUG: TokenCustomizer called for token type: " + context.getTokenType().getValue());
+                log.debug("TokenCustomizer called for token type: {}", context.getTokenType().getValue());
                 if (OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType())) {
                     Authentication principal = context.getPrincipal();
                     if (principal == null) {
-                        System.out.println("ERROR: TokenCustomizer Principal is NULL!");
+                        log.error("TokenCustomizer Principal is NULL!");
                         return;
                     }
-                    System.out.println("DEBUG: TokenCustomizer Principal class: " + principal.getClass().getName());
+                    log.debug("TokenCustomizer Principal class: {}", principal.getClass().getName());
 
                     Object principalObj = principal.getPrincipal();
 
                     if (principalObj == null) {
-                        System.out.println(
-                                "ERROR: TokenCustomizer Principal Object is NULL! Using Principal Name as sub.");
+                        log.error("TokenCustomizer Principal Object is NULL! Using Principal Name as sub.");
                         context.getClaims().claim("sub", principal.getName());
                     } else if (principalObj instanceof UserMockEntity user) {
-                        System.out.println("DEBUG: Principal is UserMockEntity. Username: " + user.getUsername());
+                        log.debug("Principal is UserMockEntity. Username: {}", user.getUsername());
                         context.getClaims().claim("sub", user.getUsername());
                     } else if (principalObj instanceof org.springframework.security.core.userdetails.UserDetails userDetails) {
-                        System.out.println("DEBUG: Principal is UserDetails. Username: " + userDetails.getUsername());
+                        log.debug("Principal is UserDetails. Username: {}", userDetails.getUsername());
                         context.getClaims().claim("sub", userDetails.getUsername());
                     } else {
-                        System.out.println("DEBUG: Principal is unknown type: " + principalObj.getClass().getName());
+                        log.debug("Principal is unknown type: {}", principalObj.getClass().getName());
                         context.getClaims().claim("sub", principal.getName());
                     }
                 }
-                System.out
-                        .println("DEBUG: Token Customizer finished for principal: " + context.getPrincipal().getName());
+                log.debug("Token Customizer finished for principal: {}", context.getPrincipal().getName());
             } catch (Exception e) {
-                System.out.println("ERROR: TokenCustomizer CRASHED: " + e.getMessage());
-                e.printStackTrace();
+                log.error("TokenCustomizer CRASHED", e);
                 throw e;
             }
         };
@@ -108,7 +107,7 @@ public class ServerConfig {
 
     private com.nimbusds.jose.jwk.RSAKey parseKey(KeyProperties.KeyInfo keyInfo, String label) {
         if (keyInfo == null || keyInfo.getPrivateKey() == null) {
-            System.out.println("WARNING: No key configuration found for " + label);
+            log.warn("WARNING: No key configuration found for {}", label);
             return null;
         }
 
@@ -123,14 +122,13 @@ public class ServerConfig {
                         .privateKey(rsaKey.toRSAPrivateKey())
                         .keyID(keyInfo.getKeyId())
                         .build();
-                System.out.println("SUCCESS: Loaded " + label + " RSA Key with ID: " + keyInfo.getKeyId());
+                log.info("SUCCESS: Loaded {} RSA Key with ID: {}", label, keyInfo.getKeyId());
                 return rsaKey;
             } else {
-                System.err.println("ERROR: Could not parse RSA Key for " + label);
+                log.error("ERROR: Could not parse RSA Key for {}", label);
             }
         } catch (Exception e) {
-            System.err.println("ERROR: Failed to parse " + label + " key: " + e.getMessage());
-            e.printStackTrace();
+            log.error("ERROR: Failed to parse {} key", label, e);
         }
         return null;
     }

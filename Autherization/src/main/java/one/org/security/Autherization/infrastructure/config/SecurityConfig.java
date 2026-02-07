@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 
+import lombok.extern.slf4j.Slf4j;
 import one.org.security.Autherization.infrastructure.security.filture.SessionFilture;
 import one.org.security.Autherization.infrastructure.security.filture.LoggingFilter;
 import one.org.security.Autherization.infrastructure.security.filture.TokenEndpointLoggingFilter;
@@ -28,6 +29,7 @@ import one.org.security.Autherization.core.service.Client.ClientService;
 
 @Configuration
 @EnableWebSecurity
+@Slf4j
 public class SecurityConfig {
 
         @Bean
@@ -65,21 +67,29 @@ public class SecurityConfig {
         @Order(1)
         public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http,
                         RegisteredClientRepository registeredClientRepository) throws Exception {
-                System.out.println("DEBUG: SecurityConfig Injected Repo: "
-                                + (registeredClientRepository != null ? registeredClientRepository.getClass().getName()
+                log.debug("SecurityConfig Injected Repo: {}",
+                                (registeredClientRepository != null ? registeredClientRepository.getClass().getName()
                                                 : "NULL"));
                 OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
-                // Redirect to Frontend Consent Page
-                authorizationServerConfigurer.authorizationEndpoint(
-                                authorizationEndpoint -> authorizationEndpoint
-                                                .consentPage("http://localhost:5173/oauth2/consent"));
+                // Configure custom handlers
+                authorizationServerConfigurer
+                                .clientAuthentication(clientAuthentication -> clientAuthentication
+                                                .errorResponseHandler(
+                                                                new one.org.security.Autherization.infrastructure.security.CustomAuthenticationFailureHandler()))
+                                .authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint
+                                                .consentPage("http://localhost:5173/oauth2/consent")
+                                                .errorResponseHandler(
+                                                                new one.org.security.Autherization.infrastructure.security.CustomAuthenticationFailureHandler()))
+                                .tokenEndpoint(tokenEndpoint -> tokenEndpoint
+                                                .errorResponseHandler(
+                                                                new one.org.security.Autherization.infrastructure.security.CustomAuthenticationFailureHandler()));
 
                 http
                                 .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
                                 .requestCache(cache -> cache.disable())
                                 .csrf(csrf -> csrf.disable()) // COMPLETELY DISABLE CSRF FOR STATELESS
                                 .with(authorizationServerConfigurer, (authorizationServer) -> {
-                                        System.out.println("DEBUG: Configuring Authorization Server Customizer");
+                                        log.debug("Configuring Authorization Server Customizer");
                                         authorizationServer.registeredClientRepository(registeredClientRepository);
                                         authorizationServer.oidc(oidc -> oidc
                                                         .providerConfigurationEndpoint(
@@ -109,7 +119,9 @@ public class SecurityConfig {
                                                 .defaultAuthenticationEntryPointFor(
                                                                 new one.org.security.Autherization.infrastructure.security.LoggingAuthenticationEntryPoint(
                                                                                 "http://localhost:5173/login"),
-                                                                new MediaTypeRequestMatcher(MediaType.TEXT_HTML)))
+                                                                new MediaTypeRequestMatcher(MediaType.TEXT_HTML))
+                                                .accessDeniedHandler(
+                                                                new one.org.security.Autherization.infrastructure.security.CustomAccessDeniedHandler()))
                                 // 3. IMPORTANT: Your filters must run here to provide the Principal during
                                 // /authorize
                                 // Rate limiting filter runs first
@@ -129,6 +141,11 @@ public class SecurityConfig {
         public SecurityFilterChain standardSecurityFilterChain(HttpSecurity http) throws Exception {
                 http
                                 .csrf(csrf -> csrf.disable())
+                                .headers(headers -> headers
+                                                .contentSecurityPolicy(csp -> csp
+                                                                .policyDirectives(
+                                                                                "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:;"))
+                                                .frameOptions(frame -> frame.deny()))
                                 .formLogin(org.springframework.security.config.Customizer.withDefaults()) // Enable
                                                                                                           // default
                                                                                                           // login page

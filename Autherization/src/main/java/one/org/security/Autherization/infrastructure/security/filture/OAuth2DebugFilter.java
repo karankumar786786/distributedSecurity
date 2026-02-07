@@ -4,10 +4,13 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Slf4j
 public class OAuth2DebugFilter extends OncePerRequestFilter {
 
     @Override
@@ -18,26 +21,26 @@ public class OAuth2DebugFilter extends OncePerRequestFilter {
         String method = request.getMethod();
 
         if (uri.contains("/oauth2/")) {
-            System.out.println("==============================================");
-            System.out.println("DEBUG: OAuth2DebugFilter - " + method + " " + uri);
-            System.out.println("DEBUG: Parameters: " + request.getParameterMap().keySet());
-            System.out.println("DEBUG: Has user_oauth_approval: " + request.getParameter("user_oauth_approval"));
+            log.debug("==============================================");
+            log.debug("OAuth2DebugFilter - {} {}", method, uri);
+            log.debug("Parameters: {}", request.getParameterMap().keySet());
+            log.debug("Has user_oauth_approval: {}", request.getParameter("user_oauth_approval"));
 
             // Show scope parameters
             String[] scopes = request.getParameterValues("scope");
             if (scopes != null) {
-                System.out.println("DEBUG: Scope count: " + scopes.length);
+                log.debug("Scope count: {}", scopes.length);
                 for (int i = 0; i < scopes.length; i++) {
-                    System.out.println("DEBUG: Scope[" + i + "]: " + scopes[i]);
+                    log.debug("Scope[{}]: {}", i, scopes[i]);
                 }
             }
 
             // Check authentication
             org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder
                     .getContext().getAuthentication();
-            System.out.println("DEBUG: Authentication: "
-                    + (auth != null ? auth.getName() + " (authenticated=" + auth.isAuthenticated() + ")" : "null"));
-            System.out.println("==============================================");
+            log.debug("Authentication: {}",
+                    (auth != null ? auth.getName() + " (authenticated=" + auth.isAuthenticated() + ")" : "null"));
+            log.debug("==============================================");
         }
 
         filterChain.doFilter(request, response);

@@ -1,8 +1,5 @@
 package one.org.security.Autherization.core.service.Authcode;
 
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
@@ -17,11 +14,13 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
 import one.org.security.Autherization.core.domain.entity.AuthorizationEntity;
 import one.org.security.Autherization.core.domain.entity.AuthorizationEntity.TokenEntity;
 import one.org.security.Autherization.core.service.cache.RedisService;
 
 @Service
+@Slf4j
 public class CustomAuthcodeService implements OAuth2AuthorizationService {
 
     @Autowired
@@ -32,47 +31,46 @@ public class CustomAuthcodeService implements OAuth2AuthorizationService {
 
     @Override
     public void save(OAuth2Authorization authorization) {
-        logToFile("save called for ID: " + authorization.getId());
+        log.debug("save called for ID: {}", authorization.getId());
         AuthorizationEntity entity = toEntity(authorization);
-        logToFile("Saving entity with code: "
-                + (entity.getAuthorizationCode() != null ? entity.getAuthorizationCode().getTokenValue() : "NULL"));
+        log.debug("Saving entity with code: {}",
+                (entity.getAuthorizationCode() != null ? "PRESENT" : "NULL")); // Redacted token value
         redisService.saveAuthorizationEntity(entity);
     }
 
     @Override
     public void remove(OAuth2Authorization authorization) {
-        System.out.println("DEBUG: CustomAuthcodeService.remove called for id: " + authorization.getId());
+        log.debug("CustomAuthcodeService.remove called for id: {}", authorization.getId());
         redisService.removeAuthorization(authorization.getId());
     }
 
     @Override
     public OAuth2Authorization findById(String id) {
-        System.out.println("DEBUG: CustomAuthcodeService.findById called for id: " + id);
+        log.debug("CustomAuthcodeService.findById called for id: {}", id);
         AuthorizationEntity entity = redisService.findAuthorizationEntityById(id);
         if (entity == null) {
-            System.out.println("DEBUG: CustomAuthcodeService.findById: Entity not found for id: " + id);
+            log.debug("CustomAuthcodeService.findById: Entity not found for id: {}", id);
             return null;
         }
-        System.out.println("DEBUG: CustomAuthcodeService.findById: Found entity, converting to domain object.");
+        log.debug("CustomAuthcodeService.findById: Found entity, converting to domain object.");
         return toObject(entity);
     }
 
     @Override
     public OAuth2Authorization findByToken(String token, OAuth2TokenType tokenType) {
-        System.out.println("DEBUG: CustomAuthcodeService.findByToken called. Token: " + token + ", Type: "
-                + (tokenType != null ? tokenType.getValue() : "null"));
+        log.debug("CustomAuthcodeService.findByToken called. Type: {}",
+                (tokenType != null ? tokenType.getValue() : "null"));
         AuthorizationEntity entity = redisService.findAuthorizationEntityByToken(token, tokenType);
         if (entity == null) {
-            System.out.println("DEBUG: CustomAuthcodeService.findByToken: Entity not found.");
+            log.debug("CustomAuthcodeService.findByToken: Entity not found.");
             return null;
         }
-        System.out.println("DEBUG: CustomAuthcodeService.findByToken: Found entity, converting to domain object "
-                + entity.getId());
+        log.debug("CustomAuthcodeService.findByToken: Found entity, converting to domain object {}", entity.getId());
         return toObject(entity);
     }
 
     private AuthorizationEntity toEntity(OAuth2Authorization authorization) {
-        logToFile("toEntity called for ID: " + authorization.getId());
+        log.trace("toEntity called for ID: {}", authorization.getId());
 
         java.util.Map<String, Object> attributes = new java.util.HashMap<>(authorization.getAttributes());
 
@@ -105,25 +103,20 @@ public class CustomAuthcodeService implements OAuth2AuthorizationService {
 
             if (codeChallenge != null) {
                 attributes.put("code_challenge", codeChallenge);
-                logToFile("toEntity: Promoted code_challenge: " + codeChallenge);
+                log.trace("toEntity: Promoted code_challenge");
             }
             if (codeChallengeMethod != null) {
                 attributes.put("code_challenge_method", codeChallengeMethod);
-                logToFile("toEntity: Promoted code_challenge_method: " + codeChallengeMethod);
+                log.trace("toEntity: Promoted code_challenge_method: {}", codeChallengeMethod);
             }
             if (nonce != null) {
                 attributes.put("nonce", nonce);
-                logToFile("toEntity: Promoted nonce: " + nonce);
+                log.trace("toEntity: Promoted nonce");
             }
 
-            logToFile("toEntity: Exhaustive AuthRequest Log:");
-            logToFile("  Attributes keys: " + req.getAttributes().keySet());
-            req.getAttributes().forEach((k, v) -> logToFile("    Attr: " + k + " = " + v));
-            logToFile("  Params keys: " + req.getAdditionalParameters().keySet());
-            req.getAdditionalParameters().forEach((k, v) -> logToFile("    Param: " + k + " = " + v));
-            logToFile("  Redirect URI: " + req.getRedirectUri());
+            log.trace("toEntity: AuthRequest Params keys: {}", req.getAdditionalParameters().keySet());
         } else {
-            logToFile("toEntity: OAuth2AuthorizationRequest MISSING or wrong type!");
+            log.warn("toEntity: OAuth2AuthorizationRequest MISSING or wrong type!");
         }
 
         AuthorizationEntity.AuthorizationEntityBuilder builder = AuthorizationEntity.builder()
@@ -140,8 +133,8 @@ public class CustomAuthcodeService implements OAuth2AuthorizationService {
                 .codeVerifier(codeVerifier)
                 .nonce(nonce);
 
-        logToFile("toEntity: Tracking State: " + builder.build().getState());
-        logToFile("toEntity: Client State: " + builder.build().getClientState());
+        log.trace("toEntity: Tracking State: {}", builder.build().getState());
+        log.trace("toEntity: Client State: {}", builder.build().getClientState());
 
         OAuth2Authorization.Token<OAuth2AuthorizationCode> code = authorization.getToken(OAuth2AuthorizationCode.class);
         if (code != null) {
@@ -177,26 +170,17 @@ public class CustomAuthcodeService implements OAuth2AuthorizationService {
                 .build();
     }
 
-    private void logToFile(String message) {
-        try (FileWriter fw = new FileWriter("/Users/rahulgupta/Desktop/distributedSecurity/AuthDebug.txt", true);
-                PrintWriter pw = new PrintWriter(fw)) {
-            pw.println(LocalDateTime.now() + " - " + message);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     private OAuth2Authorization toObject(AuthorizationEntity entity) {
-        logToFile("toObject called for ID: " + entity.getId());
+        log.trace("toObject called for ID: {}", entity.getId());
         try {
             RegisteredClient registeredClient = registeredClientRepository.findById(entity.getRegisteredClientId());
             if (registeredClient == null) {
-                logToFile("ERROR: RegisteredClient NOT FOUND for ID: " + entity.getRegisteredClientId());
-                System.out.println("WARNING: Registered client not found for ID: " + entity.getRegisteredClientId()
-                        + ". Treating authorization as invalid.");
+                log.error("RegisteredClient NOT FOUND for ID: {}", entity.getRegisteredClientId());
+                log.warn("Registered client not found for ID: {}. Treating authorization as invalid.",
+                        entity.getRegisteredClientId());
                 return null;
             }
-            logToFile("Found RegisteredClient: " + registeredClient.getClientId());
+            log.trace("Found RegisteredClient: {}", registeredClient.getClientId());
 
             OAuth2Authorization.Builder builder = OAuth2Authorization.withRegisteredClient(registeredClient)
                     .id(entity.getId())
@@ -205,48 +189,29 @@ public class CustomAuthcodeService implements OAuth2AuthorizationService {
                     .authorizedScopes(entity.getAuthorizedScopes())
                     .attributes(attrs -> {
                         attrs.putAll(entity.getAttributes());
-                        logToFile("toObject: Loaded attributes keys: " + attrs.keySet());
 
                         // Force restoration from flat fields for maximum reliability
                         if (entity.getCodeChallenge() != null) {
                             attrs.put("code_challenge", entity.getCodeChallenge());
-                            logToFile("toObject: Forcing code_challenge from flat field: " + entity.getCodeChallenge());
                         }
                         if (entity.getCodeChallengeMethod() != null) {
                             attrs.put("code_challenge_method", entity.getCodeChallengeMethod());
-                            logToFile("toObject: Forcing code_challenge_method from flat field: "
-                                    + entity.getCodeChallengeMethod());
                         }
                         if (entity.getCodeVerifier() != null) {
                             attrs.put("code_verifier", entity.getCodeVerifier());
-                            logToFile("toObject: Forcing code_verifier from flat field: " + entity.getCodeVerifier());
                         }
                         if (entity.getNonce() != null) {
                             attrs.put("nonce", entity.getNonce());
-                            logToFile("toObject: Forcing nonce from flat field: " + entity.getNonce());
-                        }
-
-                        if (attrs.containsKey(
-                                "org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest")) {
-                            Object authReqObj = attrs.get(
-                                    "org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest");
-                            if (authReqObj instanceof org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest) {
-                                org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest req = (org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest) authReqObj;
-                                logToFile("toObject: OAuth2AuthorizationRequest params keys: "
-                                        + req.getAdditionalParameters().keySet());
-                            }
                         }
                     });
 
             if (entity.getState() != null) {
                 builder.attribute(OAuth2ParameterNames.STATE, entity.getState());
-                logToFile("toObject: Tracking State restored: " + entity.getState());
             }
 
             if (entity.getClientState() != null) {
                 // This is important for the final redirect back to the client
                 builder.attribute("client_state", entity.getClientState());
-                logToFile("toObject: Client State available: " + entity.getClientState());
             }
 
             if (entity.getAuthorizationCode() != null) {
@@ -277,7 +242,7 @@ public class CustomAuthcodeService implements OAuth2AuthorizationService {
 
             return builder.build();
         } catch (Exception e) {
-            System.out.println("WARN: CustomAuthcodeService.toObject failed: " + e.getMessage());
+            log.warn("CustomAuthcodeService.toObject failed: {}", e.getMessage());
             // Return null to indicate the authorization cannot be reconstructed
             // The flow will restart or fail gracefully
             return null;

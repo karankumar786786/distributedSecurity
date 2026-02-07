@@ -4305,3 +4305,631 @@
 2026-02-05T15:59:32.675476 - Status: 200
 2026-02-05T15:59:32.675521 - ===============================
 2026-02-05T15:59:32.693621 - FILTER: Entering - GET /oauth2/jwks (State: null)
+2026-02-07T11:55:19.279886 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T11:55:19.307912 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T11:55:19.309994 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T11:55:19.310214 - Status: 400
+2026-02-07T11:55:19.310599 - ===============================
+2026-02-07T11:56:58.548858 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T11:56:58.574237 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T11:56:58.850639 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T11:56:58.850852 - Status: 401
+2026-02-07T11:56:58.850919 - ===============================
+2026-02-07T11:57:51.196993 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T11:57:51.224849 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T11:57:51.231622 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T11:57:51.239547 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T11:57:51.570542 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T11:57:51.570776 - Status: 401
+2026-02-07T11:57:51.570845 - ===============================
+2026-02-07T12:04:00.175986 - save called for ID: 0e8b548d-78fc-4a52-8f69-a51c34ecd946
+2026-02-07T12:04:00.176523 - toEntity called for ID: 0e8b548d-78fc-4a52-8f69-a51c34ecd946
+2026-02-07T12:04:00.176605 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:04:00.176958 - toEntity: Tracking State: null
+2026-02-07T12:04:00.177046 - toEntity: Client State: null
+2026-02-07T12:04:00.177342 - Saving entity with code: valid-auth-code
+2026-02-07T12:04:00.437059 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:04:00.451759 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:04:00.451932 - Status: 401
+2026-02-07T12:04:00.451990 - ===============================
+2026-02-07T12:04:00.473982 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:04:00.481504 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:04:00.490602 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:04:00.500056 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:04:00.508928 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:04:00.511188 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:04:00.511306 - Status: 401
+2026-02-07T12:04:00.511362 - ===============================
+2026-02-07T12:06:47.632028 - save called for ID: 30803997-c992-44aa-ba23-c6a46c02ad7a
+2026-02-07T12:06:47.632545 - toEntity called for ID: 30803997-c992-44aa-ba23-c6a46c02ad7a
+2026-02-07T12:06:47.632636 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:06:47.632965 - toEntity: Tracking State: null
+2026-02-07T12:06:47.633084 - toEntity: Client State: null
+2026-02-07T12:06:47.633439 - Saving entity with code: valid-auth-code
+2026-02-07T12:06:47.854395 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:06:47.864207 - toObject called for ID: 30803997-c992-44aa-ba23-c6a46c02ad7a
+2026-02-07T12:06:47.879743 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:06:47.879935 - Status: 400
+2026-02-07T12:06:47.880005 - ===============================
+2026-02-07T12:06:47.897070 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:06:47.909022 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:06:47.921719 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:06:47.929741 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:06:47.938689 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:06:47.943207 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:06:47.943363 - Status: 400
+2026-02-07T12:06:47.943453 - ===============================
+2026-02-07T12:08:51.835074 - save called for ID: 3cfbd929-bec8-4cd0-a2bc-6dbbfaa89aba
+2026-02-07T12:08:51.835734 - toEntity called for ID: 3cfbd929-bec8-4cd0-a2bc-6dbbfaa89aba
+2026-02-07T12:08:51.835850 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:08:51.836317 - toEntity: Tracking State: null
+2026-02-07T12:08:51.836398 - toEntity: Client State: null
+2026-02-07T12:08:51.836767 - Saving entity with code: valid-auth-code
+2026-02-07T12:08:52.047570 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:08:52.056848 - toObject called for ID: 3cfbd929-bec8-4cd0-a2bc-6dbbfaa89aba
+2026-02-07T12:08:52.068457 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:08:52.068648 - Status: 400
+2026-02-07T12:08:52.068712 - ===============================
+2026-02-07T12:08:52.089724 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:08:52.099839 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:08:52.109348 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:08:52.116896 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:08:52.125099 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:08:52.128312 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:08:52.128485 - Status: 400
+2026-02-07T12:08:52.128540 - ===============================
+2026-02-07T12:37:35.990475 - save called for ID: 3fee2e85-1963-4240-87ea-f94cf7ec9d94
+2026-02-07T12:37:35.991022 - toEntity called for ID: 3fee2e85-1963-4240-87ea-f94cf7ec9d94
+2026-02-07T12:37:35.991120 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:37:35.991502 - toEntity: Tracking State: null
+2026-02-07T12:37:35.991593 - toEntity: Client State: null
+2026-02-07T12:37:35.991942 - Saving entity with code: valid-auth-code
+2026-02-07T12:37:36.331163 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:37:36.357885 - toObject called for ID: 3fee2e85-1963-4240-87ea-f94cf7ec9d94
+2026-02-07T12:37:36.372322 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:37:36.372482 - Status: 400
+2026-02-07T12:37:36.372547 - ===============================
+2026-02-07T12:37:36.394267 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:37:36.409768 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:37:36.428308 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:37:36.438353 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:37:36.445878 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:37:36.448445 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:37:36.448576 - Status: 401
+2026-02-07T12:37:36.448632 - ===============================
+2026-02-07T12:41:23.893403 - save called for ID: 01056c01-c76e-48fe-b3b2-4c2f9f1d1fdc
+2026-02-07T12:41:23.893946 - toEntity called for ID: 01056c01-c76e-48fe-b3b2-4c2f9f1d1fdc
+2026-02-07T12:41:23.894025 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:41:23.894365 - toEntity: Tracking State: null
+2026-02-07T12:41:23.894433 - toEntity: Client State: null
+2026-02-07T12:41:23.894769 - Saving entity with code: s256-code
+2026-02-07T12:41:24.111468 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:41:24.120046 - toObject called for ID: 01056c01-c76e-48fe-b3b2-4c2f9f1d1fdc
+2026-02-07T12:41:24.132656 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:41:24.132912 - Status: 400
+2026-02-07T12:41:24.133049 - ===============================
+2026-02-07T12:41:24.155163 - save called for ID: d6c805f6-e6e4-4c24-a444-7f189ddd6d54
+2026-02-07T12:41:24.155367 - toEntity called for ID: d6c805f6-e6e4-4c24-a444-7f189ddd6d54
+2026-02-07T12:41:24.155461 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:41:24.155538 - toEntity: Tracking State: null
+2026-02-07T12:41:24.155589 - toEntity: Client State: null
+2026-02-07T12:41:24.155652 - Saving entity with code: valid-auth-code
+2026-02-07T12:41:24.161457 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:41:24.164489 - toObject called for ID: d6c805f6-e6e4-4c24-a444-7f189ddd6d54
+2026-02-07T12:41:24.167812 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:41:24.167986 - Status: 400
+2026-02-07T12:41:24.168050 - ===============================
+2026-02-07T12:41:24.174971 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:41:24.187937 - save called for ID: 0bc661a2-e0b1-4c4b-8ac1-f48ff66e33f6
+2026-02-07T12:41:24.188051 - toEntity called for ID: 0bc661a2-e0b1-4c4b-8ac1-f48ff66e33f6
+2026-02-07T12:41:24.188107 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:41:24.188160 - toEntity: Tracking State: null
+2026-02-07T12:41:24.188233 - toEntity: Client State: null
+2026-02-07T12:41:24.188285 - Saving entity with code: original-code
+2026-02-07T12:41:24.193495 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:41:24.196938 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:41:24.197065 - Status: 400
+2026-02-07T12:41:24.197117 - ===============================
+2026-02-07T12:41:24.203930 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:41:24.210579 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:41:24.216824 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:41:24.216992 - Status: 400
+2026-02-07T12:41:24.217048 - ===============================
+2026-02-07T12:41:24.228913 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:41:24.238267 - save called for ID: 39038026-3bf9-460f-83d5-452f3e410c2a
+2026-02-07T12:41:24.238582 - toEntity called for ID: 39038026-3bf9-460f-83d5-452f3e410c2a
+2026-02-07T12:41:24.238723 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:41:24.238880 - toEntity: Tracking State: null
+2026-02-07T12:41:24.239915 - toEntity: Client State: null
+2026-02-07T12:41:24.240103 - Saving entity with code: expired-code
+2026-02-07T12:41:24.246099 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:41:24.252808 - toObject called for ID: 39038026-3bf9-460f-83d5-452f3e410c2a
+2026-02-07T12:41:24.255151 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:41:24.255255 - Status: 400
+2026-02-07T12:41:24.255303 - ===============================
+2026-02-07T12:41:24.259536 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:41:24.266408 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:41:24.271570 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:41:24.271882 - Status: 401
+2026-02-07T12:41:24.272028 - ===============================
+2026-02-07T12:43:03.071420 - save called for ID: 4cb03ee4-a10e-4c7e-8ace-1b8499dd38c7
+2026-02-07T12:43:03.071967 - toEntity called for ID: 4cb03ee4-a10e-4c7e-8ace-1b8499dd38c7
+2026-02-07T12:43:03.072054 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:43:03.072414 - toEntity: Tracking State: null
+2026-02-07T12:43:03.072482 - toEntity: Client State: null
+2026-02-07T12:43:03.072801 - Saving entity with code: s256-code
+2026-02-07T12:43:03.290750 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:43:03.299798 - toObject called for ID: 4cb03ee4-a10e-4c7e-8ace-1b8499dd38c7
+2026-02-07T12:43:03.311922 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:43:03.312096 - Status: 400
+2026-02-07T12:43:03.312156 - ===============================
+2026-02-07T12:43:03.328929 - save called for ID: 26bf3914-63a5-4e9a-9f74-cb1fb628c163
+2026-02-07T12:43:03.329060 - toEntity called for ID: 26bf3914-63a5-4e9a-9f74-cb1fb628c163
+2026-02-07T12:43:03.329125 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:43:03.329178 - toEntity: Tracking State: null
+2026-02-07T12:43:03.329224 - toEntity: Client State: null
+2026-02-07T12:43:03.329270 - Saving entity with code: valid-auth-code
+2026-02-07T12:43:03.337446 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:43:03.340802 - toObject called for ID: 26bf3914-63a5-4e9a-9f74-cb1fb628c163
+2026-02-07T12:43:03.342535 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:43:03.342641 - Status: 400
+2026-02-07T12:43:03.342694 - ===============================
+2026-02-07T12:43:03.348647 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:43:03.356846 - save called for ID: af8d0a44-f7f3-4d21-af29-947f917afe19
+2026-02-07T12:43:03.356990 - toEntity called for ID: af8d0a44-f7f3-4d21-af29-947f917afe19
+2026-02-07T12:43:03.357051 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:43:03.357101 - toEntity: Tracking State: null
+2026-02-07T12:43:03.357149 - toEntity: Client State: null
+2026-02-07T12:43:03.357196 - Saving entity with code: original-code
+2026-02-07T12:43:03.361146 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:43:03.364619 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:43:03.364730 - Status: 400
+2026-02-07T12:43:03.364779 - ===============================
+2026-02-07T12:43:03.371086 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:43:03.377551 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:43:03.382427 - FILTER: Redirecting to: http://localhost:5173/login?return_to=http://localhost/oauth2/token
+2026-02-07T12:43:03.382558 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:43:03.382618 - Status: 302
+2026-02-07T12:43:03.382665 - ===============================
+2026-02-07T12:43:03.391449 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:43:03.395407 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:43:03.395578 - Status: 400
+2026-02-07T12:43:03.395634 - ===============================
+2026-02-07T12:43:03.400230 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:43:03.406782 - save called for ID: ea89fc09-5d0e-446b-94b2-95f41f2eda1b
+2026-02-07T12:43:03.406896 - toEntity called for ID: ea89fc09-5d0e-446b-94b2-95f41f2eda1b
+2026-02-07T12:43:03.406948 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:43:03.406992 - toEntity: Tracking State: null
+2026-02-07T12:43:03.407032 - toEntity: Client State: null
+2026-02-07T12:43:03.407076 - Saving entity with code: expired-code
+2026-02-07T12:43:03.410322 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:43:03.413643 - toObject called for ID: ea89fc09-5d0e-446b-94b2-95f41f2eda1b
+2026-02-07T12:43:03.415074 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:43:03.415161 - Status: 400
+2026-02-07T12:43:03.415206 - ===============================
+2026-02-07T12:43:03.420636 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:43:03.426955 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:43:03.428680 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:43:03.428769 - Status: 401
+2026-02-07T12:43:03.428815 - ===============================
+2026-02-07T12:44:11.681117 - save called for ID: a2995608-edaf-4575-a3ab-c11e5600beac
+2026-02-07T12:44:11.681639 - toEntity called for ID: a2995608-edaf-4575-a3ab-c11e5600beac
+2026-02-07T12:44:11.681724 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:44:11.682058 - toEntity: Tracking State: null
+2026-02-07T12:44:11.682123 - toEntity: Client State: null
+2026-02-07T12:44:11.682401 - Saving entity with code: s256-code
+2026-02-07T12:44:11.929436 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:44:11.939436 - toObject called for ID: a2995608-edaf-4575-a3ab-c11e5600beac
+2026-02-07T12:44:11.952899 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:44:11.953088 - Status: 400
+2026-02-07T12:44:11.953152 - ===============================
+2026-02-07T12:44:11.974504 - save called for ID: 0ebb1724-f360-408b-90c7-d3ed10b503c6
+2026-02-07T12:44:11.974693 - toEntity called for ID: 0ebb1724-f360-408b-90c7-d3ed10b503c6
+2026-02-07T12:44:11.974779 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:44:11.974837 - toEntity: Tracking State: null
+2026-02-07T12:44:11.974882 - toEntity: Client State: null
+2026-02-07T12:44:11.974929 - Saving entity with code: valid-auth-code
+2026-02-07T12:44:11.981448 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:44:11.989928 - toObject called for ID: 0ebb1724-f360-408b-90c7-d3ed10b503c6
+2026-02-07T12:44:11.991959 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:44:11.992091 - Status: 400
+2026-02-07T12:44:11.992151 - ===============================
+2026-02-07T12:44:11.999775 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:44:12.011050 - save called for ID: a00894cf-5bf9-41aa-8e6b-1ce0fe5a896e
+2026-02-07T12:44:12.011155 - toEntity called for ID: a00894cf-5bf9-41aa-8e6b-1ce0fe5a896e
+2026-02-07T12:44:12.011208 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:44:12.011285 - toEntity: Tracking State: null
+2026-02-07T12:44:12.011334 - toEntity: Client State: null
+2026-02-07T12:44:12.011380 - Saving entity with code: original-code
+2026-02-07T12:44:12.016876 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:44:12.022723 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:44:12.022872 - Status: 400
+2026-02-07T12:44:12.022927 - ===============================
+2026-02-07T12:44:12.029106 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:44:12.040442 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:44:12.048568 - FILTER: Redirecting to: http://localhost:5173/login?return_to=http://localhost/oauth2/token
+2026-02-07T12:44:12.048957 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:44:12.049056 - Status: 302
+2026-02-07T12:44:12.049147 - ===============================
+2026-02-07T12:44:12.061822 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:44:12.065934 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:44:12.066077 - Status: 400
+2026-02-07T12:44:12.066140 - ===============================
+2026-02-07T12:44:12.074067 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:44:12.080911 - save called for ID: c4815556-bc16-4cc8-bbaf-965880ccf276
+2026-02-07T12:44:12.081013 - toEntity called for ID: c4815556-bc16-4cc8-bbaf-965880ccf276
+2026-02-07T12:44:12.081063 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:44:12.081107 - toEntity: Tracking State: null
+2026-02-07T12:44:12.081148 - toEntity: Client State: null
+2026-02-07T12:44:12.081193 - Saving entity with code: expired-code
+2026-02-07T12:44:12.084063 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:44:12.090716 - toObject called for ID: c4815556-bc16-4cc8-bbaf-965880ccf276
+2026-02-07T12:44:12.092339 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:44:12.092474 - Status: 400
+2026-02-07T12:44:12.092543 - ===============================
+2026-02-07T12:44:12.098539 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:44:12.110054 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:44:12.111714 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:44:12.111837 - Status: 401
+2026-02-07T12:44:12.111889 - ===============================
+2026-02-07T12:45:06.185854 - save called for ID: 51e0c93d-e89d-47d6-919b-acc76c8987db
+2026-02-07T12:45:06.186384 - toEntity called for ID: 51e0c93d-e89d-47d6-919b-acc76c8987db
+2026-02-07T12:45:06.186466 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:45:06.186812 - toEntity: Tracking State: null
+2026-02-07T12:45:06.186882 - toEntity: Client State: null
+2026-02-07T12:45:06.187173 - Saving entity with code: s256-code
+2026-02-07T12:45:06.462085 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:45:06.470794 - toObject called for ID: 51e0c93d-e89d-47d6-919b-acc76c8987db
+2026-02-07T12:45:06.488833 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:45:06.489010 - Status: 400
+2026-02-07T12:45:06.489073 - ===============================
+2026-02-07T12:45:06.505359 - save called for ID: d70d1f36-51b3-4e7b-a29d-1b988397d9da
+2026-02-07T12:45:06.505508 - toEntity called for ID: d70d1f36-51b3-4e7b-a29d-1b988397d9da
+2026-02-07T12:45:06.505581 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:45:06.505635 - toEntity: Tracking State: null
+2026-02-07T12:45:06.505683 - toEntity: Client State: null
+2026-02-07T12:45:06.505733 - Saving entity with code: valid-auth-code
+2026-02-07T12:45:06.515122 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:45:06.525100 - toObject called for ID: d70d1f36-51b3-4e7b-a29d-1b988397d9da
+2026-02-07T12:45:06.527572 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:45:06.527788 - Status: 400
+2026-02-07T12:45:06.527949 - ===============================
+2026-02-07T12:45:06.534235 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:45:06.542293 - save called for ID: 0c4be793-a221-444b-bf6d-849142f433c7
+2026-02-07T12:45:06.542471 - toEntity called for ID: 0c4be793-a221-444b-bf6d-849142f433c7
+2026-02-07T12:45:06.542550 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:45:06.542602 - toEntity: Tracking State: null
+2026-02-07T12:45:06.542653 - toEntity: Client State: null
+2026-02-07T12:45:06.542700 - Saving entity with code: original-code
+2026-02-07T12:45:06.552191 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:45:06.555819 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:45:06.555949 - Status: 400
+2026-02-07T12:45:06.555999 - ===============================
+2026-02-07T12:45:06.563310 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:45:06.569713 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:45:06.574238 - FILTER: Redirecting to: http://localhost:5173/login?return_to=http://localhost/oauth2/token
+2026-02-07T12:45:06.574443 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:45:06.574533 - Status: 302
+2026-02-07T12:45:06.574591 - ===============================
+2026-02-07T12:45:06.583701 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:45:06.587462 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:45:06.587571 - Status: 400
+2026-02-07T12:45:06.587621 - ===============================
+2026-02-07T12:45:06.595969 - save called for ID: a7a16f06-684f-4a2f-b42b-3cba811d71d3
+2026-02-07T12:45:06.596160 - toEntity called for ID: a7a16f06-684f-4a2f-b42b-3cba811d71d3
+2026-02-07T12:45:06.596241 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:45:06.596343 - toEntity: Tracking State: null
+2026-02-07T12:45:06.596394 - toEntity: Client State: null
+2026-02-07T12:45:06.596483 - Saving entity with code: expired-code
+2026-02-07T12:45:06.600660 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:45:06.603570 - toObject called for ID: a7a16f06-684f-4a2f-b42b-3cba811d71d3
+2026-02-07T12:45:06.604792 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:45:06.604856 - Status: 400
+2026-02-07T12:45:06.604901 - ===============================
+2026-02-07T12:45:06.609806 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:45:06.616096 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:45:06.617770 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:45:06.617864 - Status: 401
+2026-02-07T12:45:06.617949 - ===============================
+2026-02-07T12:45:45.728230 - save called for ID: 09ed14f6-8420-4972-837e-a9d5a41556f6
+2026-02-07T12:45:45.729182 - toEntity called for ID: 09ed14f6-8420-4972-837e-a9d5a41556f6
+2026-02-07T12:45:45.729930 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:45:45.730828 - toEntity: Tracking State: null
+2026-02-07T12:45:45.730946 - toEntity: Client State: null
+2026-02-07T12:45:45.731352 - Saving entity with code: s256-code
+2026-02-07T12:45:45.966772 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:45:45.976098 - toObject called for ID: 09ed14f6-8420-4972-837e-a9d5a41556f6
+2026-02-07T12:45:45.989546 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:45:45.989806 - Status: 400
+2026-02-07T12:45:45.989892 - ===============================
+2026-02-07T12:45:46.017935 - save called for ID: 4e244eb4-ff20-4bb1-9167-609ad133b011
+2026-02-07T12:45:46.018132 - toEntity called for ID: 4e244eb4-ff20-4bb1-9167-609ad133b011
+2026-02-07T12:45:46.018366 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:45:46.018688 - toEntity: Tracking State: null
+2026-02-07T12:45:46.018763 - toEntity: Client State: null
+2026-02-07T12:45:46.018941 - Saving entity with code: valid-auth-code
+2026-02-07T12:45:46.025479 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:45:46.028647 - toObject called for ID: 4e244eb4-ff20-4bb1-9167-609ad133b011
+2026-02-07T12:45:46.030554 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:45:46.030655 - Status: 400
+2026-02-07T12:45:46.030707 - ===============================
+2026-02-07T12:45:46.036711 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:45:46.047543 - save called for ID: 884e0781-1820-416d-808a-7d61cdec238b
+2026-02-07T12:45:46.047668 - toEntity called for ID: 884e0781-1820-416d-808a-7d61cdec238b
+2026-02-07T12:45:46.047723 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:45:46.047809 - toEntity: Tracking State: null
+2026-02-07T12:45:46.047856 - toEntity: Client State: null
+2026-02-07T12:45:46.047902 - Saving entity with code: original-code
+2026-02-07T12:45:46.051720 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:45:46.056964 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:45:46.057087 - Status: 400
+2026-02-07T12:45:46.057145 - ===============================
+2026-02-07T12:45:46.062033 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:45:46.071874 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:45:46.078522 - FILTER: Redirecting to: http://localhost:5173/login?return_to=http://localhost/oauth2/token
+2026-02-07T12:45:46.079050 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:45:46.079302 - Status: 302
+2026-02-07T12:45:46.079394 - ===============================
+2026-02-07T12:45:46.090119 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:45:46.094374 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:45:46.094546 - Status: 400
+2026-02-07T12:45:46.094597 - ===============================
+2026-02-07T12:45:46.099661 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:45:46.109661 - save called for ID: 866310fe-bcd1-4fec-a437-e2970c287333
+2026-02-07T12:45:46.110014 - toEntity called for ID: 866310fe-bcd1-4fec-a437-e2970c287333
+2026-02-07T12:45:46.110107 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:45:46.110160 - toEntity: Tracking State: null
+2026-02-07T12:45:46.110214 - toEntity: Client State: null
+2026-02-07T12:45:46.110261 - Saving entity with code: expired-code
+2026-02-07T12:45:46.114414 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:45:46.117223 - toObject called for ID: 866310fe-bcd1-4fec-a437-e2970c287333
+2026-02-07T12:45:46.120220 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:45:46.120342 - Status: 400
+2026-02-07T12:45:46.120390 - ===============================
+2026-02-07T12:45:46.126967 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:45:46.134618 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:45:46.138395 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:45:46.138517 - Status: 401
+2026-02-07T12:45:46.138566 - ===============================
+2026-02-07T12:49:44.107555 - save called for ID: 7f28b280-8516-4b74-aa42-eaabc37d32f5
+2026-02-07T12:49:44.108085 - toEntity called for ID: 7f28b280-8516-4b74-aa42-eaabc37d32f5
+2026-02-07T12:49:44.108162 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:49:44.108496 - toEntity: Tracking State: null
+2026-02-07T12:49:44.108579 - toEntity: Client State: null
+2026-02-07T12:49:44.108851 - Saving entity with code: s256-code
+2026-02-07T12:49:44.325821 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:49:44.334079 - toObject called for ID: 7f28b280-8516-4b74-aa42-eaabc37d32f5
+2026-02-07T12:49:44.344998 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:49:44.345219 - Status: 400
+2026-02-07T12:49:44.345288 - ===============================
+2026-02-07T12:49:44.359873 - save called for ID: 9507b2a2-c3c0-40dd-afc0-5cfda838a39e
+2026-02-07T12:49:44.359993 - toEntity called for ID: 9507b2a2-c3c0-40dd-afc0-5cfda838a39e
+2026-02-07T12:49:44.360056 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:49:44.360107 - toEntity: Tracking State: null
+2026-02-07T12:49:44.360154 - toEntity: Client State: null
+2026-02-07T12:49:44.360208 - Saving entity with code: valid-auth-code
+2026-02-07T12:49:44.364700 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:49:44.368165 - toObject called for ID: 9507b2a2-c3c0-40dd-afc0-5cfda838a39e
+2026-02-07T12:49:44.369929 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:49:44.370018 - Status: 400
+2026-02-07T12:49:44.370100 - ===============================
+2026-02-07T12:49:44.375172 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:49:44.388885 - save called for ID: d9ef4555-bb27-4180-af04-626036dd4505
+2026-02-07T12:49:44.389071 - toEntity called for ID: d9ef4555-bb27-4180-af04-626036dd4505
+2026-02-07T12:49:44.389143 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:49:44.389192 - toEntity: Tracking State: null
+2026-02-07T12:49:44.389242 - toEntity: Client State: null
+2026-02-07T12:49:44.389287 - Saving entity with code: original-code
+2026-02-07T12:49:44.392423 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:49:44.395202 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:49:44.395299 - Status: 400
+2026-02-07T12:49:44.395349 - ===============================
+2026-02-07T12:49:44.400444 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:49:44.413095 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:49:44.420575 - FILTER: Redirecting to: http://localhost:5173/login?return_to=http://localhost/oauth2/token
+2026-02-07T12:49:44.420706 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:49:44.420793 - Status: 302
+2026-02-07T12:49:44.420839 - ===============================
+2026-02-07T12:49:44.428288 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:49:44.431905 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:49:44.432015 - Status: 400
+2026-02-07T12:49:44.432064 - ===============================
+2026-02-07T12:49:44.436755 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:49:44.441486 - save called for ID: 9eee5811-f765-46ee-a7cb-bc0d0163c579
+2026-02-07T12:49:44.441615 - toEntity called for ID: 9eee5811-f765-46ee-a7cb-bc0d0163c579
+2026-02-07T12:49:44.441666 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:49:44.441715 - toEntity: Tracking State: null
+2026-02-07T12:49:44.441755 - toEntity: Client State: null
+2026-02-07T12:49:44.441798 - Saving entity with code: expired-code
+2026-02-07T12:49:44.444868 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:49:44.447860 - toObject called for ID: 9eee5811-f765-46ee-a7cb-bc0d0163c579
+2026-02-07T12:49:44.449390 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:49:44.449483 - Status: 400
+2026-02-07T12:49:44.449529 - ===============================
+2026-02-07T12:49:44.454252 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:49:44.459523 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:49:44.461452 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:49:44.461574 - Status: 401
+2026-02-07T12:49:44.461627 - ===============================
+2026-02-07T12:52:40.919012 - save called for ID: e65e5595-4f9b-4972-b2ee-b3f4fff49944
+2026-02-07T12:52:40.919580 - toEntity called for ID: e65e5595-4f9b-4972-b2ee-b3f4fff49944
+2026-02-07T12:52:40.919667 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:52:40.920021 - toEntity: Tracking State: null
+2026-02-07T12:52:40.920093 - toEntity: Client State: null
+2026-02-07T12:52:40.920411 - Saving entity with code: s256-code
+2026-02-07T12:52:41.157438 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:52:41.165621 - toObject called for ID: e65e5595-4f9b-4972-b2ee-b3f4fff49944
+2026-02-07T12:52:41.181138 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:52:41.181305 - Status: 400
+2026-02-07T12:52:41.181367 - ===============================
+2026-02-07T12:52:41.206191 - save called for ID: 5c8075d6-8e28-415c-a8eb-c2f7bad1d418
+2026-02-07T12:52:41.206801 - toEntity called for ID: 5c8075d6-8e28-415c-a8eb-c2f7bad1d418
+2026-02-07T12:52:41.207023 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:52:41.207114 - toEntity: Tracking State: null
+2026-02-07T12:52:41.207179 - toEntity: Client State: null
+2026-02-07T12:52:41.207350 - Saving entity with code: valid-auth-code
+2026-02-07T12:52:41.215130 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:52:41.220148 - toObject called for ID: 5c8075d6-8e28-415c-a8eb-c2f7bad1d418
+2026-02-07T12:52:41.223122 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:52:41.223556 - Status: 400
+2026-02-07T12:52:41.223690 - ===============================
+2026-02-07T12:52:41.233813 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:52:41.244519 - save called for ID: d63091b4-b3fe-492f-8aee-ed49920b4258
+2026-02-07T12:52:41.244655 - toEntity called for ID: d63091b4-b3fe-492f-8aee-ed49920b4258
+2026-02-07T12:52:41.244713 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:52:41.244767 - toEntity: Tracking State: null
+2026-02-07T12:52:41.244815 - toEntity: Client State: null
+2026-02-07T12:52:41.244864 - Saving entity with code: original-code
+2026-02-07T12:52:41.247925 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:52:41.252521 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:52:41.252637 - Status: 400
+2026-02-07T12:52:41.252703 - ===============================
+2026-02-07T12:52:41.260515 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:52:41.266884 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:52:41.268816 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:52:41.268927 - Status: 401
+2026-02-07T12:52:41.268981 - ===============================
+2026-02-07T12:52:41.276538 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:52:41.282146 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:52:41.282279 - Status: 400
+2026-02-07T12:52:41.282332 - ===============================
+2026-02-07T12:52:41.287353 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:52:41.293720 - save called for ID: 1849cd3e-60d2-48b2-a23a-516fb1a536a1
+2026-02-07T12:52:41.293815 - toEntity called for ID: 1849cd3e-60d2-48b2-a23a-516fb1a536a1
+2026-02-07T12:52:41.293873 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:52:41.293927 - toEntity: Tracking State: null
+2026-02-07T12:52:41.293967 - toEntity: Client State: null
+2026-02-07T12:52:41.294013 - Saving entity with code: expired-code
+2026-02-07T12:52:41.296773 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:52:41.299843 - toObject called for ID: 1849cd3e-60d2-48b2-a23a-516fb1a536a1
+2026-02-07T12:52:41.301211 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:52:41.301277 - Status: 400
+2026-02-07T12:52:41.301361 - ===============================
+2026-02-07T12:52:41.306987 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:52:41.317810 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:52:41.321358 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:52:41.321473 - Status: 401
+2026-02-07T12:52:41.321523 - ===============================
+2026-02-07T12:59:27.012857 - save called for ID: 70691c97-d8e4-49b5-8090-9b187044ff32
+2026-02-07T12:59:27.013409 - toEntity called for ID: 70691c97-d8e4-49b5-8090-9b187044ff32
+2026-02-07T12:59:27.013501 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:59:27.013848 - toEntity: Tracking State: null
+2026-02-07T12:59:27.013915 - toEntity: Client State: null
+2026-02-07T12:59:27.014209 - Saving entity with code: s256-code
+2026-02-07T12:59:27.224625 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:59:27.233438 - toObject called for ID: 70691c97-d8e4-49b5-8090-9b187044ff32
+2026-02-07T12:59:27.245316 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:59:27.245495 - Status: 400
+2026-02-07T12:59:27.245555 - ===============================
+2026-02-07T12:59:27.266414 - save called for ID: d005934e-6856-402c-b0f5-1719adb51acf
+2026-02-07T12:59:27.266548 - toEntity called for ID: d005934e-6856-402c-b0f5-1719adb51acf
+2026-02-07T12:59:27.266614 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:59:27.266672 - toEntity: Tracking State: null
+2026-02-07T12:59:27.266717 - toEntity: Client State: null
+2026-02-07T12:59:27.266767 - Saving entity with code: valid-auth-code
+2026-02-07T12:59:27.271333 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:59:27.275298 - toObject called for ID: d005934e-6856-402c-b0f5-1719adb51acf
+2026-02-07T12:59:27.277183 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:59:27.277289 - Status: 400
+2026-02-07T12:59:27.277339 - ===============================
+2026-02-07T12:59:27.282876 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:59:27.289265 - save called for ID: 5d67fbf1-499a-46b1-908d-f39b4d8846ff
+2026-02-07T12:59:27.289424 - toEntity called for ID: 5d67fbf1-499a-46b1-908d-f39b4d8846ff
+2026-02-07T12:59:27.289519 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:59:27.289573 - toEntity: Tracking State: null
+2026-02-07T12:59:27.289619 - toEntity: Client State: null
+2026-02-07T12:59:27.289665 - Saving entity with code: original-code
+2026-02-07T12:59:27.292845 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:59:27.296832 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:59:27.296953 - Status: 400
+2026-02-07T12:59:27.297005 - ===============================
+2026-02-07T12:59:27.302488 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:59:27.308783 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:59:27.311532 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:59:27.311667 - Status: 401
+2026-02-07T12:59:27.311719 - ===============================
+2026-02-07T12:59:27.316573 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:59:27.321615 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:59:27.321745 - Status: 400
+2026-02-07T12:59:27.321797 - ===============================
+2026-02-07T12:59:27.326795 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:59:27.334057 - save called for ID: 45255329-26ad-4c4e-bb83-9611dd821e80
+2026-02-07T12:59:27.334158 - toEntity called for ID: 45255329-26ad-4c4e-bb83-9611dd821e80
+2026-02-07T12:59:27.334208 - toEntity: OAuth2AuthorizationRequest MISSING or wrong type!
+2026-02-07T12:59:27.334254 - toEntity: Tracking State: null
+2026-02-07T12:59:27.334292 - toEntity: Client State: null
+2026-02-07T12:59:27.334338 - Saving entity with code: expired-code
+2026-02-07T12:59:27.337617 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:59:27.341231 - toObject called for ID: 45255329-26ad-4c4e-bb83-9611dd821e80
+2026-02-07T12:59:27.343237 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:59:27.343451 - Status: 400
+2026-02-07T12:59:27.343548 - ===============================
+2026-02-07T12:59:27.348400 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T12:59:27.355 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T12:59:27.356721 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T12:59:27.356834 - Status: 401
+2026-02-07T12:59:27.356881 - ===============================
+2026-02-07T13:56:39.811158 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T13:56:39.840214 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T13:56:39.840375 - Status: 400
+2026-02-07T13:56:39.840437 - ===============================
+2026-02-07T13:56:39.890336 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T13:56:39.897822 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T13:56:39.897965 - Status: 400
+2026-02-07T13:56:39.898023 - ===============================
+2026-02-07T13:56:39.909302 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T13:56:39.927311 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T13:56:39.930983 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T13:56:39.931142 - Status: 400
+2026-02-07T13:56:39.931204 - ===============================
+2026-02-07T13:56:39.941529 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T13:56:39.952503 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T13:56:39.956435 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T13:56:39.956576 - Status: 401
+2026-02-07T13:56:39.956631 - ===============================
+2026-02-07T13:56:39.964140 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T13:56:39.971186 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T13:56:39.971351 - Status: 400
+2026-02-07T13:56:39.971407 - ===============================
+2026-02-07T13:56:39.979860 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T13:56:39.994971 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T13:56:39.999682 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T13:56:39.999802 - Status: 400
+2026-02-07T13:56:39.999855 - ===============================
+2026-02-07T13:56:40.009895 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T13:56:40.018429 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T13:56:40.021044 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T13:56:40.021184 - Status: 401
+2026-02-07T13:56:40.021252 - ===============================
+2026-02-07T14:08:06.787018 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T14:08:06.817496 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T14:08:06.817720 - Status: 400
+2026-02-07T14:08:06.817785 - ===============================
+2026-02-07T14:08:06.840153 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T14:08:06.845683 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T14:08:06.845808 - Status: 400
+2026-02-07T14:08:06.845860 - ===============================
+2026-02-07T14:08:06.857033 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T14:08:06.873833 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T14:08:06.877504 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T14:08:06.877625 - Status: 400
+2026-02-07T14:08:06.877676 - ===============================
+2026-02-07T14:08:06.887822 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T14:08:06.908417 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T14:08:06.912579 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T14:08:06.912685 - Status: 401
+2026-02-07T14:08:06.912785 - ===============================
+2026-02-07T14:08:06.924662 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T14:08:06.931464 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T14:08:06.931595 - Status: 400
+2026-02-07T14:08:06.931648 - ===============================
+2026-02-07T14:08:06.939740 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T14:08:06.953194 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T14:08:06.958238 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T14:08:06.958367 - Status: 400
+2026-02-07T14:08:06.958417 - ===============================
+2026-02-07T14:08:06.965093 - FILTER: Entering - GET /oauth2/authorize (State: null)
+2026-02-07T14:08:06.975034 - FILTER: Entering - POST /oauth2/token (State: null)
+2026-02-07T14:08:06.977419 - === TOKEN ENDPOINT RESPONSE ===
+2026-02-07T14:08:06.977515 - Status: 401
+2026-02-07T14:08:06.977564 - ===============================

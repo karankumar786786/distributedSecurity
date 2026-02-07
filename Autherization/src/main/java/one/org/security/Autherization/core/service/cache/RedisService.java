@@ -8,15 +8,33 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import one.org.security.Autherization.core.domain.entity.AuthorizationEntity;
 import one.org.security.Autherization.core.domain.entity.ClientEntity;
 
 @Service
+@Slf4j
 public class RedisService {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
+    private ObjectMapper objectMapper;
+
     public RedisService() {
+    }
+
+    @PostConstruct
+    public void init() {
+        objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     public boolean saveClient(ClientEntity client) {
@@ -37,7 +55,7 @@ public class RedisService {
             stringRedisTemplate.opsForValue().set(key, value.toString(), 15, java.util.concurrent.TimeUnit.MINUTES);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error saving client to Redis", e);
             return false;
         }
     }
@@ -63,7 +81,7 @@ public class RedisService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error getting client from Redis", e);
         }
         return null;
     }
@@ -73,72 +91,66 @@ public class RedisService {
             String key = "client:" + clientId;
             return Boolean.TRUE.equals(stringRedisTemplate.delete(key));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error deleting client from Redis", e);
             return false;
         }
     }
 
     public void saveAuthorizationEntity(AuthorizationEntity entity) {
         try {
-            System.out.println("DEBUG: RedisService.saveAuthorizationEntity called for id: " + entity.getId());
+            log.debug("RedisService.saveAuthorizationEntity called for id: {}", entity.getId());
 
-            // Strategy: Serialize the entire AuthorizationEntity to a Base64 string.
-            // This satisfies the "store as string" requirement and safely handles all
-            // nested complex types
-            // (like OAuth2AuthorizationRequest in attributes) without JSON deserialization
-            // issues.
-            String value = serializeObject(entity);
+            String value = objectMapper.writeValueAsString(entity);
             String id = entity.getId();
 
             stringRedisTemplate.opsForValue().set("auth:id:" + id, value, 10, TimeUnit.MINUTES);
-            System.out.println("DEBUG: Saved auth entity to redis as BASE64 STRING. Key: auth:id:" + id);
+            log.debug("Saved auth entity to redis as JSON. Key: auth:id:{}", id);
 
             // Same for indices - they just point to the ID
             if (entity.getAuthorizationCode() != null) {
                 stringRedisTemplate.opsForValue().set("auth:code:" + entity.getAuthorizationCode().getTokenValue(), id,
                         10,
                         TimeUnit.MINUTES);
-                System.out.println("DEBUG: Saved auth code mapping: auth:code:"
-                        + entity.getAuthorizationCode().getTokenValue() + " -> " + id);
+                log.debug("Saved auth code mapping: auth:code:{} -> {}",
+                        "PRESENT", id); // Redacted
             }
 
             if (entity.getRefreshToken() != null) {
                 stringRedisTemplate.opsForValue().set("auth:refresh_token:" + entity.getRefreshToken().getTokenValue(),
                         id, 10,
                         TimeUnit.MINUTES);
-                System.out.println("DEBUG: Saved refresh token mapping: auth:refresh_token:"
-                        + entity.getRefreshToken().getTokenValue() + " -> " + id);
+                log.debug("Saved refresh token mapping: auth:refresh_token:{} -> {}",
+                        "PRESENT", id); // Redacted
             }
 
             if (entity.getAccessToken() != null) {
                 stringRedisTemplate.opsForValue().set("auth:access_token:" + entity.getAccessToken().getTokenValue(),
                         id, 10,
                         TimeUnit.MINUTES);
-                System.out.println("DEBUG: Saved access token mapping: auth:access_token:"
-                        + entity.getAccessToken().getTokenValue() + " -> " + id);
+                log.debug("Saved access token mapping: auth:access_token:{} -> {}",
+                        "PRESENT", id); // Redacted
             }
 
             String state = entity.getState();
             if (state != null) {
                 stringRedisTemplate.opsForValue().set("auth:state:" + state, id, 10, TimeUnit.MINUTES);
-                System.out.println("DEBUG: Saved tracking state mapping: auth:state:" + state + " -> " + id);
+                log.debug("Saved tracking state mapping: auth:state:{} -> {}", state, id);
             }
 
             String clientState = entity.getClientState();
             if (clientState != null && !clientState.equals(state)) {
                 stringRedisTemplate.opsForValue().set("auth:state:" + clientState, id, 10, TimeUnit.MINUTES);
-                System.out.println("DEBUG: Saved client state mapping: auth:state:" + clientState + " -> " + id);
+                log.debug("Saved client state mapping: auth:state:{} -> {}", clientState, id);
             }
 
         } catch (Exception e) {
-            System.out.println("ERROR: RedisService.saveAuthorizationEntity failed: " + e.getMessage());
-            e.printStackTrace();
+            log.error("RedisService.saveAuthorizationEntity failed", e);
             throw new RuntimeException(e);
         }
     }
 
     public void removeAuthorization(String id) {
-        System.out.println("DEBUG: RedisService.removeAuthorization called for id: " + id);
+        log.debug("RedisService.removeAuthorization called for id: {}", id);
         AuthorizationEntity entity = findAuthorizationEntityById(id);
         if (entity == null)
             return;
@@ -162,49 +174,27 @@ public class RedisService {
         }
     }
 
-    // Helper to serialize any object to Base64 String
-    private String serializeObject(java.io.Serializable obj) throws java.io.IOException {
-        if (obj == null)
-            return null;
-        try (java.io.ByteArrayOutputStream sh = new java.io.ByteArrayOutputStream();
-                java.io.ObjectOutputStream os = new java.io.ObjectOutputStream(sh)) {
-            os.writeObject(obj);
-            return java.util.Base64.getEncoder().encodeToString(sh.toByteArray());
-        }
-    }
-
-    // Helper to deserialize Base64 String back to Object
-    private Object deserializeObject(String str) throws java.io.IOException, ClassNotFoundException {
-        if (str == null)
-            return null;
-        byte[] data = java.util.Base64.getDecoder().decode(str);
-        try (java.io.ByteArrayInputStream sh = new java.io.ByteArrayInputStream(data);
-                java.io.ObjectInputStream is = new java.io.ObjectInputStream(sh)) {
-            return is.readObject();
-        }
-    }
-
     public AuthorizationEntity findAuthorizationEntityById(String id) {
         try {
-            System.out.println("DEBUG: RedisService.findAuthorizationEntityById called for id: " + id);
+            log.debug("RedisService.findAuthorizationEntityById called for id: {}", id);
             String value = stringRedisTemplate.opsForValue().get("auth:id:" + id);
             if (value != null) {
-                System.out.println("DEBUG: Found base64 string for id: " + id);
-                return (AuthorizationEntity) deserializeObject(value);
+                log.debug("Found JSON string for id: {}", id);
+                return objectMapper.readValue(value, AuthorizationEntity.class);
             } else {
-                System.out.println("DEBUG: Authorization entity NOT found for id: " + id);
+                log.debug("Authorization entity NOT found for id: {}", id);
             }
         } catch (Exception e) {
-            System.out.println("ERROR: RedisService.findAuthorizationEntityById failed: " + e.getMessage());
-            e.printStackTrace();
+            log.error("RedisService.findAuthorizationEntityById failed", e);
         }
         return null;
     }
 
     public AuthorizationEntity findAuthorizationEntityByToken(String token, OAuth2TokenType tokenType) {
         try {
-            System.out.println("DEBUG: RedisService.findAuthorizationEntityByToken called. TokenType: "
-                    + (tokenType != null ? tokenType.getValue() : "null") + ", Token: " + token);
+            log.debug("RedisService.findAuthorizationEntityByToken called. TokenType: {}, Token: {}",
+                    (tokenType != null ? tokenType.getValue() : "null"), "REDACTED");
+
             if (tokenType == null) {
                 return null;
             }
@@ -219,24 +209,15 @@ public class RedisService {
                 id = stringRedisTemplate.opsForValue().get("auth:refresh_token:" + token);
             }
 
-            System.out.println("DEBUG: Resolved ID from token/state: " + id);
+            log.debug("Resolved ID from token/state: {}", id);
 
             if (id != null) {
                 return findAuthorizationEntityById(id);
             }
         } catch (Exception e) {
-            System.out.println("ERROR: RedisService.findAuthorizationEntityByToken CRASHED: " + e.getMessage());
-            e.printStackTrace();
-            // Try to log to file as backup
-            try (java.io.PrintWriter pw = new java.io.PrintWriter(
-                    new java.io.FileWriter("/tmp/redis_crash.log", true))) {
-                pw.println("Timestamp: " + java.time.Instant.now());
-                e.printStackTrace(pw);
-            } catch (Exception io) {
-            }
-            throw e; // Bubble up
+            log.error("RedisService.findAuthorizationEntityByToken CRASHED", e);
+            throw e;
         }
         return null;
     }
-
 }

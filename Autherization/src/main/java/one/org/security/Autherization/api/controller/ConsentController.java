@@ -4,9 +4,13 @@ import org.springframework.stereotype.Controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.oauth2.core.endpoint.PkceParameterNames;
 
 @Controller
+@Slf4j
 public class ConsentController {
 
         @org.springframework.beans.factory.annotation.Autowired
@@ -15,9 +19,7 @@ public class ConsentController {
         @GetMapping("/oauth2/consent")
         public String consent(@RequestParam java.util.Map<String, String> parameters) {
 
-                System.out
-                                .println("DEBUG: ConsentController - Redirecting to Frontend Consent Page with params: "
-                                                + parameters);
+                log.debug("ConsentController - Redirecting to Frontend Consent Page with params: {}", parameters);
 
                 String frontendUrl = "http://localhost:5173/oauth2/consent";
 
@@ -45,8 +47,7 @@ public class ConsentController {
                                                                                 .getName());
 
                                 if (authorizationRequest != null) {
-                                        System.out.println(
-                                                        "DEBUG: ConsentController - Recovered full Authorization Request from State");
+                                        log.debug("ConsentController - Recovered full Authorization Request from State");
 
                                         // Ensure response_type is present
                                         if (!parameters.containsKey(

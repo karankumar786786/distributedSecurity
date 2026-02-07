@@ -1,10 +1,12 @@
 package one.org.security.Autherization.api.controller;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
+
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import one.org.security.Autherization.api.dto.request.CreateClientRequestDTO;
 import one.org.security.Autherization.api.dto.request.UpdateClientRedirectUrlRequestDTO;
@@ -37,11 +40,21 @@ public class ClientController {
     @Autowired
     private CustomEncodingService customEncodingService;
 
+    @Autowired
+    private Environment environment;
+
     @PostMapping("/create-client")
     public ResponseEntity<CreateClientResponseDTO> createClient(
             @RequestBody @Validated CreateClientRequestDTO request,
             @AuthenticationPrincipal UserMockEntity user) {
-        String clientSecret = UUID.randomUUID().toString().replaceAll("\\-", "");
+
+        validateRedirectUrl(request.redirectUrl());
+
+        // Cryptographically secure random secret generation (32 bytes = 256 bits)
+        java.security.SecureRandom secureRandom = new java.security.SecureRandom();
+        byte[] secretBytes = new byte[32];
+        secureRandom.nextBytes(secretBytes);
+        String clientSecret = java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(secretBytes);
         ClientEntity client = ClientEntity.builder()
                 .clientId(request.clientId())
                 .hashedClientSecretHmac(customEncodingService.encode(clientSecret))
@@ -62,6 +75,9 @@ public class ClientController {
     public ResponseEntity<Void> updateClientRedirectUrl(
             @AuthenticationPrincipal UserMockEntity user,
             @Validated @RequestBody UpdateClientRedirectUrlRequestDTO request) {
+
+        validateRedirectUrl(request.redirectUrl());
+
         // if client will not found then it will throw client not found exception in the
         // service already
         ClientEntity client = clientService.findByClientId(request.clientId());
@@ -69,7 +85,7 @@ public class ClientController {
         // Ensure user owns the client
         if (!client.getUserId().equals(user.getId())) {
             // Or throw a specific forbidden/not found exception
-            throw new SecurityException("User not authorized to update this client");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not authorized to update this client");
         }
 
         client.setRedirectUrl(request.redirectUrl());
@@ -94,9 +110,19 @@ public class ClientController {
         ClientEntity client = clientService.findByClientId(clientId);
         // Ensure user owns the client
         if (!client.getUserId().equals(user.getId())) {
-            throw new SecurityException("User not authorized to delete this client");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not authorized to delete this client");
         }
         clientService.deleteClient(clientId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    private void validateRedirectUrl(String url) {
+        if (url.startsWith("http://localhost")) {
+            boolean isDev = Arrays.asList(environment.getActiveProfiles()).contains("dev");
+            if (!isDev) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "http://localhost redirect URIs are only allowed in 'dev' profile.");
+            }
+        }
     }
 }

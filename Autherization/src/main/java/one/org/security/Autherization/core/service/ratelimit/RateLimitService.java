@@ -1,21 +1,24 @@
 package one.org.security.Autherization.core.service.ratelimit;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
+import java.util.concurrent.TimeUnit;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-import java.util.concurrent.atomic.AtomicInteger;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * Rate limiting service using Caffeine cache.
- * Implements sliding window rate limiting per client/IP.
+ * Distributed rate limiting service using Redis.
+ * Implements fixed window rate limiting per client/IP.
  */
 @Service
+@Slf4j
 public class RateLimitService {
 
-    // Cache for tracking request counts: key -> AtomicInteger count
-    private final Cache<String, AtomicInteger> requestCountCache;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     // Configuration
     private static final int MAX_REQUESTS_PER_MINUTE = 60; // 60 requests per minute per key
@@ -23,10 +26,6 @@ public class RateLimitService {
     private static final int MAX_AUTHORIZE_REQUESTS_PER_MINUTE = 30; // For authorization endpoint
 
     public RateLimitService() {
-        this.requestCountCache = Caffeine.newBuilder()
-                .expireAfterWrite(Duration.ofMinutes(1)) // Reset counters every minute
-                .maximumSize(10000) // Max 10k unique keys
-                .build();
     }
 
     /**
@@ -60,27 +59,39 @@ public class RateLimitService {
     }
 
     /**
-     * Core rate limiting logic
+     * Core rate limiting logic using Redis
      */
     private boolean isAllowed(String key, int maxRequests) {
-        AtomicInteger counter = requestCountCache.get(key, k -> new AtomicInteger(0));
-        int currentCount = counter.incrementAndGet();
+        String redisKey = "ratelimit:" + key;
+        ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
 
-        if (currentCount > maxRequests) {
-            System.out.println("RATE LIMIT: Blocked request for key: " + key +
-                    " (count: " + currentCount + "/" + maxRequests + ")");
-            return false;
+        try {
+            Long count = ops.increment(redisKey);
+
+            if (count != null && count == 1) {
+                stringRedisTemplate.expire(redisKey, 1, TimeUnit.MINUTES);
+            }
+
+            if (count != null && count > maxRequests) {
+                log.warn("RATE LIMIT: Blocked request for key: {} (count: {}/{})", key, count, maxRequests);
+                return false;
+            }
+
+            return true;
+        } catch (Exception e) {
+            log.error("Rate limit check failed for key: " + key, e);
+            // Fail open principle: if Redis is down, allow the request to prevent outage
+            return true;
         }
-
-        return true;
     }
 
     /**
      * Get current request count for a key (for monitoring)
      */
     public int getCurrentCount(String key) {
-        AtomicInteger counter = requestCountCache.getIfPresent(key);
-        return counter != null ? counter.get() : 0;
+        String redisKey = "ratelimit:" + key;
+        String val = stringRedisTemplate.opsForValue().get(redisKey);
+        return val != null ? Integer.parseInt(val) : 0;
     }
 
     /**

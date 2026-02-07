@@ -10,6 +10,7 @@ import one.org.security.Autherization.core.service.cache.RedisService;
 import one.org.security.Autherization.infrastructure.persistance.ClientRepository;
 
 @Service
+@org.springframework.transaction.annotation.Transactional
 public class ClientService {
     @Autowired
     private ClientRepository clientRepository;

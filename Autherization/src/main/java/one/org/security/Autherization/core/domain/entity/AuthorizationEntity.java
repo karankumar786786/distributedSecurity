@@ -13,8 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthorizationEntity implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+public class AuthorizationEntity {
 
     private String id;
     private String registeredClientId;
@@ -39,8 +38,7 @@ public class AuthorizationEntity implements java.io.Serializable {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class TokenEntity implements java.io.Serializable {
-        private static final long serialVersionUID = 1L;
+    public static class TokenEntity {
 
         private String tokenValue;
         private Instant issuedAt;
