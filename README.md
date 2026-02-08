@@ -13,7 +13,7 @@
 
 ## 🎯 Project Overview
 
-This project implements a **distributed OAuth2/OIDC authorization server** designed for high-availability, security, and scalability. Built as a college project to demonstrate enterprise-grade architecture patterns, it incorporates cutting-edge security practices and event-driven architecture.
+This project implements a **distributed OAuth2/OIDC authorization server** designed for high-availability, security, and scalability. Built to demonstrate enterprise-grade architecture patterns, it incorporates cutting-edge security practices and event-driven architecture.
 
 ### Key Highlights
 
