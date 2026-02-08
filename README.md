@@ -1,4 +1,4 @@
-# Distributed OAuth2 Authorization Server 🔐
+# Distributed OAuth2 Authorization Server (Provider) 🔐
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-1.28+-326CE5?logo=kubernetes)](https://kubernetes.io/)
