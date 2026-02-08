@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: processed-mail-consumer
+  namespace: distributed-security
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: processed-mail-consumer
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: enabled
+      labels:
+        app: processed-mail-consumer
+    spec:
+      containers:
+      - name: processed-mail-consumer
+        image: processed-mail-consumer:latest # Replace with actual image
+        resources:
+          limits:
+            cpu: "300m"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+        envFrom:
+        - configMapRef:
+            name: common-config
+        env:
+        - name: JWT_PROCESSOR_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: JWT_PROCESSOR_SECRET
+        - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+          valueFrom:
+            configMapRef:
+              name: common-config
+              key: KAFKA_BOOTSTRAP_SERVERS
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: processed-mail-consumer
+  namespace: distributed-security
+spec:
+  selector:
+    app: processed-mail-consumer
+  ports:
+  - protocol: TCP
+    port: 10014
+    targetPort: 10014

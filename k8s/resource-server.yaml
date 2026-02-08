@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resource-server
+  namespace: distributed-security
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resource-server
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: enabled
+      labels:
+        app: resource-server
+    spec:
+      containers:
+      - name: resource-server
+        image: resource-server:latest # Replace with actual image
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+        ports:
+        - containerPort: 10002
+        envFrom:
+        - configMapRef:
+            name: common-config
+        env:
+        - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
+          value: "http://autherization:12000"
+        - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI
+          value: "http://autherization:12000/oauth2/jwks"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resource-server
+  namespace: distributed-security
+spec:
+  selector:
+    app: resource-server
+  ports:
+  - protocol: TCP
+    port: 10002
+    targetPort: 10002

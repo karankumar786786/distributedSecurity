@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+    
+    environment {
+        DOCKER_IMAGE = "autherization:latest"
+        K8S_NAMESPACE = "distributed-security"
+        REGISTRY_CREDENTIALS = "docker-registry-credentials"
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                dir('Autherization') {
+                    sh './mvnw clean package -DskipTests'
+                }
+            }
+        }
+        
+        stage('Dockerize') {
+            steps {
+                script {
+                    docker.withRegistry('', REGISTRY_CREDENTIALS) {
+                        def img = docker.build("${DOCKER_IMAGE}", "Autherization/.")
+                        img.push()
+                    }
+                }
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                sh "kubectl apply -f k8s/autherization.yaml -n ${K8S_NAMESPACE}"
+            }
+        }
+    }
+    
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}

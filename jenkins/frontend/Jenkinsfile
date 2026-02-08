@@ -1,0 +1,56 @@
+pipeline {
+    agent any
+    
+    environment {
+        DOCKER_IMAGE = "frontend:latest"
+        K8S_NAMESPACE = "distributed-security"
+        REGISTRY_CREDENTIALS = "docker-registry-credentials"
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        
+        stage('Install Dependencies') {
+            steps {
+                dir('frontend') {
+                    sh 'npm install'
+                }
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                dir('frontend') {
+                    sh 'npm run build'
+                }
+            }
+        }
+        
+        stage('Dockerize') {
+            steps {
+                script {
+                    docker.withRegistry('', REGISTRY_CREDENTIALS) {
+                        def img = docker.build("${DOCKER_IMAGE}", "frontend/.")
+                        img.push()
+                    }
+                }
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                sh "kubectl apply -f k8s/frontend.yaml -n ${K8S_NAMESPACE}"
+            }
+        }
+    }
+    
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}

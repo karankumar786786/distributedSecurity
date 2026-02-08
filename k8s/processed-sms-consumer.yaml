@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: processed-sms-consumer
+  namespace: distributed-security
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: processed-sms-consumer
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: enabled
+      labels:
+        app: processed-sms-consumer
+    spec:
+      containers:
+      - name: processed-sms-consumer
+        image: processed-sms-consumer:latest # Replace with actual image
+        resources:
+          limits:
+            cpu: "300m"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+        envFrom:
+        - configMapRef:
+            name: common-config
+        env:
+        - name: JWT_PROCESSOR_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: JWT_PROCESSOR_SECRET
+        - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+          valueFrom:
+            configMapRef:
+              name: common-config
+              key: KAFKA_BOOTSTRAP_SERVERS
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: processed-sms-consumer
+  namespace: distributed-security
+spec:
+  selector:
+    app: processed-sms-consumer
+  ports:
+  - protocol: TCP
+    port: 10016
+    targetPort: 10016

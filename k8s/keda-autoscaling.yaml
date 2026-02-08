@@ -1,0 +1,107 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: mail-stream-processor-scaledobject
+  namespace: distributed-security
+spec:
+  scaleTargetRef:
+    name: mail-stream-processor
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  triggers:
+  - type: kafka
+    metadata:
+      bootstrapServers: redpanda.default.svc.cluster.local:9092
+      consumerGroup: mail-processor-group
+      topic: mail-topic
+      lagThreshold: "10"
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: sms-stream-processor-scaledobject
+  namespace: distributed-security
+spec:
+  scaleTargetRef:
+    name: sms-stream-processor
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  triggers:
+  - type: kafka
+    metadata:
+      bootstrapServers: redpanda.default.svc.cluster.local:9092
+      consumerGroup: sms-processor-group
+      topic: sms-topic
+      lagThreshold: "10"
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: security-event-stream-processor-scaledobject
+  namespace: distributed-security
+spec:
+  scaleTargetRef:
+    name: security-event-stream-processor
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  triggers:
+  - type: kafka
+    metadata:
+      bootstrapServers: redpanda.default.svc.cluster.local:9092
+      consumerGroup: security-event-processor-group
+      topic: security-event-topic
+      lagThreshold: "10"
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: processed-mail-consumer-scaledobject
+  namespace: distributed-security
+spec:
+  scaleTargetRef:
+    name: processed-mail-consumer
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  triggers:
+  - type: kafka
+    metadata:
+      bootstrapServers: redpanda.default.svc.cluster.local:9092
+      consumerGroup: mail-consumer-group
+      topic: processed-mail-topic
+      lagThreshold: "10"
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: processed-sms-consumer-scaledobject
+  namespace: distributed-security
+spec:
+  scaleTargetRef:
+    name: processed-sms-consumer
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  triggers:
+  - type: kafka
+    metadata:
+      bootstrapServers: redpanda.default.svc.cluster.local:9092
+      consumerGroup: sms-consumer-group
+      topic: processed-sms-topic
+      lagThreshold: "10"
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: processed-security-event-consumer-scaledobject
+  namespace: distributed-security
+spec:
+  scaleTargetRef:
+    name: processed-security-event-consumer
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  triggers:
+  - type: kafka
+    metadata:
+      bootstrapServers: redpanda.default.svc.cluster.local:9092
+      consumerGroup: security-event-consumer-group
+      topic: processed-security-event-topic
+      lagThreshold: "10"
