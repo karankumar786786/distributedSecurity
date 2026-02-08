@@ -102,9 +102,9 @@ public class SecurityConfig {
                                 .authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Changed to
-                                                                                                           // IF_REQUIRED
-                                                                                                           // for OAuth2
-                                                                                                           // flow
+                                                                                                         // IF_REQUIRED
+                                                                                                         // for OAuth2
+                                                                                                         // flow
                                 .exceptionHandling(exceptions -> exceptions
                                                 .defaultAuthenticationEntryPointFor(
                                                                 new one.org.security.Autherization.infrastructure.security.LoggingAuthenticationEntryPoint(
@@ -129,9 +129,9 @@ public class SecurityConfig {
         public SecurityFilterChain standardSecurityFilterChain(HttpSecurity http) throws Exception {
                 http
                                 .csrf(csrf -> csrf.disable())
-                                .formLogin(org.springframework.security.config.Customizer.withDefaults()) // Enable
-                                                                                                          // default
-                                                                                                          // login page
+                                .formLogin(form -> form
+                                                .loginPage("http://localhost:5173/login") // Redirect to frontend login
+                                                .permitAll())
                                 // 4. Ensure endpoints handled by Order 1 are ignored here
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

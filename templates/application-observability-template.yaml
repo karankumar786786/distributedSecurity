@@ -1,22 +1,5 @@
-spring:
-  application:
-    name: ResourceServer
-  autoconfigure:
-    exclude:
-      - io.opentelemetry.instrumentation.spring.autoconfigure.instrumentation.kafka.KafkaInstrumentationAutoConfiguration
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:12000
-          jwk-set-uri: http://localhost:12000/oauth2/jwks
-server:
-  port: 10002
-
-encryption:
-  master-key: "1234567890123456"
-jwt:
-  secret: "jwt-secret-key-for-mail-processor-jwt-secret-key"
+# TEMPLATE: application.yaml observability configuration
+# Add this to the end of each microservice's application.yaml
 
 # OpenTelemetry - Traces to Zipkin
 otel:

@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.0</version>
+		<version>4.0.2</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>one.org</groupId>
@@ -33,6 +33,7 @@
 		<avro.version>1.11.3</avro.version>
 		<confluent.version>7.5.1</confluent.version>
 		<protobuf.version>3.25.1</protobuf.version>
+		<otel.instrumentation.version>1.33.0</otel.instrumentation.version>
 	</properties>
 
 	<repositories>
@@ -177,6 +178,49 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- OpenTelemetry for distributed tracing -->
+		<dependency>
+			<groupId>io.opentelemetry.instrumentation</groupId>
+			<artifactId>opentelemetry-spring-boot-starter</artifactId>
+			<version>1.33.0-alpha</version>
+			<exclusions>
+				<!-- Exclude Kafka instrumentation due to Spring Boot 4.0.2 incompatibility -->
+				<exclusion>
+					<groupId>io.opentelemetry.instrumentation</groupId>
+					<artifactId>opentelemetry-kafka-clients-2.6</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.opentelemetry.instrumentation</groupId>
+					<artifactId>opentelemetry-spring-kafka-2.7</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- Micrometer for Prometheus -->
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+		</dependency>
+
+		<!-- Loki for centralized logging -->
+		<dependency>
+			<groupId>com.github.loki4j</groupId>
+			<artifactId>loki-logback-appender</artifactId>
+			<version>1.5.1</version>
+		</dependency>
+
+		<!-- Spring Boot Actuator -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<!-- Zipkin exporter -->
+		<dependency>
+			<groupId>io.opentelemetry</groupId>
+			<artifactId>opentelemetry-exporter-zipkin</artifactId>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
@@ -185,6 +229,13 @@
 				<groupId>io.grpc</groupId>
 				<artifactId>grpc-bom</artifactId>
 				<version>${grpc.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>io.opentelemetry.instrumentation</groupId>
+				<artifactId>opentelemetry-instrumentation-bom</artifactId>
+				<version>${otel.instrumentation.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
