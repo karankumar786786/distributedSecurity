@@ -4,25 +4,29 @@
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-1.28+-326CE5?logo=kubernetes)](https://kubernetes.io/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2+-6DB33F?logo=spring)](https://spring.io/projects/spring-boot)
 [![MongoDB](https://img.shields.io/badge/MongoDB-7.0+-47A248?logo=mongodb)](https://www.mongodb.com/)
-[![ScyllaDB](https://img.shields.io/badge/ScyllaDB-5.4+-53CADD)](https://www.scylladb.com/)
+[![Redpanda](https://img.shields.io/badge/Redpanda-23.3+-FF4438)](https://redpanda.com/)
+[![Redis](https://img.shields.io/badge/Redis%20Stack-latest-DC382D?logo=redis)](https://redis.io/)
 
-> **A production-grade, multi-region OAuth2 authorization server** with hardware security key support, cryptographic password integrity verification, and zero-trust architecture.
+> **A production-grade OAuth2/OIDC authorization server** with hardware security key support (FIDO2/WebAuthn), cryptographic password integrity verification, event-driven architecture, and comprehensive observability.
 
 ---
 
 ## 🎯 Project Overview
 
-This project implements a **distributed OAuth2/OIDC authorization server** designed for high-availability, security, and scalability. Built as a college project to demonstrate enterprise-grade architecture patterns, it incorporates cutting-edge security practices rarely seen in traditional OAuth2 implementations.
+This project implements a **distributed OAuth2/OIDC authorization server** designed for high-availability, security, and scalability. Built as a college project to demonstrate enterprise-grade architecture patterns, it incorporates cutting-edge security practices and event-driven architecture.
 
 ### Key Highlights
 
-- 🔒 **Hardware Security Keys**: FIDO2/WebAuthn (YubiKey) integration for passwordless authentication
+- 🔒 **Hardware Security Keys**: FIDO2/WebAuthn integration for passwordless authentication with YubiKey support
 - 🛡️ **Cryptographic Integrity**: HMAC-based password integrity verification preventing database tampering
-- 🌍 **Multi-Region**: Active-passive deployment with automatic failover
-- 🔑 **Dynamic Key Management**: HashiCorp Vault integration with on-the-fly RSA key rotation
-- 📊 **Full Observability**: Prometheus metrics, Loki logs, Tempo distributed tracing
-- 🚀 **Cloud-Native**: Kubernetes with Istio service mesh, GitOps via ArgoCD
-- ⚡ **High Performance**: Dragonfly (Redis-compatible) cache + ScyllaDB for token storage
+- 🌐 **Multi-Language Clients**: OAuth2 clients in Go, Python, and JavaScript with PKCE + nonce support
+- 📨 **Event-Driven Architecture**: Decoupled mail/SMS/security event processing via Kafka streams
+- 📊 **Full Observability**: Prometheus metrics, Grafana dashboards, Loki logs, Zipkin distributed tracing
+- 🚀 **Cloud-Native**: Kubernetes deployment with HPA + KEDA autoscaling, Kong API Gateway
+- ⚡ **High Performance**: Redis Stack caching + MongoDB for user data + ScyllaDB ready
+- 🔐 **Advanced Security**: Device fingerprinting, account locking, rate limiting, security event audit trail
+- 🏗️ **Microservices**: 11 independent services with dedicated Jenkins CI/CD pipelines
+- 🔧 **gRPC Integration**: Isolated password hashing service using Argon2id
 
 ---
 
@@ -31,86 +35,193 @@ This project implements a **distributed OAuth2/OIDC authorization server** desig
 - [Architecture](#-architecture)
 - [Security Features](#-security-features)
 - [Technology Stack](#-technology-stack)
+- [Multi-Language OAuth2 Clients](#-multi-language-oauth2-clients)
+- [Event-Driven Architecture](#-event-driven-architecture)
 - [Key Components](#-key-components)
 - [Getting Started](#-getting-started)
 - [Configuration](#-configuration)
-- [API Documentation](#-api-documentation)
-- [Multi-Region Setup](#-multi-region-setup)
 - [Monitoring & Observability](#-monitoring--observability)
+- [Kubernetes Deployment](#-kubernetes-deployment)
+- [CI/CD Pipeline](#-cicd-pipeline)
 - [Security Best Practices](#-security-best-practices)
-- [Performance Tuning](#-performance-tuning)
 - [Contributing](#-contributing)
 - [License](#-license)
 
 ---
 
+## 🔐 OAuth2 Authorization Flow
+
+### Authorization Code Flow with PKCE
+
+![OAuth2 Authorization Code Flow](assets/Oauth2Flow.png)
+_Complete OAuth2 authorization code flow showing resource owner, browser, authorization server, client app, and resource server interactions_
+
+**Flow Steps:**
+
+1. **Redirect to Authorization:** Resource owner initiates login, browser redirects to authorization server
+2. **Give Consent:** User authenticates and provides consent
+3. **Authorization Code:** Authorization server returns authorization code via redirect URL
+4. **Request Token:** Client app exchanges authorization code for access & refresh tokens
+5. **Access & Refresh Tokens:** Authorization server issues tokens
+6. **Request Resource:** Client uses access token to request protected resources
+7. **Access Protected Resource:** Resource server validates token and returns data
+8. **Persist Refresh Token:** Client stores refresh token for future use
+
+### Simplified OAuth2 Flow
+
+![OAuth2 Depth Flow](assets/Oauth2DepthFlow.png)
+_Simplified view showing BusinessClient, OAuth Server, and ResourceServer interaction_
+
+**Simplified Steps:**
+
+1. **Request Access Token:** Business client requests token from OAuth server
+2. **Verify Client:** OAuth server verifies client credentials
+3. **User Consent:** User provides consent for authorization
+4. **Returns Access Token:** OAuth server issues access token
+5. **Requests Resource:** Client uses token to access resource server
+6. **Validate Token:** Resource server validates token with OAuth server
+7. **Valid Token:** OAuth server confirms token validity
+8. **Returns Resource:** Resource server returns protected data
+
+---
+
 ## 🏗️ Architecture
+
+### System Architecture Overview
+
+![Architecture Diagram](assets/architecture.png)
+
+The system follows a microservices architecture with event-driven communication patterns, deployed on Kubernetes with comprehensive observability.
 
 ### High-Level Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Istio Service Mesh                        │
-│  ┌────────────────────────────────────────────────────────────┐ │
-│  │  mTLS • Circuit Breakers • Request Timeouts • Rate Limiting│ │
-│  └────────────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────────┘
-                                 │
-                    ┌────────────┴────────────┐
-                    │   Ingress Gateway       │
-                    │   (TLS Termination)     │
-                    └────────────┬────────────┘
-                                 │
-        ┌────────────────────────┼────────────────────────┐
-        │                        │                        │
-┌───────▼───────┐       ┌───────▼───────┐       ┌───────▼───────┐
-│ OAuth2 Service│       │ Passkey Service│       │  gRPC Service │
-│  (Spring Boot)│       │  (WebAuthn)   │       │ (Argon2 Hash) │
-└───────┬───────┘       └───────┬───────┘       └───────┬───────┘
-        │                       │                        │
-        └───────────┬───────────┴────────────────────────┘
-                    │
-        ┌───────────┼───────────────────────┐
-        │           │                       │
-┌───────▼─────┐ ┌──▼────────┐    ┌────────▼────────┐
-│  MongoDB    │ │ ScyllaDB  │    │   Dragonfly     │
-│ (User Data) │ │ (Tokens)  │    │ (Session Cache) │
-└─────────────┘ └───────────┘    └─────────────────┘
-                    │
-        ┌───────────┼───────────────────────┐
-        │           │                       │
-┌───────▼─────┐ ┌──▼────────┐    ┌────────▼────────┐
-│    Kafka    │ │   Vault   │    │  OpenTelemetry  │
-│(Event Stream│ │ (Secrets) │    │   Collector     │
-│   + Audit)  │ │           │    │                 │
-└─────────────┘ └───────────┘    └─────────────────┘
+```mermaid
+graph TB
+    subgraph "Client Layer"
+        GoClient["Go Client<br/>(PKCE + Nonce)"]
+        PyClient["Python Client<br/>(PKCE + Nonce)"]
+        JSClient["JavaScript Client<br/>(PKCE + Nonce)"]
+        Frontend["React Frontend<br/>(Login/Register UI)"]
+    end
+
+    subgraph "Kong API Gateway"
+        Kong["Kong Ingress<br/>/auth → Authentication<br/>/oauth2 → Authorization<br/>/ → Frontend"]
+    end
+
+    subgraph "Core Services"
+        Auth["Authentication Service<br/>:10000<br/>(User Management, FIDO2)"]
+        AuthZ["Authorization Server<br/>:12000<br/>(OAuth2/OIDC)"]
+        Resource["Resource Server<br/>:10002<br/>(Protected APIs)"]
+        PasswordGRPC["Password Encoding<br/>:9000<br/>(gRPC Argon2id)"]
+    end
+
+    subgraph "Event Processing Layer"
+        MailProc["Mail Stream Processor<br/>:10003"]
+        SmsProc["SMS Stream Processor<br/>:10005"]
+        SecProc["Security Event Processor<br/>:10004"]
+    end
+
+    subgraph "Consumer Layer"
+        MailCons["Processed Mail Consumer<br/>:10006"]
+        SmsCons["Processed SMS Consumer<br/>:10008"]
+        SecCons["Security Event Consumer<br/>:10007"]
+    end
+
+    subgraph "Data Layer"
+        MongoDB[("MongoDB<br/>(User Data, Credentials)")]
+        Redis[("Redis Stack<br/>(Sessions, Rate Limiting)")]
+        Scylla[("ScyllaDB<br/>(Token Storage - Ready)")]
+    end
+
+    subgraph "Event Streaming"
+        Redpanda["Redpanda<br/>(Kafka-compatible)<br/>Topics: mail, sms, security-event"]
+    end
+
+    subgraph "Observability Stack"
+        Prometheus["Prometheus<br/>(Metrics)"]
+        Grafana["Grafana<br/>(Dashboards)"]
+        Loki["Loki<br/>(Logs)"]
+        Zipkin["Zipkin<br/>(Traces)"]
+    end
+
+    GoClient --> Kong
+    PyClient --> Kong
+    JSClient --> Kong
+    Frontend --> Kong
+
+    Kong --> Auth
+    Kong --> AuthZ
+    Kong --> Resource
+
+    Auth --> PasswordGRPC
+    Auth --> MongoDB
+    Auth --> Redis
+    Auth --> Redpanda
+    AuthZ --> MongoDB
+    AuthZ --> Redis
+    Resource --> AuthZ
+
+    Redpanda --> MailProc
+    Redpanda --> SmsProc
+    Redpanda --> SecProc
+
+    MailProc --> Redpanda
+    SmsProc --> Redpanda
+    SecProc --> Redpanda
+
+    Redpanda --> MailCons
+    Redpanda --> SmsCons
+    Redpanda --> SecCons
+
+    Auth -."metrics".-> Prometheus
+    AuthZ -."metrics".-> Prometheus
+    Resource -."metrics".-> Prometheus
+    PasswordGRPC -."metrics".-> Prometheus
+    MailProc -."metrics".-> Prometheus
+    SmsProc -."metrics".-> Prometheus
+    SecProc -."metrics".-> Prometheus
+
+    Prometheus --> Grafana
+    Loki --> Grafana
+    Zipkin --> Grafana
 ```
 
-### Multi-Region Deployment
+### Event-Driven Processing Flow
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                     Region 1 (Primary - Active)                  │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
-│  │ OAuth2 Pods  │  │  ScyllaDB    │  │    Kafka     │          │
-│  │  (Serving)   │  │  (QUORUM)    │  │  (Producer)  │          │
-│  └──────────────┘  └──────────────┘  └──────────────┘          │
-└───────────────────────────────┬─────────────────────────────────┘
-                                │
-                    ┌───────────▼────────────┐
-                    │   Cross-Region Sync    │
-                    │  • ScyllaDB Replication│
-                    │  • Kafka Mirroring     │
-                    │  • Vault DR Replication│
-                    └───────────┬────────────┘
-                                │
-┌───────────────────────────────▼─────────────────────────────────┐
-│                   Region 2 (Secondary - Passive)                 │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
-│  │ OAuth2 Pods  │  │  ScyllaDB    │  │    Kafka     │          │
-│  │ (Warm Standby│  │  (Replica)   │  │  (Consumer)  │          │
-│  └──────────────┘  └──────────────┘  └──────────────┘          │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+sequenceDiagram
+    participant Auth as Authentication Service
+    participant Redpanda as Redpanda (Kafka)
+    participant MailProc as Mail Stream Processor
+    participant SmsProc as SMS Stream Processor
+    participant SecProc as Security Event Processor
+    participant MailCons as Mail Consumer
+    participant SmsCons as SMS Consumer
+    participant SecCons as Security Event Consumer
+
+    Auth->>Redpanda: Publish to mail-topic<br/>(Email verification)
+    Auth->>Redpanda: Publish to sms-topic<br/>(OTP SMS)
+    Auth->>Redpanda: Publish to security-event-topic<br/>(Login event)
+
+    Redpanda->>MailProc: Consume mail-topic
+    Redpanda->>SmsProc: Consume sms-topic
+    Redpanda->>SecProc: Consume security-event-topic
+
+    MailProc->>MailProc: Process & enrich email data
+    SmsProc->>SmsProc: Process & enrich SMS data
+    SecProc->>SecProc: Analyze security event
+
+    MailProc->>Redpanda: Publish to processed-mail-topic
+    SmsProc->>Redpanda: Publish to processed-sms-topic
+    SecProc->>Redpanda: Publish to processed-security-event-topic
+
+    Redpanda->>MailCons: Consume processed-mail-topic
+    Redpanda->>SmsCons: Consume processed-sms-topic
+    Redpanda->>SecCons: Consume processed-security-event-topic
+
+    MailCons->>MailCons: Send email via SMTP
+    SmsCons->>SmsCons: Send SMS via Twilio/SNS
+    SecCons->>SecCons: Store audit log & trigger alerts
 ```
 
 ---
@@ -189,6 +300,7 @@ public class SecurityIntegrity {
 ```
 
 **Why This Matters:**
+
 - ✅ Detects if an attacker modifies the database directly
 - ✅ Prevents privilege escalation via database manipulation
 - ✅ Keys rotate automatically via Vault (30-day cycle)
@@ -209,22 +321,22 @@ Full support for passwordless authentication using YubiKey, Touch ID, Windows He
 public class FidoCredential {
     @Field("credential_id")
     private ByteArray credentialId;      // Unique credential identifier
-    
+
     @Field("user_handle")
     private ByteArray userHandle;        // Links to user account
-    
+
     @Field("public_key")
     private ByteArray publicKey;         // ECDSA P-256 public key
-    
+
     @Field("signature_count")
     private long signatureCount;         // Prevents replay attacks
-    
+
     @Field("name")
     private String name;                 // "My YubiKey 5C"
-    
+
     @Field("integrity_hmac_key_id")
     private String integrityHmacKeyId;   // For key rotation
-    
+
     @Field("integrity_hmac")
     private String integrityHmac;        // HMAC(key, publicKey)
 }
@@ -294,6 +406,7 @@ public class FidoCredential {
 ```
 
 **Security Properties:**
+
 - ✅ **Phishing-resistant**: Cryptographically bound to domain
 - ✅ **Replay-protected**: Signature counter increments
 - ✅ **Tamper-evident**: HMAC integrity on public keys
@@ -314,7 +427,7 @@ Authorization Request:
 
 Token Request:
   code_verifier = original_random_value
-  
+
 Server validates:
   SHA256(code_verifier) == code_challenge
 ```
@@ -324,7 +437,7 @@ Server validates:
 ```
 Authorization Request:
   nonce = random_value_123
-  
+
 ID Token (JWT):
   {
     "nonce": "random_value_123",
@@ -486,6 +599,7 @@ GET /.well-known/jwks.json
 ```
 
 **Benefits:**
+
 - ✅ Centralized secret management
 - ✅ Automated key rotation (zero-downtime)
 - ✅ Audit trail of all key access
@@ -538,13 +652,13 @@ To ensure **defense in depth**, password hashing is isolated in a dedicated micr
 
 **Why Separate Service?**
 
-| Benefit | Explanation |
-|---------|-------------|
-| **Resource Isolation** | Password hashing is CPU-intensive (Argon2 uses 64MB RAM per hash). Separate service prevents it from starving OAuth2 API threads. |
-| **Horizontal Scaling** | Can scale password hashing pods independently (e.g., 10 OAuth2 pods, 3 hashing pods). |
-| **Security Boundary** | Plaintext passwords never touch OAuth2 service memory. gRPC service can run in a separate security zone with stricter network policies. |
-| **Technology Choice** | Can use Go/Rust for faster Argon2 implementation while keeping OAuth2 in Java/Spring. |
-| **Audit Trail** | All password operations logged separately for compliance. |
+| Benefit                | Explanation                                                                                                                             |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **Resource Isolation** | Password hashing is CPU-intensive (Argon2 uses 64MB RAM per hash). Separate service prevents it from starving OAuth2 API threads.       |
+| **Horizontal Scaling** | Can scale password hashing pods independently (e.g., 10 OAuth2 pods, 3 hashing pods).                                                   |
+| **Security Boundary**  | Plaintext passwords never touch OAuth2 service memory. gRPC service can run in a separate security zone with stricter network policies. |
+| **Technology Choice**  | Can use Go/Rust for faster Argon2 implementation while keeping OAuth2 in Java/Spring.                                                   |
+| **Audit Trail**        | All password operations logged separately for compliance.                                                                               |
 
 **gRPC Protocol Definition:**
 
@@ -556,7 +670,7 @@ package auth;
 service PasswordHasher {
   // Hash a plaintext password
   rpc HashPassword(HashPasswordRequest) returns (HashPasswordResponse);
-  
+
   // Verify password against hash
   rpc VerifyPassword(VerifyPasswordRequest) returns (VerifyPasswordResponse);
 }
@@ -587,52 +701,386 @@ message VerifyPasswordResponse {
 
 ### Core Services
 
-| Component | Technology | Version | Purpose |
-|-----------|-----------|---------|---------|
-| **OAuth2 Server** | Spring Boot | 3.2+ | Authorization server (RFC 6749, OIDC) |
-| **Password Hashing** | gRPC Service | - | Argon2id hashing (isolated microservice) |
-| **Passkey Service** | Spring Boot + Yubico WebAuthn | 2.5+ | FIDO2/WebAuthn authentication |
-| **User Database** | MongoDB | 7.0+ | User profiles, credentials, device hashes |
-| **Token Store** | ScyllaDB | 5.4+ | OAuth tokens (high-write throughput) |
-| **Session Cache** | Dragonfly | 1.14+ | Session data, rate limiting counters |
-| **Secret Management** | HashiCorp Vault | 1.15+ | RSA keys, HMAC keys, encryption keys |
-| **Event Streaming** | Apache Kafka | 3.6+ | Audit logs, cross-region replication |
+| Component                 | Technology                  | Version | Purpose                                          |
+| ------------------------- | --------------------------- | ------- | ------------------------------------------------ |
+| **Authentication Server** | Spring Boot                 | 3.2+    | User management, FIDO2/WebAuthn, device tracking |
+| **Authorization Server**  | Spring Boot                 | 3.2+    | OAuth2/OIDC authorization server (RFC 6749)      |
+| **Resource Server**       | Spring Boot                 | 3.2+    | Protected API resources                          |
+| **Password Encoding**     | Spring Boot + gRPC          | 3.2+    | Argon2id hashing (isolated microservice)         |
+| **Mail Stream Processor** | Spring Boot + Kafka Streams | 3.2+    | Process and enrich email events                  |
+| **SMS Stream Processor**  | Spring Boot + Kafka Streams | 3.2+    | Process and enrich SMS events                    |
+| **Security Event Proc.**  | Spring Boot + Kafka Streams | 3.2+    | Analyze and enrich security events               |
+| **Mail Consumer**         | Spring Boot + Kafka         | 3.2+    | Send processed emails via SMTP                   |
+| **SMS Consumer**          | Spring Boot + Kafka         | 3.2+    | Send processed SMS via Twilio/SNS                |
+| **Security Event Cons.**  | Spring Boot + Kafka         | 3.2+    | Store audit logs and trigger alerts              |
+| **Frontend**              | React + TypeScript          | 18+     | Login/Register UI with FIDO2 support             |
+
+### Data Stores
+
+| Component         | Technology  | Version | Purpose                                         |
+| ----------------- | ----------- | ------- | ----------------------------------------------- |
+| **User Database** | MongoDB     | 7.0+    | User profiles, credentials, FIDO2 keys, devices |
+| **Session Cache** | Redis Stack | latest  | Session data, rate limiting counters, OTP cache |
+| **Token Store**   | ScyllaDB    | 5.4+    | OAuth tokens (configured, ready for production) |
+
+### Event Streaming
+
+| Component          | Technology | Version | Purpose                                              |
+| ------------------ | ---------- | ------- | ---------------------------------------------------- |
+| **Message Broker** | Redpanda   | 23.3+   | Kafka-compatible event streaming (mail, SMS, events) |
 
 ### Infrastructure
 
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| **Orchestration** | Kubernetes | 1.28+ |
-| **Service Mesh** | Istio | 1.20+ |
-| **GitOps** | ArgoCD | 2.9+ |
-| **Ingress** | Istio Gateway | TLS termination, routing |
-| **Container Registry** | Harbor | Image scanning, signing |
+| Component             | Technology | Purpose                                   |
+| --------------------- | ---------- | ----------------------------------------- |
+| **Orchestration**     | Kubernetes | 1.28+ container orchestration             |
+| **API Gateway**       | Kong       | Ingress routing, rate limiting            |
+| **Autoscaling**       | HPA + KEDA | CPU-based and Kafka lag-based autoscaling |
+| **Container Runtime** | Docker     | 24.0+ containerization                    |
 
 ### Observability
 
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| **Metrics** | Prometheus | Time-series metrics |
-| **Logs** | Loki | Centralized logging |
-| **Traces** | Tempo | Distributed tracing |
-| **Visualization** | Grafana | Dashboards |
-| **APM** | OpenTelemetry | Unified telemetry |
+| Component         | Technology | Purpose                               |
+| ----------------- | ---------- | ------------------------------------- |
+| **Metrics**       | Prometheus | Time-series metrics from all services |
+| **Logs**          | Loki       | Centralized logging                   |
+| **Traces**        | Zipkin     | Distributed tracing                   |
+| **Visualization** | Grafana    | Dashboards for metrics, logs, traces  |
 
 ### CI/CD
 
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| **Source Control** | Git | Version control |
-| **CI Pipeline** | GitHub Actions / Jenkins | Build, test, scan |
-| **Code Quality** | SonarQube | Static analysis |
-| **Image Scanning** | Trivy / Grype | Vulnerability scanning |
-| **Helm Charts** | Helm | Kubernetes packaging |
+| Component              | Technology | Purpose                                     |
+| ---------------------- | ---------- | ------------------------------------------- |
+| **Source Control**     | Git        | Version control                             |
+| **CI Pipeline**        | Jenkins    | Build, test, containerize (11 Jenkinsfiles) |
+| **Container Registry** | Docker Hub | Image storage                               |
+| **Deployment**         | kubectl    | Manual Kubernetes deployment                |
+
+---
+
+## 🌐 Multi-Language OAuth2 Clients
+
+The project includes production-ready OAuth2 clients in **Go**, **Python**, and **JavaScript**, all implementing PKCE (Proof Key for Code Exchange) and nonce validation for enhanced security.
+
+### Go Client
+
+**Location:** [`goClient/main.go`](file:///Users/rahulgupta/Desktop/distributedSecurity/goClient/main.go)
+
+**Features:**
+
+- OIDC Discovery for automatic endpoint configuration
+- PKCE with S256 challenge method
+- Nonce validation to prevent replay attacks
+- State parameter for CSRF protection
+- Session management with HTTP-only cookies
+
+**Key Implementation:**
+
+```go
+// PKCE Challenge Generation
+func generateChallenge(verifier string) string {
+    h := sha256.New()
+    h.Write([]byte(verifier))
+    return base64.RawURLEncoding.EncodeToString(h.Sum(nil))
+}
+
+// Authorization Request with PKCE + Nonce
+func handleLogin(w http.ResponseWriter, r *http.Request) {
+    state := generateRandom(32)
+    nonce := generateRandom(32)
+    verifier := generateRandom(32)
+    challenge := generateChallenge(verifier)
+
+    setCookie(w, "go_state", state)
+    setCookie(w, "go_nonce", nonce)
+    setCookie(w, "go_cv", verifier)
+
+    url := oauthConfig.AuthCodeURL(state,
+        oauth2.AccessTypeOffline,
+        oauth2.SetAuthURLParam("code_challenge", challenge),
+        oauth2.SetAuthURLParam("code_challenge_method", "S256"),
+        oidc.Nonce(nonce),
+    )
+    http.Redirect(w, r, url, http.StatusFound)
+}
+
+// Token Exchange with Verifier
+func handleCallback(w http.ResponseWriter, r *http.Request) {
+    code := r.URL.Query().Get("code")
+    cvCookie, _ := r.Cookie("go_cv")
+
+    token, err := oauthConfig.Exchange(ctx, code,
+        oauth2.VerifierOption(cvCookie.Value))
+
+    // Verify ID Token and Nonce
+    rawIDToken, _ := token.Extra("id_token").(string)
+    verifier := provider.Verifier(&oidc.Config{ClientID: oauthConfig.ClientID})
+    idToken, _ := verifier.Verify(ctx, rawIDToken)
+
+    nonceCookie, _ := r.Cookie("go_nonce")
+    if idToken.Nonce != nonceCookie.Value {
+        http.Error(w, "Nonce mismatch", http.StatusBadRequest)
+        return
+    }
+}
+```
+
+**Run:**
+
+```bash
+cd goClient
+go run main.go
+# Visit http://127.0.0.1:7800
+```
+
+---
+
+### Python Client
+
+**Location:** [`pythonClient/main.py`](file:///Users/rahulgupta/Desktop/distributedSecurity/pythonClient/main.py)
+
+**Features:**
+
+- FastAPI framework with Authlib integration
+- Automatic PKCE with S256 method
+- OIDC discovery via `.well-known/openid-configuration`
+- Session middleware for user state
+- ID token parsing and validation
+
+**Key Implementation:**
+
+```python
+from authlib.integrations.starlette_client import OAuth
+
+oauth = OAuth()
+oauth.register(
+    name='my_auth_server',
+    client_id=os.getenv("CLIENT_ID"),
+    client_secret=os.getenv("CLIENT_SECRET"),
+    server_metadata_url=f'{os.getenv("ISSUER_URL")}/.well-known/openid-configuration',
+    client_kwargs={
+        'scope': 'openid profile read',
+        'code_challenge_method': 'S256'  # Enable PKCE
+    },
+)
+
+@app.get("/login")
+async def login(request: Request):
+    redirect_uri = os.getenv("REDIRECT_URI")
+    return await oauth.my_auth_server.authorize_redirect(request, redirect_uri)
+
+@app.get("/code/callback")
+async def callback(request: Request):
+    token = await oauth.my_auth_server.authorize_access_token(request)
+    user = oauth.my_auth_server.parse_id_token(request, token)
+    request.session['user'] = dict(user)
+    return RedirectResponse(url='/')
+```
+
+**Run:**
+
+```bash
+cd pythonClient
+uv run uvicorn main:app --host 127.0.0.1 --port 7700
+# Visit http://127.0.0.1:7700
+```
+
+---
+
+### JavaScript Client
+
+**Location:** [`jsClient/index.js`](file:///Users/rahulgupta/Desktop/distributedSecurity/jsClient/index.js)
+
+**Features:**
+
+- Express.js with `openid-client` library
+- OIDC Issuer discovery
+- PKCE code verifier and challenge generation
+- Nonce and state validation
+- Express session management
+
+**Key Implementation:**
+
+```javascript
+const { Issuer, generators } = require("openid-client");
+
+// Initialize OpenID Client
+async function initClient() {
+  const issuer = await Issuer.discover(process.env.ISSUER_URL);
+  client = new issuer.Client({
+    client_id: process.env.CLIENT_ID,
+    client_secret: process.env.CLIENT_SECRET,
+    redirect_uris: [process.env.REDIRECT_URI],
+    response_types: ["code"],
+  });
+}
+
+app.get("/login", (req, res) => {
+  const nonce = generators.nonce();
+  const state = generators.state();
+  const code_verifier = generators.codeVerifier();
+  const code_challenge = generators.codeChallenge(code_verifier);
+
+  req.session.nonce = nonce;
+  req.session.state = state;
+  req.session.code_verifier = code_verifier;
+
+  const authUrl = client.authorizationUrl({
+    scope: "openid profile read",
+    state,
+    nonce,
+    code_challenge,
+    code_challenge_method: "S256",
+  });
+
+  res.redirect(authUrl);
+});
+
+app.get("/code/callback", async (req, res) => {
+  const params = client.callbackParams(req);
+  const tokenSet = await client.callback(process.env.REDIRECT_URI, params, {
+    nonce: req.session.nonce,
+    state: req.session.state,
+    code_verifier: req.session.code_verifier,
+  });
+
+  req.session.user = tokenSet.claims();
+  res.redirect("/");
+});
+```
+
+**Run:**
+
+```bash
+cd jsClient
+pnpm install
+node index.js
+# Visit http://localhost:6000
+```
+
+---
+
+### Client Comparison
+
+| Feature                | Go Client | Python Client | JavaScript Client |
+| ---------------------- | --------- | ------------- | ----------------- |
+| **PKCE Support**       | ✅ S256   | ✅ S256       | ✅ S256           |
+| **Nonce Validation**   | ✅ Manual | ✅ Automatic  | ✅ Automatic      |
+| **State Validation**   | ✅ Manual | ✅ Automatic  | ✅ Automatic      |
+| **OIDC Discovery**     | ✅        | ✅            | ✅                |
+| **ID Token Parsing**   | ✅ Manual | ✅ Automatic  | ✅ Automatic      |
+| **Session Management** | Cookies   | Middleware    | Express Session   |
+| **Framework**          | net/http  | FastAPI       | Express.js        |
+
+---
+
+## 📨 Event-Driven Architecture
+
+The system uses a **decoupled event-driven architecture** for mail, SMS, and security event processing. This ensures high throughput, fault tolerance, and independent scaling of processing components.
+
+### Architecture Pattern
+
+```mermaid
+graph LR
+    A[Authentication Service] -->|Publish| B[Redpanda Topics]
+    B -->|mail-topic| C[Mail Stream Processor]
+    B -->|sms-topic| D[SMS Stream Processor]
+    B -->|security-event-topic| E[Security Event Processor]
+
+    C -->|processed-mail-topic| F[Mail Consumer]
+    D -->|processed-sms-topic| G[SMS Consumer]
+    E -->|processed-security-event-topic| H[Security Event Consumer]
+
+    F -->|SMTP| I[Email Provider]
+    G -->|API| J[Twilio/SNS]
+    H -->|Store| K[Audit Database]
+```
+
+### Kafka Topics
+
+| Topic                            | Producer                 | Consumer                        | Purpose                              |
+| -------------------------------- | ------------------------ | ------------------------------- | ------------------------------------ |
+| `mail-topic`                     | Authentication Service   | Mail Stream Processor           | Raw email events (verification, OTP) |
+| `sms-topic`                      | Authentication Service   | SMS Stream Processor            | Raw SMS events (OTP, alerts)         |
+| `security-event-topic`           | Authentication Service   | Security Event Stream Processor | Security events (login, FIDO2, etc.) |
+| `processed-mail-topic`           | Mail Stream Processor    | Processed Mail Consumer         | Enriched emails ready to send        |
+| `processed-sms-topic`            | SMS Stream Processor     | Processed SMS Consumer          | Enriched SMS ready to send           |
+| `processed-security-event-topic` | Security Event Processor | Security Event Consumer         | Analyzed events ready for audit log  |
+
+### Stream Processors
+
+**Purpose:** Transform and enrich raw events before consumption.
+
+**Example - Mail Stream Processor:**
+
+- Consumes from `mail-topic`
+- Enriches with user details, templates, localization
+- Validates email addresses
+- Publishes to `processed-mail-topic`
+
+**Scaling:** KEDA autoscaling based on Kafka lag (threshold: 10 messages)
+
+### Consumers
+
+**Purpose:** Execute final actions (send email, send SMS, store audit log).
+
+**Example - Mail Consumer:**
+
+- Consumes from `processed-mail-topic`
+- Sends email via SMTP (Gmail, SendGrid, etc.)
+- Handles retries and dead-letter queue
+- Logs delivery status
+
+**Scaling:** KEDA autoscaling based on Kafka lag
+
+### Security Event Types
+
+From [`Event.java`](file:///Users/rahulgupta/Desktop/distributedSecurity/common/src/main/java/one/org/security/common/enums/Event.java):
+
+```java
+public enum Event {
+    REGISTER,
+    LOGIN_SUCCESS,
+    LOGIN_FAIL,
+    QR_LOGIN_SUCCESS,
+    QR_LOGIN_FAIL,
+    FIDO_REGISTER_SUCCESS,
+    FIDO_REGISTER_FAIL,
+    FIDO_LOGIN_SUCCESS,
+    FIDO_LOGIN_FAIL,
+    FORGET_PASSWORD_SUCCESS,
+    FORGET_PASSWORD_FAIL,
+    FORGET_PASSWORD_INITIATED,
+    PASSWORD_CHANGED,
+    BACKUP_EMAIL_VERIFIED,
+    PHONE_NUMBER_VERIFIED,
+    ACCOUNT_LOCKED,
+    LOGOUT,
+    ACCOUNT_DELETED,
+    AUTHERIZED_CLIENT,
+    CLIENT_ACCOUNT_CREATED,
+    CLIENT_ACCOUNT_DELETED
+}
+```
+
+### Benefits
+
+| Benefit                   | Explanation                                                 |
+| ------------------------- | ----------------------------------------------------------- |
+| **Decoupling**            | Services don't directly depend on each other                |
+| **Fault Tolerance**       | If mail service is down, events are queued in Kafka         |
+| **Independent Scaling**   | Scale mail processors independently from SMS processors     |
+| **Replay Capability**     | Can replay events from Kafka for debugging or data recovery |
+| **Observability**         | Each processor and consumer exposes Prometheus metrics      |
+| **Backpressure Handling** | Kafka handles backpressure when consumers are slow          |
 
 ---
 
 ## 🧩 Key Components
 
 ### 1. User Entity
+
+From [`User.java`](file:///Users/rahulgupta/Desktop/distributedSecurity/Authentication/src/main/java/one/org/security/core/domain/entity/User.java):
 
 ```java
 @Document(collection = "security")
@@ -641,58 +1089,98 @@ message VerifyPasswordResponse {
 public class User implements UserDetails {
     @Id
     private ObjectId id;
-    
+
     @Indexed(unique = true)
     private String username;
-    
+
     // Password integrity with HMAC
     private SecurityIntegrity security;
-    
+
     // FIDO2/WebAuthn credential
     private FidoCredential fidoCredential;
-    
+
     // Multi-factor recovery
     private String backupEmail;
     private String phoneNumber;
     private boolean backupEmailVerified;
     private boolean phoneNumberVerified;
-    
+
     // Device tracking
     private List<String> knownDeviceHashes;
-    
+
     // Account security
     private boolean isAccountLocked;
     private LocalDateTime lockingTime;
-    private int numberOfInitiatedOperations;  // Rate limiting
-    
+    private int numberOfInitaiatedOperations;  // Rate limiting counter
+
     // Feature flags
     private boolean passkeyEnabled;
 }
 ```
 
-### 2. Security Integrity Keys
+**Rate Limiting Implementation:**
+
+The `numberOfInitaiatedOperations` field tracks user operations for rate limiting:
 
 ```java
-// Stored in MongoDB (encrypted at rest)
-@Document("security_keys")
-@Data
-@Builder
-public class SecurityIntegrityKeyEntity {
-    @Id
-    private ObjectId id;
-    private String encryptedKey;  // Encrypted with Vault's transit engine
-}
+// Increment operation counter
+Update update = new Update().inc("numberOfInitaiatedOperations", 1);
 
-// FIDO-specific keys
-@Document("security_fido_keys")
+// Reset counter after successful operation
+Update update = new Update()
+    .set("numberOfInitaiatedOperations", 0)
+    .set("lockingTime", null);
+```
+
+When the counter exceeds a threshold, the account is locked temporarily.
+
+### 2. Security Integrity
+
+From [`SecurityIntegrity.java`](file:///Users/rahulgupta/Desktop/distributedSecurity/Authentication/src/main/java/one/org/security/core/domain/entity/SecurityIntegrity.java):
+
+```java
 @Data
-@Builder
-public class SecurityIntegrityFidoKeyEntity {
-    @Id
-    private ObjectId id;
-    private String key;  // Used for HMAC(publicKey)
+public class SecurityIntegrity {
+    private String hashedPassword;        // Argon2id hash from gRPC service
+    private String integrityHmacKeyId;    // Key ID for rotation support
+    private String integrityHmac;         // HMAC(key, hashedPassword)
 }
 ```
+
+**Purpose:** Detects database tampering by verifying HMAC on password hashes.
+
+### 3. FIDO2 Credential
+
+From [`FidoCredential.java`](file:///Users/rahulgupta/Desktop/distributedSecurity/Authentication/src/main/java/one/org/security/core/domain/entity/FidoCredential.java):
+
+```java
+@Data
+@Builder
+public class FidoCredential {
+    @Field("credential_id")
+    private ByteArray credentialId;      // Unique credential identifier
+
+    @Field("user_handle")
+    private ByteArray userHandle;        // Links to user account
+
+    @Field("public_key")
+    private ByteArray publicKey;         // ECDSA P-256 public key
+
+    @Field("signature_count")
+    private long signatureCount;         // Prevents replay attacks
+
+    @Field("name")
+    private String name;                 // "My YubiKey 5C"
+
+    @Field("integrity_hmac_key_id")
+    private String integrityHmacKeyId;   // For key rotation
+
+    @Field("integrity_hmac")
+    private String integrityHmac;        // HMAC(key, publicKey)
+}
+```
+
+**Security:** Public keys are also protected with HMAC integrity verification.
 
 ### 3. Security Event Audit
 
@@ -981,20 +1469,20 @@ metadata:
   name: oauth2-rate-limit
 spec:
   configPatches:
-  - applyTo: HTTP_FILTER
-    match:
-      context: SIDECAR_INBOUND
-    patch:
-      operation: INSERT_BEFORE
-      value:
-        name: envoy.filters.http.local_ratelimit
-        typed_config:
-          "@type": type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
-          stat_prefix: http_local_rate_limiter
-          token_bucket:
-            max_tokens: 100
-            tokens_per_fill: 10
-            fill_interval: 1s
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_INBOUND
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.local_ratelimit
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+            stat_prefix: http_local_rate_limiter
+            token_bucket:
+              max_tokens: 100
+              tokens_per_fill: 10
+              fill_interval: 1s
 ```
 
 ---
@@ -1248,12 +1736,12 @@ data:
     bootstrap.servers=kafka-us-east:9092
     group.id=mirror-maker-group
     auto.offset.reset=earliest
-  
+
   producer.properties: |
     bootstrap.servers=kafka-eu-west:9092
     acks=all
     retries=3
-  
+
   whitelist: |
     security-events
     audit-logs
@@ -1314,203 +1802,714 @@ scylla-nodetool status
 
 ---
 
-## 📊 Monitoring & Observability
+---
 
-### Prometheus Metrics
+## ☸️ Kubernetes Deployment
+
+The system is deployed on Kubernetes with **HPA (Horizontal Pod Autoscaler)** for core services and **KEDA (Kubernetes Event-Driven Autoscaling)** for Kafka-based services.
+
+### Deployment Architecture
+
+```mermaid
+graph TB
+    subgraph "Kubernetes Cluster"
+        subgraph "Namespace: distributed-security"
+            Kong[Kong Ingress<br/>Routes: /auth, /oauth2, /]
+
+            subgraph "Core Services (HPA)"
+                Auth[Authentication<br/>Min: 1, Max: 5<br/>CPU: 70%]
+                AuthZ[Authorization<br/>Min: 1, Max: 5<br/>CPU: 70%]
+                Resource[Resource Server<br/>Min: 1, Max: 5<br/>CPU: 70%]
+                Password[Password Encoding<br/>gRPC :9000]
+            end
+
+            subgraph "Stream Processors (KEDA)"
+                MailProc[Mail Processor<br/>Min: 1, Max: 10<br/>Kafka Lag: 10]
+                SmsProc[SMS Processor<br/>Min: 1, Max: 10<br/>Kafka Lag: 10]
+                SecProc[Security Processor<br/>Min: 1, Max: 10<br/>Kafka Lag: 10]
+            end
+
+            subgraph "Consumers (KEDA)"
+                MailCons[Mail Consumer<br/>Min: 1, Max: 10<br/>Kafka Lag: 10]
+                SmsCons[SMS Consumer<br/>Min: 1, Max: 10<br/>Kafka Lag: 10]
+                SecCons[Security Consumer<br/>Min: 1, Max: 10<br/>Kafka Lag: 10]
+            end
+
+            Frontend[React Frontend<br/>:80]
+        end
+
+        subgraph "External Services (docker-compose)"
+            MongoDB[(MongoDB<br/>:27017)]
+            Redis[(Redis Stack<br/>:6379)]
+            Redpanda[(Redpanda<br/>:9092)]
+            Prometheus[Prometheus<br/>:9090]
+            Grafana[Grafana<br/>:3000]
+            Loki[Loki<br/>:3100]
+            Zipkin[Zipkin<br/>:9411]
+        end
+    end
+
+    Kong --> Auth
+    Kong --> AuthZ
+    Kong --> Frontend
+
+    Auth --> MongoDB
+    Auth --> Redis
+    Auth --> Redpanda
+    Auth --> Password
+
+    Redpanda --> MailProc
+    Redpanda --> SmsProc
+    Redpanda --> SecProc
+
+    MailProc --> Redpanda
+    SmsProc --> Redpanda
+    SecProc --> Redpanda
+
+    Redpanda --> MailCons
+    Redpanda --> SmsCons
+    Redpanda --> SecCons
+```
+
+### HPA Configuration
+
+**File:** [`k8s/hpa.yaml`](file:///Users/rahulgupta/Desktop/distributedSecurity/k8s/hpa.yaml)
+
+Autoscales core services based on CPU utilization:
 
 ```yaml
-# OAuth2 Service Metrics
-# Token issuance rate
-oauth2_tokens_issued_total{type="access_token"}
-oauth2_tokens_issued_total{type="refresh_token"}
-
-# Authentication metrics
-oauth2_auth_attempts_total{method="password",result="success"}
-oauth2_auth_attempts_total{method="passkey",result="success"}
-oauth2_auth_attempts_total{result="failed"}
-
-# Password integrity violations
-security_integrity_violations_total{type="password"}
-security_integrity_violations_total{type="fido_pubkey"}
-
-# Device anomalies
-security_unknown_device_detections_total
-security_account_locks_total
-
-# Vault operations
-vault_key_rotation_total{key="oauth2-jwt-signing"}
-vault_hmac_fetch_duration_seconds
-
-# gRPC metrics
-grpc_server_handled_total{method="HashPassword"}
-grpc_server_handling_seconds{method="VerifyPassword"}
-
-# Istio metrics
-istio_requests_total{destination_service="oauth2-service"}
-istio_request_duration_milliseconds{destination_service="oauth2-service"}
-istio_tcp_connections_opened_total
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: authentication-hpa
+  namespace: distributed-security
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: authentication
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
 ```
 
-### Grafana Dashboards
+**Services with HPA:**
 
-**Dashboard 1: OAuth2 Overview**
+- Authentication Service (1-5 replicas, 70% CPU)
+- Authorization Server (1-5 replicas, 70% CPU)
+- Resource Server (1-5 replicas, 70% CPU)
 
-```
-+─────────────────────────────────────────────────────────+
-│  Token Issuance Rate (req/sec)                          │
-│  ▂▃▅▇█▇▅▃▂ Access Tokens                                │
-│  ▂▃▄▅▆▅▄▃▂ Refresh Tokens                               │
-+─────────────────────────────────────────────────────────+
-│  Authentication Success Rate                            │
-│  Password:  92.5%  ████████████████████░░               │
-│  Passkey:   98.7%  ███████████████████████              │
-+─────────────────────────────────────────────────────────+
-│  Top 10 Clients by Token Usage                          │
-│  client_web_app:     1,245,678 tokens                   │
-│  client_mobile_ios:    987,654 tokens                   │
-│  client_mobile_android: 876,543 tokens                  │
-+─────────────────────────────────────────────────────────+
-```
+### KEDA Autoscaling
 
-**Dashboard 2: Security Events**
+**File:** [`k8s/keda-autoscaling.yaml`](file:///Users/rahulgupta/Desktop/distributedSecurity/k8s/keda-autoscaling.yaml)
 
-```
-+─────────────────────────────────────────────────────────+
-│  Security Event Timeline                                │
-│  ▂▃▅█░ LOGIN                                            │
-│  ░░▂▃░ FAILED_LOGIN                                     │
-│  ░░░▂█ SUSPICIOUS_LOGIN                                 │
-│  ░░░░▃ ACCOUNT_LOCKED                                   │
-+─────────────────────────────────────────────────────────+
-│  Password Integrity Violations (Last 24h)               │
-│  Total: 3  ⚠️                                           │
-│  - 2 from IP 203.0.113.45 (BLOCKED)                     │
-│  - 1 from IP 198.51.100.23 (INVESTIGATING)              │
-+─────────────────────────────────────────────────────────+
-│  Unknown Device Detections                              │
-│  ▂▃▄▅▆▇█ Rate: 12/hour                                  │
-│  Top Countries: US (5), UK (3), DE (2), FR (2)          │
-+─────────────────────────────────────────────────────────+
-```
-
-**Dashboard 3: Infrastructure Health**
-
-```
-+─────────────────────────────────────────────────────────+
-│  ScyllaDB Performance                                   │
-│  Write Latency (p99): 2.3ms  ████░░░░░                  │
-│  Read Latency (p99):  0.8ms  ██░░░░░░░                  │
-│  Compaction Lag:      12s    ██░░░░░░░                  │
-+─────────────────────────────────────────────────────────+
-│  Dragonfly Cache Hit Rate                               │
-│  Hit Rate: 94.7%  ███████████████████░                  │
-│  Evictions: 123/sec                                     │
-+─────────────────────────────────────────────────────────+
-│  Istio Circuit Breaker Status                           │
-│  oauth2-service:      CLOSED ✅                         │
-│  password-hasher:     CLOSED ✅                         │
-│  passkey-service:     CLOSED ✅                         │
-+─────────────────────────────────────────────────────────+
-```
-
-### Alerts
+Autoscales Kafka consumers based on topic lag:
 
 ```yaml
-# prometheus-alerts.yaml
-groups:
-- name: oauth2_alerts
-  interval: 30s
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: mail-stream-processor-scaledobject
+  namespace: distributed-security
+spec:
+  scaleTargetRef:
+    name: mail-stream-processor
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  triggers:
+    - type: kafka
+      metadata:
+        bootstrapServers: redpanda.default.svc.cluster.local:9092
+        consumerGroup: mail-processor-group
+        topic: mail-topic
+        lagThreshold: "10"
+```
+
+**Services with KEDA:**
+
+- Mail Stream Processor (1-10 replicas, lag threshold: 10)
+- SMS Stream Processor (1-10 replicas, lag threshold: 10)
+- Security Event Processor (1-10 replicas, lag threshold: 10)
+- Processed Mail Consumer (1-10 replicas, lag threshold: 10)
+- Processed SMS Consumer (1-10 replicas, lag threshold: 10)
+- Processed Security Event Consumer (1-10 replicas, lag threshold: 10)
+
+### Kong Ingress
+
+**File:** [`k8s/kong-ingress.yaml`](file:///Users/rahulgupta/Desktop/distributedSecurity/k8s/kong-ingress.yaml)
+
+Routes external traffic to services:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  namespace: distributed-security
+  annotations:
+    konghq.com/strip-path: "true"
+    kubernetes.io/ingress.class: kong
+spec:
   rules:
-  
-  # High error rate
-  - alert: HighAuthFailureRate
-    expr: |
-      rate(oauth2_auth_attempts_total{result="failed"}[5m]) > 10
-    for: 2m
-    labels:
-      severity: warning
-    annotations:
-      summary: "High authentication failure rate"
-      description: "{{ $value }} failed auths/sec in the last 5 minutes"
-  
-  # Password integrity violation
-  - alert: PasswordIntegrityViolation
-    expr: |
-      increase(security_integrity_violations_total{type="password"}[5m]) > 0
-    for: 0m
-    labels:
-      severity: critical
-    annotations:
-      summary: "Database tampering detected!"
-      description: "Password HMAC mismatch detected - possible database compromise"
-  
-  # Circuit breaker open
-  - alert: CircuitBreakerOpen
-    expr: |
-      istio_requests_total{response_code="503"} > 0
-    for: 1m
-    labels:
-      severity: warning
-    annotations:
-      summary: "Circuit breaker opened for {{ $labels.destination_service }}"
-  
-  # Vault unsealed
-  - alert: VaultSealed
-    expr: |
-      vault_core_unsealed == 0
-    for: 1m
-    labels:
-      severity: critical
-    annotations:
-      summary: "Vault is sealed - service degraded"
-  
-  # ScyllaDB node down
-  - alert: ScyllaDBNodeDown
-    expr: |
-      up{job="scylladb"} == 0
-    for: 2m
-    labels:
-      severity: critical
-    annotations:
-      summary: "ScyllaDB node {{ $labels.instance }} is down"
+    - http:
+        paths:
+          - path: /auth
+            pathType: Prefix
+            backend:
+              service:
+                name: authentication
+                port:
+                  number: 10000
+          - path: /oauth2
+            pathType: Prefix
+            backend:
+              service:
+                name: autherization
+                port:
+                  number: 12000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
 ```
 
-### Distributed Tracing Example
+### Service Ports
 
-```
-Trace ID: a3f8c9d2e1b4f5a6
+| Service                        | Port  | Protocol | Purpose                |
+| ------------------------------ | ----- | -------- | ---------------------- |
+| Authentication                 | 10000 | HTTP     | User management, FIDO2 |
+| Authorization                  | 12000 | HTTP     | OAuth2/OIDC endpoints  |
+| Resource Server                | 10002 | HTTP     | Protected APIs         |
+| Password Encoding              | 9000  | gRPC     | Argon2id hashing       |
+| Mail Stream Processor          | 10003 | HTTP     | Actuator metrics       |
+| SMS Stream Processor           | 10005 | HTTP     | Actuator metrics       |
+| Security Event Processor       | 10004 | HTTP     | Actuator metrics       |
+| Processed Mail Consumer        | 10006 | HTTP     | Actuator metrics       |
+| Processed SMS Consumer         | 10008 | HTTP     | Actuator metrics       |
+| Processed Security Event Cons. | 10007 | HTTP     | Actuator metrics       |
+| Frontend                       | 80    | HTTP     | React UI               |
 
-Span 1: POST /oauth2/token [200 OK] - 145ms
-  │
-  ├─► Span 2: Verify PKCE code_verifier - 2ms
-  │
-  ├─► Span 3: Fetch user from MongoDB - 12ms
-  │
-  ├─► Span 4: Verify password integrity (HMAC) - 3ms
-  │     │
-  │     └─► Span 5: Fetch HMAC key from Vault - 8ms
-  │
-  ├─► Span 6: gRPC call to password-hasher - 85ms
-  │     │
-  │     └─► Span 7: Argon2 verification - 78ms
-  │
-  ├─► Span 8: Generate JWT with Vault signing - 25ms
-  │
-  └─► Span 9: Store token in ScyllaDB - 18ms
+### Deployment Commands
+
+```bash
+# Create namespace
+kubectl apply -f k8s/namespace.yaml
+
+# Deploy ConfigMaps and Secrets
+kubectl apply -f k8s/configmap-common.yaml
+kubectl apply -f k8s/secrets.yaml
+
+# Deploy all services
+kubectl apply -f k8s/authentication.yaml
+kubectl apply -f k8s/autherization.yaml
+kubectl apply -f k8s/resource-server.yaml
+kubectl apply -f k8s/password-encoding.yaml
+kubectl apply -f k8s/mail-stream-processor.yaml
+kubectl apply -f k8s/sms-stream-processor.yaml
+kubectl apply -f k8s/security-event-stream-processor.yaml
+kubectl apply -f k8s/processed-mail-consumer.yaml
+kubectl apply -f k8s/processed-sms-consumer.yaml
+kubectl apply -f k8s/processed-security-event-consumer.yaml
+kubectl apply -f k8s/frontend.yaml
+
+# Deploy HPA
+kubectl apply -f k8s/hpa.yaml
+
+# Deploy KEDA autoscaling
+kubectl apply -f k8s/keda-autoscaling.yaml
+
+# Deploy Kong ingress
+kubectl apply -f k8s/kong-ingress.yaml
+
+# Verify deployments
+kubectl get pods -n distributed-security
+kubectl get hpa -n distributed-security
+kubectl get scaledobjects -n distributed-security
 ```
 
 ---
+
+## 📊 Monitoring & Observability
+
+The system implements comprehensive observability using the **Prometheus + Grafana + Loki + Zipkin** stack, with all 11 microservices exposing metrics via Spring Boot Actuator.
+
+### Prometheus Scrape Configuration
+
+**File:** [`prometheus.yml`](file:///Users/rahulgupta/Desktop/distributedSecurity/prometheus.yml)
+
+All services expose metrics at `/actuator/prometheus`:
+
+```yaml
+scrape_configs:
+  - job_name: "authentication-service"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:10000"]
+
+  - job_name: "authorization-service"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:12000"]
+
+  - job_name: "resource-server"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:10002"]
+
+  - job_name: "password-encoding-service"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:9000"]
+
+  - job_name: "mail-stream-processor"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:10003"]
+
+  - job_name: "sms-stream-processor"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:10005"]
+
+  - job_name: "security-event-stream-processor"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:10004"]
+
+  - job_name: "processed-mail-consumer"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:10006"]
+
+  - job_name: "processed-sms-consumer"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:10008"]
+
+  - job_name: "processed-security-event-consumer"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:10007"]
+```
+
+**Total Services Monitored:** 11 microservices
+
+### Grafana Dashboards
+
+Access Grafana at `http://localhost:3000` (default credentials: `admin/admin`)
+
+**Pre-configured Datasources:**
+
+- Prometheus (metrics)
+- Loki (logs)
+- Zipkin (traces)
+
+#### Dashboard 1: System Overview & Health
+
+![Grafana System Overview](assets/Monitering1.png)
+_Real-time monitoring showing uptime (1.8 hours), heap usage (1.3%), non-heap usage (7.1%), CPU usage, load average, and process open files_
+
+#### Dashboard 2: JVM Memory & CodeHeap Metrics
+
+![JVM Memory Metrics](assets/Monitering2.png)
+_Detailed JVM statistics including memory pool details, CodeHeap metrics (non-nmethods, non-profiled, profiled), and compressed class space monitoring_
+
+#### Dashboard 3: HTTP Request Metrics
+
+![HTTP Request Metrics](assets/Monitering3.png)
+_HTTP server request metrics showing active seconds (max, count, sum), request counts, and JVM buffer metrics_
+
+### Key Metrics
+
+```promql
+# HTTP Request Rate
+rate(http_server_requests_seconds_count[5m])
+
+# HTTP Request Duration (p95)
+histogram_quantile(0.95, http_server_requests_seconds_bucket)
+
+# JVM Memory Usage
+jvm_memory_used_bytes{area="heap"}
+
+# Kafka Consumer Lag
+kafka_consumer_lag{topic="mail-topic"}
+
+# Active Sessions
+redis_sessions_active_total
+
+# Failed Login Attempts
+security_events_total{event="LOGIN_FAIL"}
+
+# gRPC Metrics
+grpc_server_handled_total{method="HashPassword"}
+grpc_server_handling_seconds{method="VerifyPassword"}
+```
+
+### Distributed Tracing with Zipkin
+
+**Access:** `http://localhost:9411`
+
+Zipkin captures distributed traces across all microservices with detailed span information:
+
+![Zipkin Distributed Tracing](assets/ZipkinTrace.png)
+_Example trace showing `my-service: get` operation with 8.04ms duration, including service dependencies and timing breakdown_
+
+**Trace Flow Example:**
+
+```
+User Login Request
+  ├─ Authentication Service (10ms)
+  │   ├─ Password Encoding gRPC (45ms)
+  │   ├─ MongoDB Query (5ms)
+  │   └─ Redis Session Create (2ms)
+  ├─ Authorization Service (8ms)
+  │   └─ Token Generation (3ms)
+  └─ Kafka Publish (1ms)
+      └─ Security Event Processor (12ms)
+```
+
+**Spring Boot Configuration:**
+
+```java
+management:
+  tracing:
+    sampling:
+      probability: 1.0  // 100% sampling for development
+  zipkin:
+    tracing:
+      endpoint: http://zipkin:9411/api/v2/spans
+```
+
+### Centralized Logging with Loki
+
+**Access:** Via Grafana → Explore → Loki
+
+All services send logs to Loki via Logback configuration:
+
+![Loki Centralized Logs](assets/LokiLog.png)
+_Grafana Logs Drilldown showing service logs with filtering by service name, including detailed log entries with timestamps and severity levels_
+
+**Logback Configuration:**
+
+```xml
+<appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+    <http>
+        <url>http://loki:3100/loki/api/v1/push</url>
+    </http>
+    <format>
+        <label>
+            <pattern>service=${SERVICE_NAME},env=dev</pattern>
+        </label>
+    </format>
+</appender>
+```
+
+**Query Examples:**
+
+```logql
+# All logs from authentication service
+{service="authentication-service"}
+
+# Failed login attempts
+{service="authentication-service"} |= "LOGIN_FAIL"
+
+# Errors across all services
+{env="dev"} |= "ERROR"
+
+# Logs from specific time range
+{service="mail-stream-processor"} |= "ProcessedMail"
+```
+
+### Observability Stack Deployment
+
+**File:** [`docker-compose.yaml`](file:///Users/rahulgupta/Desktop/distributedSecurity/docker-compose.yaml)
+
+```yaml
+services:
+  # Prometheus for metrics
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  # Loki for logs
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+
+  # Zipkin for distributed tracing
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana-datasource.yml:/etc/grafana/provisioning/datasources/datasources.yml
+```
+
+**Start Observability Stack:**
+
+```bash
+docker-compose up -d prometheus loki zipkin grafana
+```
+
+### Alerting (Future Enhancement)
+
+Prometheus Alertmanager can be configured for:
+
+- High error rates
+- Service downtime
+- Kafka consumer lag exceeding threshold
+- Memory/CPU usage alerts
+- Failed authentication attempts spike
+
+---
+
+## 🔄 CI/CD Pipeline
+
+The project uses **Jenkins** for continuous integration and deployment, with dedicated Jenkinsfiles for each of the 11 microservices.
+
+### Jenkins Pipeline Structure
+
+**Location:** [`jenkins/`](file:///Users/rahulgupta/Desktop/distributedSecurity/jenkins/)
+
+Each service has its own Jenkinsfile:
+
+- `jenkins/authentication/Jenkinsfile`
+- `jenkins/autherization/Jenkinsfile`
+- `jenkins/resource-server/Jenkinsfile`
+- `jenkins/password-encoding/Jenkinsfile`
+- `jenkins/mail-stream-processor/Jenkinsfile`
+- `jenkins/sms-stream-processor/Jenkinsfile`
+- `jenkins/security-event-stream-processor/Jenkinsfile`
+- `jenkins/processed-mail-consumer/Jenkinsfile`
+- `jenkins/processed-sms-consumer/Jenkinsfile`
+- `jenkins/processed-security-event-consumer/Jenkinsfile`
+- `jenkins/frontend/Jenkinsfile`
+
+### Pipeline Stages
+
+```groovy
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/karankumar786786/distributedSecurity.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t authentication-service:${BUILD_NUMBER} .'
+            }
+        }
+
+        stage('Push to Registry') {
+            steps {
+                sh 'docker push authentication-service:${BUILD_NUMBER}'
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh 'kubectl set image deployment/authentication authentication=authentication-service:${BUILD_NUMBER} -n distributed-security'
+            }
+        }
+    }
+}
+```
+
+### Deployment Workflow
+
+```mermaid
+graph LR
+    A[Git Push] --> B[Jenkins Webhook]
+    B --> C[Build Maven Project]
+    C --> D[Run Unit Tests]
+    D --> E[Build Docker Image]
+    E --> F[Push to Docker Hub]
+    F --> G[Update K8s Deployment]
+    G --> H[Rolling Update]
+```
+
+### Automated Deployment Script
+
+**File:** [`update-services.sh`](file:///Users/rahulgupta/Desktop/distributedSecurity/update-services.sh)
+
+```bash
+#!/bin/bash
+# Update all services in Kubernetes
+
+services=(
+    "authentication"
+    "autherization"
+    "resource-server"
+    "password-encoding"
+    "mail-stream-processor"
+    "sms-stream-processor"
+    "security-event-stream-processor"
+    "processed-mail-consumer"
+    "processed-sms-consumer"
+    "processed-security-event-consumer"
+    "frontend"
+)
+
+for service in "${services[@]}"; do
+    echo "Updating $service..."
+    kubectl rollout restart deployment/$service -n distributed-security
+    kubectl rollout status deployment/$service -n distributed-security
+done
+```
+
+---
+
+## 📡 API Documentation
+
+The system exposes comprehensive REST APIs for authentication, account management, OAuth2, and key management.
+
+### Authentication Endpoints
+
+![Authentication API Endpoints](assets/Endpoints.png)
+
+**Available Endpoints:**
+
+- **Register:** `POST /api/auth/register` - User registration
+- **Login:**
+  - **Password Login Init:** `POST /api/auth/login/password/init` - Initialize password-based login
+  - **Password Login Complete:** `POST /api/auth/login/password/complete` - Complete password authentication
+  - **FIDO Login Init:** `POST /api/auth/login/fido/init` - Initialize FIDO2/WebAuthn login
+  - **FIDO Login:** `PATCH /api/auth/login/fido` - New FIDO request
+  - **QR Login:** QR code-based authentication
+  - **One Time Token Login:** Single-use token authentication
+- **Forget Password:**
+  - `GET /api/auth/forget-password/backup-email` - Request password reset via backup email
+  - `GET /api/auth/forget-password/backup-email/resend-otp` - Resend OTP to backup email
+  - `POST /api/auth/forget-password/backup-email/verify` - Verify backup email OTP
+  - `GET /api/auth/forget-password/phone-number` - Request password reset via phone
+  - `GET /api/auth/forget-password/phone-number/resend-otp` - Resend OTP to phone
+  - `POST /api/auth/forget-password/phone-number/verify` - Verify phone OTP
+
+### Account Management Endpoints
+
+![Account Management API Endpoints](assets/Endpoints2.png)
+
+**Available Endpoints:**
+
+- **Change Password:** `POST /api/account/change-password` - Update user password
+- **Update Security Details:**
+  - `POST /api/account/security/backup-email` - Change backup email
+  - `GET /api/account/security/backup-email/resend-otp` - Resend backup email verification OTP
+  - `POST /api/account/security/backup-email/verify` - Verify backup email
+  - `POST /api/account/security/phone-number` - Change phone number
+  - `GET /api/account/security/phone-number/resend-otp` - Resend phone verification OTP
+  - `POST /api/account/security/phone-number/verify` - Verify phone number
+- **FIDO Register:**
+  - `PATCH /api/account/fido/register/init` - Initialize FIDO2 registration
+  - `POST /api/account/fido/register/complete` - Complete FIDO2 registration
+- **Account Actions:**
+  - `PATCH /api/account/logout` - User logout
+  - `DEL /api/account/delete` - Delete user account
+- **OAuth2 Client Management:**
+  - `POST /api/client/create` - Create new OAuth2 client
+  - `PATCH /api/client/redirect-uri` - Update client redirect URI
+  - `GET /api/client/list` - List all clients
+  - `DEL /api/client/delete` - Delete OAuth2 client
+
+### OAuth2 Server Endpoints
+
+![OAuth2 Server API Endpoints](assets/Endpoints3.png)
+
+**Available Endpoints:**
+
+- **Public Details:**
+  - `GET /oauth2/server-configuration` - Server configuration
+  - `GET /oauth2/public-key` - Public key for token verification
+- **Authorization:**
+  - `GET /oauth2/authorize` - Authorization request
+  - `POST /oauth2/token` - Token request
+  - `GET /oauth2/user-info` - Get user information
+  - `GET /oauth2/read` - Read scope
+  - `GET /oauth2/write` - Write scope
+- **General:**
+  - `POST /oauth2/check-user-in-db` - Check if user exists
+- **Key Management:**
+  - **Password Keys:**
+    - `POST /oauth2/keys/password/create` - Create password HMAC key
+    - `DEL /oauth2/keys/password/delete` - Delete password key
+  - **FIDO Keys:**
+    - `POST /oauth2/keys/fido/create` - Create FIDO HMAC key
+    - `DEL /oauth2/keys/fido/delete` - Delete FIDO key
+  - **Client Keys:**
+    - `POST /oauth2/keys/client/create` - Create client key
+    - `DEL /oauth2/keys/client/delete` - Delete client key
+
+### Password Encoding Service (gRPC)
+
+![Password Encoding gRPC Service](assets/EncodingService.png)
+
+**Available gRPC Methods:**
+
+- **Encoder:** `HashPassword(PasswordRequest) → PasswordResponse` - Hash password using Argon2id
+- **Verifier:** `VerifyPassword(VerifyRequest) → VerifyResponse` - Verify password against hash
+
+**Protocol Definition:**
+
+```protobuf
+service PasswordHasher {
+  rpc HashPassword(HashPasswordRequest) returns (HashPasswordResponse);
+  rpc VerifyPassword(VerifyPasswordRequest) returns (VerifyPasswordResponse);
+}
+```
+
+---
+
+## Security Best Practices
 
 ## 🔐 Security Best Practices
 
 ### 1. Never Store Plaintext Secrets
 
 ❌ **Bad:**
+
 ```java
 private static final String VAULT_TOKEN = "s.1234567890abcdef";
 ```
 
 ✅ **Good:**
+
 ```java
 @Value("${vault.token}")
 private String vaultToken;  // From Kubernetes secret
@@ -1549,18 +2548,18 @@ kind: Role
 metadata:
   name: oauth2-service-role
 rules:
-- apiGroups: [""]
-  resources: ["secrets"]
-  resourceNames: ["oauth2-config"]  # Only specific secret
-  verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: ["oauth2-config"] # Only specific secret
+    verbs: ["get"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: oauth2-service-binding
 subjects:
-- kind: ServiceAccount
-  name: oauth2-service
+  - kind: ServiceAccount
+    name: oauth2-service
 roleRef:
   kind: Role
   name: oauth2-service-role
@@ -1581,21 +2580,21 @@ spec:
       app: oauth2-service
   action: ALLOW
   rules:
-  - from:
-    - source:
-        principals: ["cluster.local/ns/default/sa/ingress-gateway"]
-    to:
-    - operation:
-        methods: ["GET", "POST"]
-        paths: ["/oauth2/*", "/api/webauthn/*"]
-  
-  - from:
-    - source:
-        principals: ["cluster.local/ns/default/sa/password-hasher"]
-    to:
-    - operation:
-        methods: ["POST"]
-        paths: ["/internal/verify-integrity"]
+    - from:
+        - source:
+            principals: ["cluster.local/ns/default/sa/ingress-gateway"]
+      to:
+        - operation:
+            methods: ["GET", "POST"]
+            paths: ["/oauth2/*", "/api/webauthn/*"]
+
+    - from:
+        - source:
+            principals: ["cluster.local/ns/default/sa/password-hasher"]
+      to:
+        - operation:
+            methods: ["POST"]
+            paths: ["/internal/verify-integrity"]
 ```
 
 ### 5. Audit Everything
@@ -1604,22 +2603,22 @@ spec:
 // Audit interceptor for all security events
 @Component
 public class SecurityAuditInterceptor implements HandlerInterceptor {
-    
+
     @Autowired
     private KafkaTemplate<String, SecurityEvent> kafkaTemplate;
-    
+
     @Override
-    public void afterCompletion(HttpServletRequest request, 
+    public void afterCompletion(HttpServletRequest request,
                                 HttpServletResponse response,
                                 Object handler, Exception ex) {
-        
+
         SecurityEvent event = SecurityEvent.builder()
             .user(getCurrentUserId())
             .event(determineEvent(request, response))
             .ipAddress(request.getRemoteAddr())
             .deviceHash(generateDeviceHash(request))
             .build();
-        
+
         kafkaTemplate.send("security-events", event);
     }
 }
@@ -1702,7 +2701,7 @@ spec:
         maxRequestsPerConnection: 10
         h2UpgradePolicy: UPGRADE
     loadBalancer:
-      simple: LEAST_REQUEST  # Better than ROUND_ROBIN
+      simple: LEAST_REQUEST # Better than ROUND_ROBIN
 ```
 
 ---
@@ -1773,6 +2772,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🎓 Academic Note
 
 This project was developed as a college project to demonstrate:
+
 - Enterprise software architecture patterns
 - OAuth2/OIDC implementation
 - Cloud-native application design
@@ -1780,6 +2780,7 @@ This project was developed as a college project to demonstrate:
 - DevOps and SRE practices
 
 **Educational Objectives Met:**
+
 - ✅ Distributed systems design
 - ✅ Cryptographic protocol implementation
 - ✅ Infrastructure as Code
