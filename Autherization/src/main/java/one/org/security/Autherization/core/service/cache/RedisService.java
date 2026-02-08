@@ -35,6 +35,22 @@ public class RedisService {
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+        // Add Spring Security and OAuth2 modules for correct deserialization of complex
+        // types
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        java.util.List<com.fasterxml.jackson.databind.Module> modules = org.springframework.security.jackson2.SecurityJackson2Modules
+                .getModules(classLoader);
+        objectMapper.registerModules(modules);
+        objectMapper.registerModule(
+                new org.springframework.security.oauth2.server.authorization.jackson2.OAuth2AuthorizationServerJackson2Module());
+
+        // Enable default typing to preserve type information for generic Map entries
+        // (like attributes)
+        objectMapper.activateDefaultTyping(
+                objectMapper.getPolymorphicTypeValidator(),
+                ObjectMapper.DefaultTyping.NON_FINAL,
+                com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY);
     }
 
     public boolean saveClient(ClientEntity client) {

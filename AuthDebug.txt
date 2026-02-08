@@ -4933,3 +4933,17 @@
 2026-02-07T14:08:06.977419 - === TOKEN ENDPOINT RESPONSE ===
 2026-02-07T14:08:06.977515 - Status: 401
 2026-02-07T14:08:06.977564 - ===============================
+2026-02-08T13:24:40.086926 - FILTER: Entering - GET /.well-known/openid-configuration (State: null)
+2026-02-08T13:25:27.080224 - FILTER: Entering - GET /oauth2/authorize (State: YCrAbdJsE5K99K8SlCylmIqGLpYAEtQIBTb4GQM14xc=)
+2026-02-08T13:25:27.194045 - FILTER: Redirecting to: http://localhost:5173/login?return_to=http://localhost:12000/oauth2/authorize?response_type=code&client_id=testclient2&scope=openid%20read&state=YCrAbdJsE5K99K8SlCylmIqGLpYAEtQIBTb4GQM14xc%3D&redirect_uri=http://localhost:13000/login/oauth2/code/testclient2&nonce=SPyIoOyWwJ8ESi8yOfGWCweuz3RwzBVcGW3Q3VCtDuQ&code_challenge=JCUJ9B4Jk8HYckA1OSjCiuDGd7JDN1dGkawHT_MWAtE&code_challenge_method=S256
+2026-02-08T13:25:28.374396 - FILTER: Entering - GET /oauth2/authorize (State: YCrAbdJsE5K99K8SlCylmIqGLpYAEtQIBTb4GQM14xc=)
+2026-02-08T13:25:28.394034 - FILTER: Redirecting to: http://localhost:5173/oauth2/consent?scope=read%20openid&client_id=testclient2&state=z79uFgTYoSMSMn46ev4-5TYbZ_yDMrYOp97MOHjIj3U%3D
+2026-02-08T13:25:29.744684 - FILTER: Entering - POST /oauth2/authorize/process (State: z79uFgTYoSMSMn46ev4-5TYbZ_yDMrYOp97MOHjIj3U=)
+2026-02-08T14:12:01.963872 - FILTER: Entering - GET /.well-known/openid-configuration (State: null)
+2026-02-08T14:12:10.454177 - FILTER: Entering - GET /debug/pkce-test (State: null)
+2026-02-08T14:12:18.686904 - FILTER: Entering - GET /oauth2/authorize (State: huQpH5dUkFBvoarnVP0GtOs3gZkt45pmeHXTGNt7_CI=)
+2026-02-08T14:12:18.794502 - FILTER: Redirecting to: http://localhost:5173/login?return_to=http://localhost:12000/oauth2/authorize?response_type=code&client_id=testclient2&scope=openid%20read&state=huQpH5dUkFBvoarnVP0GtOs3gZkt45pmeHXTGNt7_CI%3D&redirect_uri=http://localhost:13000/login/oauth2/code/testclient2&nonce=5hoLcUx11X6StYcvlCFKzlQ5PfE3L9nL5ZrGjX4AR80&code_challenge=FsbQmaK9JC8KEoGxqxv3Wdj77hqZ_Edejz_9KvwoYBY&code_challenge_method=S256
+2026-02-08T14:12:19.951438 - FILTER: Entering - GET /oauth2/authorize (State: huQpH5dUkFBvoarnVP0GtOs3gZkt45pmeHXTGNt7_CI=)
+2026-02-08T14:12:19.978077 - FILTER: Redirecting to: http://localhost:5173/oauth2/consent?scope=read%20openid&client_id=testclient2&state=rSXuSizcC-QROz4JNiQ0rOk7-i3WGkgp8a0atylvM6o%3D
+2026-02-08T14:12:21.034338 - FILTER: Entering - POST /oauth2/authorize/process (State: rSXuSizcC-QROz4JNiQ0rOk7-i3WGkgp8a0atylvM6o=)
+2026-02-08T14:12:21.086595 - FILTER: Redirecting to: http://localhost:12000/oauth2/authorize/null?error=invalid_request&state=rSXuSizcC-QROz4JNiQ0rOk7-i3WGkgp8a0atylvM6o=
